@@ -1,5 +1,6 @@
 import { EventNoteOutlined, Forum, LibraryBooksOutlined, TimelineOutlined } from '@mui/icons-material'
 import { List, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material'
+import { startsWith } from 'lodash'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 export const SideBar = () => {
@@ -15,18 +16,18 @@ export const SideBar = () => {
     },
     {
       title: 'Courses',
-      icon: <LibraryBooksOutlined color={pathname === '/course' ? 'primary' : 'inherit'} />,
+      icon: <LibraryBooksOutlined color={startsWith(pathname, '/course') ? 'primary' : 'inherit'} />,
       href: '/courses',
     },
     {
       title: 'Schedule',
-      icon: <EventNoteOutlined color={pathname === '/schedule' ? 'primary' : 'inherit'} />,
+      icon: <EventNoteOutlined color={startsWith(pathname, '/schedule') ? 'primary' : 'inherit'} />,
       href: '/schedule',
     },
     {
       title: 'Forum',
-      icon: <Forum color={pathname === '/message' ? 'primary' : 'inherit'} />,
-      href: '/message',
+      icon: <Forum color={startsWith(pathname, '/forum') ? 'primary' : 'inherit'} />,
+      href: '/forum',
     },
   ]
 
@@ -44,7 +45,7 @@ export const SideBar = () => {
               },
             },
           }}
-          selected={item.href === pathname}
+          selected={startsWith(pathname, item.href) && item.href !== '/'}
           key={item.title}
           onClick={() => navigate(item.href)}
         >

@@ -32,6 +32,12 @@ export const gray = {
 
 export const theme = createTheme({
   palette: {
+    // primary: {
+    //   light: blue[50],
+    //   main: '',
+    //   dark: '',
+    //   contrastText: '#fff',
+    // },
     secondary: {
       light: '#A3A5AB',
       main: '#3A3D44',

@@ -3,6 +3,7 @@ import { CastForEducationOutlined } from '@mui/icons-material'
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Course } from '../services/course/course.dto'
+import { blue } from '@mui/material/colors'
 
 export type CourseCardProps = {
   data: Course
@@ -23,7 +24,7 @@ export const CourseCard = ({ data }: CourseCardProps) => {
       borderRadius={3}
       sx={{
         ':hover': {
-          bgcolor: '#ddd',
+          bgcolor: blue[50],
         },
         cursor: 'pointer',
         transition: 'all ease 0.15s',
@@ -48,7 +49,7 @@ export const CourseCard = ({ data }: CourseCardProps) => {
             <Box>
               <Typography fontWeight={500}>{courseName}</Typography>
               <Typography variant='body2' sx={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
-                {description || 'hihi'}
+                {description}
               </Typography>
             </Box>
             <Box display='flex' alignItems='center' gap={2}>

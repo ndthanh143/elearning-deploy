@@ -7,12 +7,12 @@ import authService from '../services/auth/auth.service'
 import { userKeys } from '../services/user/user.query'
 
 export const useAuth = () => {
-  // const [accessToken, setAccessToken] = useState<string | undefined>(Cookies.get('access_token'))
+  const [accessToken, setAccessToken] = useState<string | undefined>(Cookies.get('access_token'))
 
   const queryClient = useQueryClient()
 
   const userInstance = userKeys.profile()
-  const { data: profile, isLoading, refetch, isFetched } = useQuery({ ...userInstance })
+  const { data: profile, isLoading, refetch, isFetched } = useQuery({ ...userInstance, enabled: Boolean(accessToken) })
 
   const { mutate: mutateLoginGoogle } = useMutation({
     mutationFn: authService.loginGoogle,
@@ -24,9 +24,9 @@ export const useAuth = () => {
   })
   const loginGoogle = async (accessToken: string) => mutateLoginGoogle(accessToken)
 
-  const logout = async () => {
-    await Cookies.remove('access_token')
-    queryClient.setQueryData(userKeys.all, null)
+  const logout = () => {
+    authService.logout()
+    queryClient.setQueryData(userInstance.queryKey, null)
   }
 
   return { profile, isLoading, refetch, isFetched, loginGoogle, logout }

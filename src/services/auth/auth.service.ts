@@ -14,6 +14,10 @@ const authService = {
 
     return data
   },
+  logout: () => {
+    Cookies.remove('access_token')
+    localStorage.clear()
+  },
 }
 
 export default authService

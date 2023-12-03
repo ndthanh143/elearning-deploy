@@ -2,13 +2,13 @@ import axiosInstance from '../../axios'
 import { CoureseRegistrationResponse, getListStudentCourseQuery } from './coursesRegistration.dto'
 
 export const coursesRegistrationService = {
-  getCoursesRegistrationStudent: async ({ studentId }: getListStudentCourseQuery) => {
+  getCoursesRegistrationStudent: async (query: getListStudentCourseQuery) => {
     const { data } = await axiosInstance.get<CoureseRegistrationResponse>('/course-registration/list', {
       params: {
-        studentId,
+        ...query,
       },
     })
 
-    return data
+    return data.data
   },
 }

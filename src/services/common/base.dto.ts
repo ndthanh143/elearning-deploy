@@ -3,6 +3,27 @@ export type BaseResponse<T> = {
   data: T
 }
 
+export type BasePaginationResponse<T> = {
+  result: boolean
+  data: BasePaginationData<T>
+}
+
 export type BaseData = {
   id: number
+  createDate: Date
+  modifiedDate: Date
+}
+
+export type PaginationQuery = {
+  page?: number
+  size?: number
+  paged?: boolean
+}
+
+export type BasePaginationData<T> = {
+  content: T
+  pageIndex: number
+  pageSize: number
+  totalELements: number
+  totalPages: number
 }

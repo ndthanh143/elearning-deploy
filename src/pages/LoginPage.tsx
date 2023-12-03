@@ -2,25 +2,25 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
 import { Box, Button, Divider, IconButton, OutlinedInput, TextField, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
-import GoogleLogin from 'react-google-login'
 import { useForm } from 'react-hook-form'
 import { object, string } from 'yup'
 import { configs } from '../configs'
-import { gapi } from 'gapi-script'
-import { useMutation } from '@tanstack/react-query'
-import authService from '../services/auth/auth.service'
-import { toast } from 'react-toastify'
 import { useAuth } from '../hooks'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
+import GoogleLogin from 'react-google-login'
+// import { GoogleLogin } from '@react-oauth/google'
 
 const schema = object({
   username: string().required('Please fill in your username'),
   password: string().required('Please fill in your password'),
 })
 
-const clientId = configs.GOOGLE_CLIENT_ID
 export const LoginPage = () => {
   const navigate = useNavigate()
+
+  const {
+    state: { from },
+  } = useLocation()
 
   const {
     register,
@@ -39,22 +39,11 @@ export const LoginPage = () => {
   }
   const onSubmitHandler = () => {}
 
-  const responseGoogle = ({ accessToken }) => loginGoogle(accessToken)
-
-  useEffect(() => {
-    const start = () => {
-      gapi.client.init({
-        clientId,
-        scope: '',
-      })
-    }
-
-    gapi.load('client:auth2', start)
-  }, [])
+  const responseGoogle = ({ accessToken }: any) => loginGoogle(accessToken)
 
   useEffect(() => {
     if (profile) {
-      navigate('/')
+      navigate(from || '/')
     }
   }, [profile])
 
@@ -145,11 +134,11 @@ export const LoginPage = () => {
 
         <Divider>Or</Divider>
         <GoogleLogin
-          clientId={clientId}
+          clientId={configs.GOOGLE_CLIENT_ID}
           onSuccess={responseGoogle}
           onFailure={responseGoogle}
           cookiePolicy='single_host_origin'
-          isSignedIn={true}
+          isSignedIn={false}
         />
       </Box>
     </Box>

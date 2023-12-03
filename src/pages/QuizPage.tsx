@@ -3,7 +3,6 @@ import { Box, Button, Chip, Divider, Grid, Slider, Stack, Typography } from '@mu
 import { PageContentHeading } from '../components'
 import { useState } from 'react'
 import { generateAwnserKey } from '../utils'
-import Countdown from 'react-countdown'
 import { useBoolean } from '../hooks'
 
 const questionList = [
@@ -384,7 +383,7 @@ const totalTime = 10 * 60 * 1000
 export const QuizPage = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [anwseredQuestion, setAnwseredQuestion] = useState<String[]>([])
-  const [isStarted, handleStarted] = useBoolean(true)
+  const { value: isStarted } = useBoolean(true)
 
   const [timer, setTimer] = useState(totalTime)
 
