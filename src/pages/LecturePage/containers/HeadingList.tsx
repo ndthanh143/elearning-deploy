@@ -43,7 +43,7 @@ export const HeadingList = ({ data }: HeadingListProps) => {
   }, [])
 
   return (
-    <BoxContent position='sticky' top={30}>
+    <BoxContent position='sticky' top={120}>
       <Stack gap={2}>
         {headingList.map((heading) => (
           <Link href={`#${heading.id}`} style={{ color: 'inherit', textDecoration: 'none' }} key={heading.id}>

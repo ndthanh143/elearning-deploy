@@ -1,26 +1,36 @@
-import { BoxContent, NoData, PageContentHeading } from '@/components'
+import { BoxContent, Loading, NoData, PageContentHeading } from '@/components'
 import { Avatar, Box, Grid, InputAdornment, Stack, TextField, Typography } from '@mui/material'
 import { useAuth } from '@/hooks'
 import { useQuery } from '@tanstack/react-query'
 import { SearchOutlined } from '@mui/icons-material'
-import { useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import { topicKeys } from '@/services/topic/topic.query'
 import { ForumTopic } from '../CourseDetailPage/components/ForumTopic'
 import { forumKeys } from '@/services/forum/forum.query'
 import { Forum } from '@/services/forum/forum.dto'
 import { blue } from '@mui/material/colors'
+import common from '@/assets/images/icons/common'
 
 export const ForumPage = () => {
   const { profile } = useAuth()
 
-  const [searchCourse, setSearchCourse] = useState('')
+  const [search, setSearch] = useState('')
+
   const [selectedForum, setSelectedForum] = useState<Forum | undefined>()
 
-  const forumsInstance = forumKeys.list({ accountId: Number(profile?.data.id) })
+  const forumsInstance = forumKeys.list({ accountId: Number(profile?.data.id), title: search })
   const { data: forums } = useQuery({ ...forumsInstance, enabled: Boolean(profile) })
 
   const topicInstance = topicKeys.list({ forumId: Number(selectedForum?.id) })
   const { data: topics } = useQuery({ ...topicInstance, enabled: Boolean(selectedForum) })
+
+  const handleSetSearch = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setSearch(e.target.value)
+
+  useEffect(() => {
+    if (forums) {
+      setSelectedForum(forums.content[0])
+    }
+  }, [forums])
 
   return (
     <Box>
@@ -30,6 +40,8 @@ export const ForumPage = () => {
           <BoxContent>
             <TextField
               size='small'
+              value={search}
+              onChange={handleSetSearch}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position='start'>
@@ -59,12 +71,7 @@ export const ForumPage = () => {
                   borderRadius={3}
                   onClick={() => setSelectedForum(forum)}
                 >
-                  <Avatar
-                    src={
-                      forum.courseInfo.thumbnail ||
-                      'https://blogassets.leverageedu.com/blog/wp-content/uploads/2019/10/23170101/List-of-Professional-Courses-after-Graduation.gif'
-                    }
-                  />
+                  <Avatar src={forum.courseInfo.thumbnail || common.course} />
                   <Stack>
                     <Typography fontWeight={500}>{forum.courseInfo.courseName}</Typography>
                   </Stack>
@@ -89,7 +96,7 @@ export const ForumPage = () => {
               )
             ) : (
               <BoxContent>
-                <Typography>Loading...</Typography>
+                <Loading />
               </BoxContent>
             )}
           </Stack>

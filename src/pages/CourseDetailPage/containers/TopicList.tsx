@@ -1,6 +1,6 @@
-import { BoxContent, NoData } from '@/components'
-import { Stack, Typography } from '@mui/material'
-import { ForumTopic } from '../components/ForumTopic'
+import { BoxContent, Loading, NoData } from '@/components'
+import { Stack } from '@mui/material'
+import { ForumTopic } from '../components'
 import { topicKeys } from '@/services/topic/topic.query'
 import { useQuery } from '@tanstack/react-query'
 
@@ -28,7 +28,7 @@ export const TopicList = ({ forumId }: TopicList) => {
         )
       ) : (
         <BoxContent>
-          <Typography>Loading...</Typography>
+          <Loading />
         </BoxContent>
       )}
     </Stack>

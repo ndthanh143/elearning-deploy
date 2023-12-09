@@ -7,7 +7,6 @@ export const isHeadingInViewport = (headingId: string) => {
 
   const bounding = headingElement.getBoundingClientRect()
 
-  console.log(headingId, bounding)
   return (
     bounding.top >= 0 &&
     bounding.left >= 0 &&

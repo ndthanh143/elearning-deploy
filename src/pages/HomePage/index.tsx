@@ -1,10 +1,11 @@
 import { Box, Button, Grid, IconButton, Typography } from '@mui/material'
-import { CourseCard, ListStudent, PageContentHeading } from '../components'
+import { CourseCard, PageContentHeading } from '@/components'
 import { ArrowForward, ShowChartOutlined } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
-import { coursesRegistrationKeys } from '../services/coursesRegistration/coursesRegistration.query'
-import { useAuth } from '../hooks'
+import { coursesRegistrationKeys } from '../../services/coursesRegistration/coursesRegistration.query'
+import { useAuth } from '../../hooks'
 import { useQuery } from '@tanstack/react-query'
+import { ListStudent } from './components'
 
 export type CourseData = {
   thumbnail: string
@@ -17,8 +18,11 @@ export const HomePage = () => {
 
   const { profile } = useAuth()
 
-  const coursesInstance = coursesRegistrationKeys.list({ studentId: profile?.data.id as number })
-  const { data: courses } = useQuery({ ...coursesInstance, enabled: Boolean(profile) })
+  const coursesInstance = coursesRegistrationKeys.list({ studentId: profile?.data.id as number, page: 1, size: 2 })
+  const { data: courses } = useQuery({
+    ...coursesInstance,
+    enabled: Boolean(profile),
+  })
 
   return (
     <Box>
@@ -46,7 +50,9 @@ export const HomePage = () => {
               </Button>
             </Box>
 
-            {courses && courses.content.map((course) => <CourseCard key={course.id} data={course.courseInfo} />)}
+            <Box height='40vh'>
+              {courses && courses.content.map((course) => <CourseCard key={course.id} data={course.courseInfo} />)}
+            </Box>
           </Box>
         </Grid>
         <Grid item xs={4}>

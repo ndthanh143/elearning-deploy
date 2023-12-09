@@ -4,6 +4,8 @@ import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Course } from '../services/course/course.dto'
 import { blue } from '@mui/material/colors'
+import { getAbsolutePathFile } from '@/utils'
+import common from '@/assets/images/icons/common'
 
 export type CourseCardProps = {
   data: Course
@@ -12,10 +14,8 @@ export type CourseCardProps = {
 export const CourseCard = ({ data }: CourseCardProps) => {
   const navigate = useNavigate()
 
-  const { id, thumbnail, courseName, description, teacherInfo } = data
-
   const handleOpenCourse = useCallback(() => {
-    navigate(`/courses/${id}`)
+    navigate(`/courses/${data.id}`)
   }, [])
 
   return (
@@ -35,10 +35,7 @@ export const CourseCard = ({ data }: CourseCardProps) => {
         <Grid item md={12} lg={3}>
           <Box
             component='img'
-            src={
-              thumbnail ||
-              'https://blogassets.leverageedu.com/blog/wp-content/uploads/2019/10/23170101/List-of-Professional-Courses-after-Graduation.gif'
-            }
+            src={getAbsolutePathFile(data.thumbnail) || common.course}
             width='100%'
             height='100%'
             sx={{ objectFit: 'cover', borderRadius: 3 }}
@@ -47,20 +44,20 @@ export const CourseCard = ({ data }: CourseCardProps) => {
         <Grid item md={12} lg={9}>
           <Stack direction='column' spacing={2}>
             <Box>
-              <Typography fontWeight={500}>{courseName}</Typography>
+              <Typography fontWeight={500}>{data.courseName}</Typography>
               <Typography variant='body2' sx={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
-                {description}
+                {data.description}
               </Typography>
             </Box>
             <Box display='flex' alignItems='center' gap={2}>
-              <Avatar src={teacherInfo.avatarPath} />
+              <Avatar src={data.teacherInfo.avatarPath} />
               <Typography variant='body2' fontWeight={500}>
-                {teacherInfo.fullName}
+                {data.teacherInfo.fullName}
               </Typography>
               <Divider variant='middle' orientation='vertical' />
               <Box display='flex' alignItems='center' gap={1}>
                 <CastForEducationOutlined />
-                <Typography variant='body2'>4 Sections</Typography>
+                <Typography variant='body2'>{data.modulesInfo?.length || 0} Sections</Typography>
               </Box>
             </Box>
             <Grid container>

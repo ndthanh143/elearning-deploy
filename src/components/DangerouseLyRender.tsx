@@ -30,6 +30,9 @@ export const DangerouseLyRender = ({ content }: DangerouseLyRenderProps) => {
           lineHeight: 2.2,
           color: '#334155',
         },
+        li: {
+          ml: 3,
+        },
       }}
     />
   )

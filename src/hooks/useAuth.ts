@@ -1,14 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Cookies from 'js-cookie'
 import { toast } from 'react-toastify'
-import { useState } from 'react'
 
 import authService from '../services/auth/auth.service'
 import { userKeys } from '../services/user/user.query'
 
 export const useAuth = () => {
-  const [accessToken, setAccessToken] = useState<string | undefined>(Cookies.get('access_token'))
-
+  const accessToken = Cookies.get('access_token')
   const queryClient = useQueryClient()
 
   const userInstance = userKeys.profile()
@@ -19,7 +17,6 @@ export const useAuth = () => {
     onSuccess: () => {
       toast.success('Login successfully!')
       refetch()
-      // setAccessToken(token)
     },
   })
   const loginGoogle = async (accessToken: string) => mutateLoginGoogle(accessToken)
@@ -29,5 +26,5 @@ export const useAuth = () => {
     queryClient.setQueryData(userInstance.queryKey, null)
   }
 
-  return { profile, isLoading, refetch, isFetched, loginGoogle, logout }
+  return { accessToken, profile, isLoading, refetch, isFetched, loginGoogle, logout }
 }

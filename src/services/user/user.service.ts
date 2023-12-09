@@ -1,5 +1,5 @@
 import axiosInstance from '../../axios'
-import { UserResponse } from './user.dto'
+import { RelativeMemberReponse, ScheduleResponse, UserResponse } from './user.dto'
 
 const BASE_USER_URL = 'account'
 export const userService = {
@@ -7,5 +7,15 @@ export const userService = {
     const { data } = await axiosInstance.get<UserResponse>(`${BASE_USER_URL}/me`)
 
     return data
+  },
+  getSchedule: async () => {
+    const { data } = await axiosInstance.get<ScheduleResponse>(`${BASE_USER_URL}/my-schedule`)
+
+    return data.data
+  },
+  getRelativeMember: async () => {
+    const { data } = await axiosInstance.get<RelativeMemberReponse>(`${BASE_USER_URL}/member`)
+
+    return data.data
   },
 }

@@ -6,7 +6,7 @@ import { Box, Button, Collapse, Divider, Stack, Typography } from '@mui/material
 import { ContentItem } from '../components'
 import { downloadFileByLink, getResourceType } from '@/utils'
 import { useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Module } from '@/services/module/module.dto'
 
 export type CourseContentProps = {
@@ -14,6 +14,7 @@ export type CourseContentProps = {
 }
 export const CourseContent = ({ data }: CourseContentProps) => {
   const { pathname } = useLocation()
+  const { courseId } = useParams()
   const navigate = useNavigate()
 
   const [expandModuleList, setExpandModuleList] = useState<Number[]>([])
@@ -92,6 +93,10 @@ export const CourseContent = ({ data }: CourseContentProps) => {
                   <Box component='img' src={actions.assignment} alt='assignment' width={25} />
                   <Typography>{module.assignmentInfo.length}</Typography>
                 </Box>
+                <Box display='flex' alignItems='center' gap={1}>
+                  <Box component='img' src={actions.quiz} alt='assignment' width={25} />
+                  <Typography>{module.quizInfo.length}</Typography>
+                </Box>
               </Stack>
             </Box>
             <Collapse in={expandModuleList.includes(module.id)} timeout='auto' unmountOnExit>
@@ -112,8 +117,19 @@ export const CourseContent = ({ data }: CourseContentProps) => {
                       title={assignment.assignmentTitle}
                       iconUrl={actions.assignment}
                       type='assignment'
-                      onClick={() => navigate(`/courses/assign/${assignment.id}`)}
+                      onClick={() => navigate(`/courses/${courseId}/assign/${assignment.id}`)}
                       key={assignment.id}
+                      status={assignment.assignmentSubmissionInfo.length ? 'done' : 'pending'}
+                    />
+                  ))}
+                  {module.quizInfo.map((quiz) => (
+                    <ContentItem
+                      title={quiz.quizTitle}
+                      iconUrl={actions.quiz}
+                      type='quiz'
+                      onClick={() => navigate(`/courses/${courseId}/quiz/${quiz.id}`)}
+                      key={quiz.id}
+                      status={quiz.quizSubmissionInfo.length ? 'done' : 'pending'}
                     />
                   ))}
                   {module.resourceInfo.map((resource) => (

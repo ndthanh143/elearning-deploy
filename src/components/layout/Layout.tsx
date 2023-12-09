@@ -6,11 +6,18 @@ import { useEffect } from 'react'
 
 export const Layout = () => {
   const navigate = useNavigate()
-  const { profile, isFetched } = useAuth()
+  const { accessToken, profile, isFetched } = useAuth()
 
   const { pathname } = useLocation()
 
   useEffect(() => {
+    if (!accessToken) {
+      navigate('/login', {
+        state: {
+          from: pathname,
+        },
+      })
+    }
     if (!profile && isFetched) {
       navigate('/login', {
         state: {
@@ -22,11 +29,15 @@ export const Layout = () => {
 
   return (
     profile && (
-      <Box bgcolor={'#ECEFF3'} minHeight='100vh'>
-        <Header />
-        <Box display='flex' gap={3} pr={2} pb={3}>
-          <SideBar />
-          <Box flex={1}>
+      <Box bgcolor='#ECEFF3' minHeight='100dvh'>
+        <Box position='fixed' width='100vw' bgcolor='#ECEFF3' zIndex={10}>
+          <Header />
+        </Box>
+        <Box display='flex' gap={3} pr={2} pb={3} pt={12}>
+          <Box position='fixed'>
+            <SideBar />
+          </Box>
+          <Box flex={1} ml={35}>
             <Outlet />
           </Box>
         </Box>

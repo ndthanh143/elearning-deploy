@@ -2,14 +2,14 @@ import { ArticleOutlined, CheckCircle, CircleOutlined } from '@mui/icons-materia
 import { Box, Stack, Typography } from '@mui/material'
 
 export type ContentItemProps = {
-  type: 'assignment' | 'lecture' | 'resource'
+  type: 'assignment' | 'lecture' | 'resource' | 'quiz'
   iconUrl?: string
   title: string
   onClick: () => void
   status?: 'done' | 'pending'
 }
 
-export const ContentItem = ({ iconUrl, title, onClick, status = 'pending' }: ContentItemProps) => {
+export const ContentItem = ({ iconUrl, title, onClick, status = 'pending', type }: ContentItemProps) => {
   return (
     <Box
       display='flex'
@@ -28,7 +28,8 @@ export const ContentItem = ({ iconUrl, title, onClick, status = 'pending' }: Con
         {iconUrl ? <Box component='img' src={iconUrl} alt={title} width={25} /> : <ArticleOutlined color='primary' />}
         <Typography>{title}</Typography>
       </Stack>
-      {status === 'done' ? <CheckCircle color='success' /> : <CircleOutlined color='success' />}
+      {type !== 'resource' &&
+        (status === 'done' ? <CheckCircle color='success' /> : <CircleOutlined color='success' />)}
     </Box>
   )
 }

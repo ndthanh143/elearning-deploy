@@ -44,6 +44,7 @@ export const SideBar = () => {
                 bgcolor: 'primary.contrastText',
               },
             },
+            bgcolor: item.href === '/' && pathname === '/' ? '#fff' : 'inherit',
           }}
           selected={startsWith(pathname, item.href) && item.href !== '/'}
           key={item.title}

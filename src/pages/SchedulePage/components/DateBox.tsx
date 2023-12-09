@@ -1,9 +1,15 @@
 import { Box, Typography } from '@mui/material'
+import { Dayjs } from 'dayjs'
 
 export type DateBoxProps = {
+  date: Dayjs
   isActive?: boolean
+  onClick: (date: Dayjs) => void
 }
-export const DateBox = ({ isActive }: DateBoxProps) => {
+export const DateBox = ({ date, isActive, onClick }: DateBoxProps) => {
+  const handleClick = () => {
+    onClick(date)
+  }
   return (
     <Box
       borderRadius={3}
@@ -18,6 +24,7 @@ export const DateBox = ({ isActive }: DateBoxProps) => {
         },
         cursor: 'pointer',
       }}
+      onClick={handleClick}
     >
       <Typography
         variant='h4'
@@ -28,7 +35,7 @@ export const DateBox = ({ isActive }: DateBoxProps) => {
           },
         }}
       >
-        8
+        {date.format('DD')}
       </Typography>
       <Typography
         color={isActive ? 'primary' : 'inherit'}
@@ -38,7 +45,7 @@ export const DateBox = ({ isActive }: DateBoxProps) => {
           },
         }}
       >
-        Mon
+        {date.format('dd')}
       </Typography>
     </Box>
   )

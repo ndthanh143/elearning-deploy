@@ -5,6 +5,8 @@ export enum ResourceFileTypeEnum {
   Word = 'word',
   Excel = 'excel',
   PDF = 'pdf',
+  png = 'png',
+  jpeg = 'jpeg',
 }
 
 export const getResourceType = (urlDocument: string) => {
@@ -16,6 +18,8 @@ export const getResourceType = (urlDocument: string) => {
     word: icons.resource.word,
     excel: icons.resource.excel,
     pdf: icons.resource.pdf,
+    png: icons.resource.png,
+    jpeg: icons.resource.jpeg,
   }
   return typeResourceIcons[fileExtension]
 }

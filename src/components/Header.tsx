@@ -21,9 +21,10 @@ import {
 } from '@mui/material'
 
 import { images } from '../assets/images'
-import { CustomMenu, LanguageSwitcher } from '.'
+import { CustomMenu } from '.'
 import { useAuth, useMenu } from '../hooks'
 import { useNavigate } from 'react-router-dom'
+import { gray } from '@/styles/theme'
 
 export const Header = () => {
   const navigate = useNavigate()
@@ -33,8 +34,9 @@ export const Header = () => {
   const { anchorEl: anchorElProfile, isOpen: isOpenProfile, onClose: closeProfile, onOpen: openProfile } = useMenu()
   const { anchorEl: anchorElNoti, isOpen: isOpenNoti, onClose: closeNoti, onOpen: openNoti } = useMenu()
 
-  const handleClickMenuItem = () => {
+  const handleClickMenuItem = (href: string) => {
     closeProfile()
+    navigate(href)
   }
 
   return (
@@ -58,7 +60,7 @@ export const Header = () => {
           </Stack>
         </Grid>
         <Grid item xs={8} display='flex' justifyContent='end' alignItems='center' gap={4}>
-          <LanguageSwitcher />
+          {/* <LanguageSwitcher /> */}
           <Tooltip title='Toggle notification panel'>
             <IconButton onClick={openNoti}>
               <Badge badgeContent={2} color='primary'>
@@ -90,15 +92,18 @@ export const Header = () => {
           horizontal: 'left',
         }}
       >
-        <MenuItem sx={{ display: 'flex', alignItems: 'center', gap: 2, pr: 6 }} onClick={handleClickMenuItem}>
+        <MenuItem
+          sx={{ display: 'flex', alignItems: 'center', gap: 2, pr: 6 }}
+          onClick={() => handleClickMenuItem('/profile')}
+        >
           <PersonOutline />
           <Typography>Profile</Typography>
         </MenuItem>
-        <MenuItem sx={{ display: 'flex', alignItems: 'center', gap: 2, pr: 6 }} onClick={handleClickMenuItem}>
+        <MenuItem sx={{ display: 'flex', alignItems: 'center', gap: 2, pr: 6 }} onClick={() => handleClickMenuItem('')}>
           <TableChart />
           <Typography>Scores</Typography>
         </MenuItem>
-        <MenuItem sx={{ display: 'flex', alignItems: 'center', gap: 2, pr: 6 }} onClick={handleClickMenuItem}>
+        <MenuItem sx={{ display: 'flex', alignItems: 'center', gap: 2, pr: 6 }} onClick={() => handleClickMenuItem('')}>
           <MessageOutlined />
           <Typography>Message</Typography>
         </MenuItem>
@@ -123,37 +128,50 @@ export const Header = () => {
           horizontal: 'right',
         }}
       >
-        <Typography variant='body2' mb={1} ml={2} textAlign='left'>
-          Your notifications
-        </Typography>
-        <Divider />
-        <MenuItem sx={{ my: 1 }}>
-          <Stack direction='row' gap={2}>
-            <Avatar src='https://cdn.tuoitre.vn/thumb_w/640/471584752817336320/2023/2/10/2736796065095908771941249179080146527866732n-16760123424561767223067.jpg' />
-            <Stack>
-              <Typography fontWeight={500}>Cristiano Ronaldo</Typography>
-              <Typography>Cristiano has create new Topic in your course</Typography>
+        <Box sx={{ maxHeight: '50vh', overflow: 'scroll' }}>
+          <Box maxWidth={300} p={2}>
+            <Stack direction='row' gap={2}>
+              <Stack>
+                <Typography fontWeight={500}>
+                  MUI X v6.18.x and the latest improvements before the next major
+                </Typography>
+                <Typography color={gray[800]}>
+                  New stable components, polished features, better performance and more. Check out the details in our
+                  recent blog post.
+                </Typography>
+              </Stack>
             </Stack>
-          </Stack>
-        </MenuItem>
-        <MenuItem sx={{ my: 1 }}>
-          <Stack direction='row' gap={2}>
-            <Avatar src='https://cdn.tuoitre.vn/thumb_w/640/471584752817336320/2023/2/10/2736796065095908771941249179080146527866732n-16760123424561767223067.jpg' />
-            <Stack>
-              <Typography fontWeight={500}>Cristiano Ronaldo</Typography>
-              <Typography>Cristiano has create new Topic in your course</Typography>
+          </Box>
+          <Divider />
+          <Box maxWidth={300} p={2}>
+            <Stack direction='row' gap={2}>
+              <Stack>
+                <Typography fontWeight={500}>
+                  MUI X v6.18.x and the latest improvements before the next major
+                </Typography>
+                <Typography color={gray[800]}>
+                  New stable components, polished features, better performance and more. Check out the details in our
+                  recent blog post.
+                </Typography>
+              </Stack>
             </Stack>
-          </Stack>
-        </MenuItem>
-        <MenuItem sx={{ my: 1 }}>
-          <Stack direction='row' gap={2}>
-            <Avatar src='https://cdn.tuoitre.vn/thumb_w/640/471584752817336320/2023/2/10/2736796065095908771941249179080146527866732n-16760123424561767223067.jpg' />
-            <Stack>
-              <Typography fontWeight={500}>Cristiano Ronaldo</Typography>
-              <Typography>Cristiano has create new Topic in your course</Typography>
+          </Box>
+          <Divider />
+          <Box maxWidth={300} p={2}>
+            <Stack direction='row' gap={2}>
+              <Stack>
+                <Typography fontWeight={500}>
+                  MUI X v6.18.x and the latest improvements before the next major
+                </Typography>
+                <Typography color={gray[800]}>
+                  New stable components, polished features, better performance and more. Check out the details in our
+                  recent blog post.
+                </Typography>
+              </Stack>
             </Stack>
-          </Stack>
-        </MenuItem>
+          </Box>
+          <Divider />
+        </Box>
       </CustomMenu>
     </Box>
   )

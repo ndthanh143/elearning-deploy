@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { object, string } from 'yup'
 import { configs } from '../configs'
+import { gapi } from 'gapi-script'
 import { useAuth } from '../hooks'
 import { useLocation, useNavigate } from 'react-router-dom'
 import GoogleLogin from 'react-google-login'
@@ -15,12 +16,11 @@ const schema = object({
   password: string().required('Please fill in your password'),
 })
 
+const clientId = configs.GOOGLE_CLIENT_ID
 export const LoginPage = () => {
   const navigate = useNavigate()
 
-  const {
-    state: { from },
-  } = useLocation()
+  const { state } = useLocation()
 
   const {
     register,
@@ -42,8 +42,18 @@ export const LoginPage = () => {
   const responseGoogle = ({ accessToken }: any) => loginGoogle(accessToken)
 
   useEffect(() => {
+    const start = () => {
+      gapi.client.init({
+        clientId,
+        scope: '',
+      })
+    }
+    gapi.load('client:auth2', start)
+  }, [])
+
+  useEffect(() => {
     if (profile) {
-      navigate(from || '/')
+      navigate(state?.form || '/')
     }
   }, [profile])
 

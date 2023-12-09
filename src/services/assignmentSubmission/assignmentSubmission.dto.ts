@@ -1,13 +1,30 @@
-import { BaseData, BaseResponse } from '../common/base.dto'
+import { Assignment } from '../assignment/assignment.dto'
+import { BaseData, BasePaginationResponse } from '../common/base.dto'
 
-export type AssignmentResponse = BaseResponse<Assignment>
+export type SubmissionsResponse = BasePaginationResponse<Submission[]>
 
-export type Assignment = {
-  assignmentContent: string
-  assignmentTitle: string
-  assignmentType: number
-  endDate: string | null
-  startDate: string
-  state: number
-  urlDocument: string
+export type GetSubmissionQuery = {
+  accountId?: number
+  assignmentId?: number
+  courseId?: number
+}
+
+export type CreateSubmissionPayload = {
+  assignmentId: number
+  courseId: number
+  fileSubmissionUrl?: string
+  textSubmission?: string
+}
+
+export type Submission = {
+  score?: number
+  assignmentInfo: Assignment
+  fileSubmissionUrl?: string
+  textSubmission?: string
 } & BaseData
+
+export type UpdateSubmissionPayload = {
+  id: number
+  fileSubmissionUrl?: string
+  textSubmission?: string
+}

@@ -1,9 +1,10 @@
 import { defineQuery } from '../../utils'
+import { GetSubmissionQuery } from './assignmentSubmission.dto'
 import { assignmentSubmissionService } from './assignmentSubmission.service'
 
-export const assignmentKeys = {
+export const assignmentSubmissionKeys = {
   all: ['assignmentSubmission'] as const,
-  details: () => [...assignmentKeys.all, 'detail'] as const,
-  detail: (assignmentId: number) =>
-    defineQuery([...assignmentKeys.details(), assignmentId], () => assignmentSubmissionService.getDetail(assignmentId)),
+  lists: () => [...assignmentSubmissionKeys.all, 'detail'] as const,
+  list: (query: GetSubmissionQuery = {}) =>
+    defineQuery([...assignmentSubmissionKeys.lists(), query], () => assignmentSubmissionService.getList(query)),
 }

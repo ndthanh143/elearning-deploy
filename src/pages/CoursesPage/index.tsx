@@ -1,12 +1,12 @@
-import { Box, Button, Grid, Skeleton, Stack, Typography } from '@mui/material'
+import { Box, Grid, Pagination, Skeleton, Stack, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useAuth } from '@/hooks'
 import { coursesRegistrationKeys } from '@/services/coursesRegistration/coursesRegistration.query'
 import { BoxContent, CourseCard, PageContentHeading } from '@/components'
-import { ScheduleItem } from '../SchedulePage/components'
+import { ListSchedule } from './components'
 
-const DEFAULT_PAGE_SIZE = 10
+const DEFAULT_PAGE_SIZE = 3
 export const CoursesPage = () => {
   const { profile } = useAuth()
 
@@ -17,12 +17,11 @@ export const CoursesPage = () => {
     page,
     size: DEFAULT_PAGE_SIZE,
   })
+
   const { data: courses, isFetching } = useQuery({
     ...coursesInstance,
     enabled: Boolean(profile),
   })
-
-  const handleLoadmore = () => setPage((prev) => prev + 1)
 
   return (
     <Box>
@@ -45,28 +44,21 @@ export const CoursesPage = () => {
                 {courses.content.map((course) => (
                   <CourseCard key={course.id} data={course.courseInfo} />
                 ))}
-                {courses.pageIndex + 1 < courses?.totalPages && (
-                  <Button variant='outlined' sx={{ mx: 'auto', mt: 2, display: 'block' }} onClick={handleLoadmore}>
-                    Load more
-                  </Button>
-                )}
+                <Pagination
+                  count={courses.totalPages}
+                  page={page + 1}
+                  onChange={(_, newPage) => setPage(newPage - 1)}
+                  color='primary'
+                  sx={{ display: 'flex', justifyContent: 'center', my: 2 }}
+                />
               </>
             )}
           </BoxContent>
         </Grid>
         <Grid item xs={4}>
           <Stack gap={3}>
-            <BoxContent>
-              {/* <Typography variant='h5'></Typography> */}
-              <ScheduleItem />
-            </BoxContent>
-            <BoxContent>
-              {/* <Typography variant='h5'></Typography> */}
-              <ScheduleItem />
-            </BoxContent>
-            <BoxContent>
-              {/* <Typography variant='h5'></Typography> */}
-              <ScheduleItem />
+            <BoxContent maxHeight='73vh' sx={{ overflow: 'hidden' }}>
+              <ListSchedule />
             </BoxContent>
           </Stack>
         </Grid>
