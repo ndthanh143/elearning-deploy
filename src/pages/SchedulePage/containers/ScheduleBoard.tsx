@@ -55,8 +55,6 @@ export const ScheduleBoard = ({ quizzes }: ScheduleBoardProps) => {
     setCurrentDate(currentDate.add(7, 'day'))
   }
 
-  console.log(quizzes)
-
   const filterQuizzes = quizzes.filter(
     (quiz) => dayjs(quiz.quizInfo.startDate).format('DD/MM/YYYY') === selectedDay.format('DD/MM/YYYY'),
   )

@@ -15,6 +15,7 @@ import {
   HomePage,
   LecturePage,
   LoginPage,
+  PlanningPage,
   ProfilePage,
   QuizPage,
   SchedulePage,
@@ -31,6 +32,8 @@ import { Suspense, useEffect } from 'react'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import { configs } from './configs'
 import { QuizReview } from './pages/QuizPage/containers'
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 const router = createBrowserRouter([
   {
@@ -75,6 +78,10 @@ const router = createBrowserRouter([
       {
         path: 'forum',
         element: <ForumPage />,
+      },
+      {
+        path: 'planning',
+        element: <PlanningPage />,
       },
       {
         path: 'schedule',
@@ -123,7 +130,9 @@ function App() {
         <ToastContainer position='bottom-right' />
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <RouterProvider router={router} />
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <RouterProvider router={router} />
+          </LocalizationProvider>
         </ThemeProvider>
       </QueryClientProvider>
     </GoogleOAuthProvider>

@@ -40,7 +40,7 @@ export const SubmissionContent = ({ assignment, courseId }: SubmissionContentPro
   const submissionInstance = assignmentSubmissionKeys.list({
     assignmentId: assignment.id,
     courseId,
-    studentId: Number(profile.data.id),
+    studentId: Number(profile?.data.id),
   })
   const { data: submissions, refetch: refetchSubmissions } = useQuery(submissionInstance)
 

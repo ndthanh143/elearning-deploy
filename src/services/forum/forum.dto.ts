@@ -14,4 +14,5 @@ export type Forum = {
 export type GetForumsQuery = {
   courseId?: number
   accountId?: number
+  title?: string
 }

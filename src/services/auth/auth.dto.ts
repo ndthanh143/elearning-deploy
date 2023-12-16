@@ -4,6 +4,7 @@ export type AuthGoogleLoginResponse = BaseResponse<AuthGoogleLoginData>
 
 export enum RoleEnum {
   Student = 'Student',
+  Teacher = 'Teacher',
 }
 
 export type AuthGoogleLoginData = {

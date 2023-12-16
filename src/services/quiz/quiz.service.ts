@@ -1,5 +1,5 @@
 import axiosInstance from '@/axios'
-import { GetQuizStartQuery, QuizResponse, QuizStartResponse } from './quiz.dto'
+import { CreateQuizPayload, GetQuizStartQuery, QuizResponse, QuizStartResponse, UpdateQuizPayload } from './quiz.dto'
 
 export const quizService = {
   getQuiz: async (quizId: number, courseId?: number) => {
@@ -11,7 +11,6 @@ export const quizService = {
 
     return data.data
   },
-
   getInStart: async (query: GetQuizStartQuery) => {
     const { data } = await axiosInstance.get<QuizStartResponse>('/quiz/start', {
       params: {
@@ -20,5 +19,18 @@ export const quizService = {
     })
 
     return data.data
+  },
+  create: async (payload: CreateQuizPayload) => {
+    const { data } = await axiosInstance.post<QuizResponse>('/quiz/create', payload)
+
+    return data
+  },
+  update: async (payload: UpdateQuizPayload) => {
+    const { data } = await axiosInstance.put<QuizResponse>('/quiz/update', payload)
+
+    return data
+  },
+  delete: async (quizId: number) => {
+    await axiosInstance.delete(`/quiz/delete/${quizId}`)
   },
 }

@@ -3,8 +3,14 @@ import { Box } from '@mui/material'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks'
 import { useEffect } from 'react'
+import { useWebSocket } from '@/hooks/useWebSocket'
 
 export const Layout = () => {
+  const { init } = useWebSocket()
+  useEffect(() => {
+    init()
+  }, [])
+
   const navigate = useNavigate()
   const { accessToken, profile, isFetched } = useAuth()
 
@@ -37,7 +43,7 @@ export const Layout = () => {
           <Box position='fixed'>
             <SideBar />
           </Box>
-          <Box flex={1} ml={35}>
+          <Box flex={1} ml={35} pt={2}>
             <Outlet />
           </Box>
         </Box>

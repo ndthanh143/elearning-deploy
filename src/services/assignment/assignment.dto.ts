@@ -13,3 +13,24 @@ export type Assignment = {
   urlDocument: string
   assignmentSubmissionInfo: Submission[]
 } & BaseData
+
+export type CreateAssignmentPayload = {
+  assignmentContent: string
+  assignmentTitle: string
+  endDate?: string
+  modulesId: number
+  startDate?: string
+  state: number
+  urlDocument?: string
+}
+
+export type UpdateAssignmentPayload = {
+  assignmentContent?: string
+  assignmentTitle: string
+  assignmentType?: number
+  endDate?: string
+  startDate?: string
+  state: number
+  urlDocument?: string
+  id: number
+}

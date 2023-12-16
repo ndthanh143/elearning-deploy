@@ -17,7 +17,7 @@ export const CourseContent = ({ data }: CourseContentProps) => {
   const { courseId } = useParams()
   const navigate = useNavigate()
 
-  const [expandModuleList, setExpandModuleList] = useState<Number[]>([])
+  const [expandModuleList, setExpandModuleList] = useState<number[]>([])
 
   const handleDownloadResource = (urlDocument: string) => {
     downloadFileByLink(urlDocument)

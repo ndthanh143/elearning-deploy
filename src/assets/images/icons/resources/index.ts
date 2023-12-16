@@ -4,5 +4,6 @@ import powerpoint from './powerpoint.png'
 import pdf from './pdf.png'
 import png from './png.png'
 import jpeg from './jpeg.png'
+import common from './default.png'
 
-export default { excel, word, powerpoint, pdf, png, jpeg }
+export default { excel, word, powerpoint, pdf, png, jpeg, common }

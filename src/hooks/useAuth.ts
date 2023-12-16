@@ -4,10 +4,12 @@ import { toast } from 'react-toastify'
 
 import authService from '../services/auth/auth.service'
 import { userKeys } from '../services/user/user.query'
+import { useState } from 'react'
 
 export const useAuth = () => {
-  const accessToken = Cookies.get('access_token')
   const queryClient = useQueryClient()
+
+  const [accessToken, _] = useState(Cookies.get('access_token'))
 
   const userInstance = userKeys.profile()
   const { data: profile, isLoading, refetch, isFetched } = useQuery({ ...userInstance, enabled: Boolean(accessToken) })
@@ -19,6 +21,7 @@ export const useAuth = () => {
       refetch()
     },
   })
+
   const loginGoogle = async (accessToken: string) => mutateLoginGoogle(accessToken)
 
   const logout = () => {

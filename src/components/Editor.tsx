@@ -1,4 +1,3 @@
-// import { SetStateAction } from 'react'
 import rehypeSanitize from 'rehype-sanitize'
 import MDEditor from '@uiw/react-md-editor'
 import { fileService } from '@/services/file/file.service'

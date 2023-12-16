@@ -13,12 +13,18 @@ export type CourseData = {
   description: string
 }
 
+const DEFAULT_PAGE = 0
+const DEFAULT_PAGE_SIZE = 2
 export const HomePage = () => {
   const navigate = useNavigate()
 
   const { profile } = useAuth()
 
-  const coursesInstance = coursesRegistrationKeys.list({ studentId: profile?.data.id as number, page: 1, size: 2 })
+  const coursesInstance = coursesRegistrationKeys.list({
+    studentId: profile?.data.id as number,
+    page: DEFAULT_PAGE,
+    size: DEFAULT_PAGE_SIZE,
+  })
   const { data: courses } = useQuery({
     ...coursesInstance,
     enabled: Boolean(profile),

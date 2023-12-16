@@ -23,10 +23,44 @@ import {
 import { images } from '../assets/images'
 import { CustomMenu } from '.'
 import { useAuth, useMenu } from '../hooks'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { gray } from '@/styles/theme'
+import { notificationKey } from '@/services/notification/notification.query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { notificationService } from '@/services/notification/notification.service'
+import { useEffect } from 'react'
+
+const parseMessage = (type: string, data: string) => {
+  const parseData = JSON.parse(data)
+  if (type === 'topic') {
+    return (
+      <>
+        <Box maxWidth={300} p={2}>
+          <Stack direction='row' gap={2}>
+            <Stack>
+              <Typography>
+                New topic in forum{' '}
+                <Box
+                  component={Link}
+                  to={`/forum/${parseData.forumId}`}
+                  sx={{ color: 'primary.main', textDecoration: 'none', fontWeight: 500 }}
+                >
+                  {parseData.forumTitle}
+                </Box>
+              </Typography>
+              <Typography color={gray[800]}>{parseData.topicContent}</Typography>
+            </Stack>
+          </Stack>
+        </Box>
+        <Divider />
+      </>
+    )
+  }
+}
 
 export const Header = () => {
+  const queryClient = useQueryClient()
+
   const navigate = useNavigate()
 
   const { profile, logout } = useAuth()
@@ -34,10 +68,30 @@ export const Header = () => {
   const { anchorEl: anchorElProfile, isOpen: isOpenProfile, onClose: closeProfile, onOpen: openProfile } = useMenu()
   const { anchorEl: anchorElNoti, isOpen: isOpenNoti, onClose: closeNoti, onOpen: openNoti } = useMenu()
 
+  const notiInstance = notificationKey.list({ userId: Number(profile?.data.id) })
+  const { data: notifications } = useQuery({
+    ...notiInstance,
+    enabled: Boolean(profile?.data.id),
+  })
+
   const handleClickMenuItem = (href: string) => {
     closeProfile()
     navigate(href)
   }
+
+  const { mutate: mutateReadNoti } = useMutation({ mutationFn: notificationService.read })
+
+  useEffect(() => {
+    if (isOpenNoti && notifications) {
+      const updateNotiList = notifications.map((noti) => ({ ...noti, isRead: true }))
+      queryClient.setQueryData(notiInstance.queryKey, updateNotiList)
+      mutateReadNoti()
+    }
+  }, [isOpenNoti])
+
+  const countUnreadNoti = notifications?.reduce((acc, cur) => {
+    return !cur.isRead ? acc + 1 : acc
+  }, 0)
 
   return (
     <Box sx={{ p: 2 }}>
@@ -55,7 +109,7 @@ export const Header = () => {
               }}
             />
             <Typography variant='h5' fontWeight={700}>
-              Sunstone
+              BrainStone
             </Typography>
           </Stack>
         </Grid>
@@ -63,7 +117,7 @@ export const Header = () => {
           {/* <LanguageSwitcher /> */}
           <Tooltip title='Toggle notification panel'>
             <IconButton onClick={openNoti}>
-              <Badge badgeContent={2} color='primary'>
+              <Badge badgeContent={countUnreadNoti} color='primary'>
                 <NotificationsOutlined color='secondary' />
               </Badge>
             </IconButton>
@@ -129,48 +183,7 @@ export const Header = () => {
         }}
       >
         <Box sx={{ maxHeight: '50vh', overflow: 'scroll' }}>
-          <Box maxWidth={300} p={2}>
-            <Stack direction='row' gap={2}>
-              <Stack>
-                <Typography fontWeight={500}>
-                  MUI X v6.18.x and the latest improvements before the next major
-                </Typography>
-                <Typography color={gray[800]}>
-                  New stable components, polished features, better performance and more. Check out the details in our
-                  recent blog post.
-                </Typography>
-              </Stack>
-            </Stack>
-          </Box>
-          <Divider />
-          <Box maxWidth={300} p={2}>
-            <Stack direction='row' gap={2}>
-              <Stack>
-                <Typography fontWeight={500}>
-                  MUI X v6.18.x and the latest improvements before the next major
-                </Typography>
-                <Typography color={gray[800]}>
-                  New stable components, polished features, better performance and more. Check out the details in our
-                  recent blog post.
-                </Typography>
-              </Stack>
-            </Stack>
-          </Box>
-          <Divider />
-          <Box maxWidth={300} p={2}>
-            <Stack direction='row' gap={2}>
-              <Stack>
-                <Typography fontWeight={500}>
-                  MUI X v6.18.x and the latest improvements before the next major
-                </Typography>
-                <Typography color={gray[800]}>
-                  New stable components, polished features, better performance and more. Check out the details in our
-                  recent blog post.
-                </Typography>
-              </Stack>
-            </Stack>
-          </Box>
-          <Divider />
+          {notifications && notifications.map((noti) => parseMessage('topic', noti.message))}
         </Box>
       </CustomMenu>
     </Box>

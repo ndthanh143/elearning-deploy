@@ -21,6 +21,16 @@ export type Quiz = {
   quizSubmissionInfo: QuizSubmission[]
 } & BaseData
 
+export type UpdateQuizPayload = {
+  id: number
+  attemptNumber: number
+  description?: string
+  quizTitle: string
+  startDate: string
+  endDate: string
+  quizTimeLimit: number
+}
+
 export type QuizStartData = {
   attemptNumber: number
   description: string
@@ -43,4 +53,14 @@ export interface Question {
 export interface Answer {
   answerContent: string
   id: number
+}
+
+export type CreateQuizPayload = {
+  attemptNumber: number
+  description?: string
+  endDate: string
+  modulesId: number
+  quizTimeLimit: number
+  quizTitle: string
+  startDate: string
 }

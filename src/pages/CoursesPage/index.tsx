@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks'
 import { coursesRegistrationKeys } from '@/services/coursesRegistration/coursesRegistration.query'
 import { BoxContent, CourseCard, PageContentHeading } from '@/components'
 import { ListSchedule } from './components'
+import { TeacherCoursesPage } from '../Teacher/TeacherCoursesPage'
 
 const DEFAULT_PAGE_SIZE = 3
 export const CoursesPage = () => {
@@ -22,6 +23,10 @@ export const CoursesPage = () => {
     ...coursesInstance,
     enabled: Boolean(profile),
   })
+
+  if (profile?.data.roleInfo.name === 'Teacher') {
+    return <TeacherCoursesPage />
+  }
 
   return (
     <Box>

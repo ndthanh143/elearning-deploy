@@ -73,8 +73,6 @@ export const QuizShow = () => {
     }
   }, [quizSubmission])
 
-  console.log('data', data)
-
   return (
     data && (
       <>

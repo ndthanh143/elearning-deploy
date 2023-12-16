@@ -4,7 +4,7 @@ import { Lecture } from '../lecture/lecture.dto'
 import { Quiz } from '../quiz/quiz.dto'
 import { Resource } from '../resource/resource.dto'
 
-export type GetModulesResponse = BasePaginationResponse<Module>
+export type GetModulesResponse = BasePaginationResponse<Module[]>
 
 export type GetModulesQuery = {
   lessonPlanId?: number
@@ -18,3 +18,9 @@ export type Module = {
   resourceInfo: Resource[]
   quizInfo: Quiz[]
 } & BaseData
+
+export type CreateModulePayload = {
+  description: string
+  lessonPlanId: number
+  modulesName: string
+}

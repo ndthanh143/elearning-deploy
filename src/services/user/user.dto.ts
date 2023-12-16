@@ -1,4 +1,5 @@
 import { Assignment } from '../assignment/assignment.dto'
+import { RoleEnum } from '../auth/auth.dto'
 import { BaseData, BasePaginationResponse, BaseResponse } from '../common/base.dto'
 import { Course } from '../course/course.dto'
 import { Quiz } from '../quiz/quiz.dto'
@@ -19,7 +20,7 @@ export type Account = {
 export type Role = {
   description: string
   kind: number
-  name: string
+  name: RoleEnum
 }
 
 export interface ScheduleData {

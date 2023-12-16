@@ -1,10 +1,23 @@
 import axiosInstance from '../../axios'
-import { LectureResponse } from './lecture.dto'
+import { CreateLecturePayload, LectureResponse, UpdateLecturePayload } from './lecture.dto'
 
 export const lectureService = {
   getById: async (lectureId: number) => {
     const { data } = await axiosInstance.get<LectureResponse>(`/lecture/retrieve/${lectureId}`)
 
     return data.data
+  },
+  create: async (payload: CreateLecturePayload) => {
+    const { data } = await axiosInstance.post<LectureResponse>('/lecture/create', payload)
+
+    return data.data
+  },
+  update: async (payload: UpdateLecturePayload) => {
+    const { data } = await axiosInstance.put<LectureResponse>('/lecture/update', payload)
+
+    return data.data
+  },
+  delete: async (lectureId: number) => {
+    await axiosInstance.delete(`/lecture/delete/${lectureId}`)
   },
 }

@@ -4,7 +4,7 @@ import { BaseData, BasePaginationResponse } from '../common/base.dto'
 export type SubmissionsResponse = BasePaginationResponse<Submission[]>
 
 export type GetSubmissionQuery = {
-  accountId?: number
+  studentId?: number
   assignmentId?: number
   courseId?: number
 }

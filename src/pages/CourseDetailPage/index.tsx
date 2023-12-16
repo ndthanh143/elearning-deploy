@@ -51,7 +51,7 @@ export const CourseDetailPage = () => {
                 <CourseFooter data={course} />
               </Stack>
             </Grid>
-            <Grid item xs={false} lg={4}>
+            <Grid item xs={false} sm={12} lg={4}>
               <BoxContent mb={2}>
                 <Button fullWidth variant='outlined' onClick={openCreateTopic}>
                   Create new Topic

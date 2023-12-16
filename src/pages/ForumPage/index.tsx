@@ -19,7 +19,7 @@ export const ForumPage = () => {
   const [selectedForum, setSelectedForum] = useState<Forum | undefined>()
 
   const forumsInstance = forumKeys.list({ accountId: Number(profile?.data.id), title: search })
-  const { data: forums } = useQuery({ ...forumsInstance, enabled: Boolean(profile) })
+  const { data: forums, isFetched } = useQuery({ ...forumsInstance, enabled: Boolean(profile) })
 
   const topicInstance = topicKeys.list({ forumId: Number(selectedForum?.id) })
   const { data: topics } = useQuery({ ...topicInstance, enabled: Boolean(selectedForum) })
@@ -37,7 +37,7 @@ export const ForumPage = () => {
       <PageContentHeading />
       <Grid container spacing={4}>
         <Grid item xs={4}>
-          <BoxContent>
+          <BoxContent minHeight='70vh'>
             <TextField
               size='small'
               value={search}
@@ -52,37 +52,43 @@ export const ForumPage = () => {
               placeholder='Search forum...'
               fullWidth
             />
-
-            <Stack marginTop={2}>
-              {forums?.content.map((forum) => (
-                <Stack
-                  direction='row'
-                  alignItems='center'
-                  sx={{
-                    ':hover': {
-                      bgcolor: blue[50],
-                    },
-                    cursor: 'pointer',
-                    transition: 'all ease 0.2s',
-                  }}
-                  bgcolor={selectedForum?.id === forum.id ? blue[50] : 'transparent'}
-                  gap={2}
-                  padding={2}
-                  borderRadius={3}
-                  onClick={() => setSelectedForum(forum)}
-                >
-                  <Avatar src={forum.courseInfo.thumbnail || common.course} />
-                  <Stack>
-                    <Typography fontWeight={500}>{forum.courseInfo.courseName}</Typography>
+            {forums && forums.content.length ? (
+              <Stack marginTop={2} height='60vh' sx={{ overflowY: 'scroll' }}>
+                {forums.content.map((forum) => (
+                  <Stack
+                    key={forum.id}
+                    direction='row'
+                    alignItems='center'
+                    sx={{
+                      ':hover': {
+                        bgcolor: blue[50],
+                      },
+                      cursor: 'pointer',
+                      transition: 'all ease 0.2s',
+                    }}
+                    bgcolor={selectedForum?.id === forum.id ? blue[50] : 'transparent'}
+                    gap={2}
+                    padding={2}
+                    borderRadius={3}
+                    onClick={() => setSelectedForum(forum)}
+                  >
+                    <Avatar src={forum.courseInfo.thumbnail || common.course} />
+                    <Stack>
+                      <Typography fontWeight={500}>{forum.courseInfo.courseName}</Typography>
+                    </Stack>
                   </Stack>
-                </Stack>
-              ))}
-            </Stack>
+                ))}
+              </Stack>
+            ) : (
+              <Box display='flex' alignItems='center' minHeight='60vh'>
+                <NoData title='No topic' />
+              </Box>
+            )}
           </BoxContent>
         </Grid>
         <Grid item xs={8}>
           <Stack gap={3}>
-            {topics ? (
+            {topics && isFetched ? (
               topics.content.length ? (
                 topics.content.map((topic) => (
                   <BoxContent key={topic.id}>
@@ -90,12 +96,12 @@ export const ForumPage = () => {
                   </BoxContent>
                 ))
               ) : (
-                <BoxContent>
+                <BoxContent minHeight='70vh' display='flex' alignItems='center'>
                   <NoData title="There isn't any topic in this forum!!" />
                 </BoxContent>
               )
             ) : (
-              <BoxContent>
+              <BoxContent minHeight='70vh' display='flex' alignItems='center'>
                 <Loading />
               </BoxContent>
             )}
