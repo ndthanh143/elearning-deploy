@@ -14,6 +14,7 @@ export type CreateSubmissionPayload = {
   courseId: number
   fileSubmissionUrl?: string
   textSubmission?: string
+  linkSubmission?: string
 }
 
 export type Submission = {
@@ -21,10 +22,12 @@ export type Submission = {
   assignmentInfo: Assignment
   fileSubmissionUrl?: string
   textSubmission?: string
+  linkSubmission?: string
 } & BaseData
 
 export type UpdateSubmissionPayload = {
   id: number
   fileSubmissionUrl?: string
   textSubmission?: string
+  linkSubmission?: string
 }

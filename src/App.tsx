@@ -19,6 +19,7 @@ import {
   ProfilePage,
   QuizPage,
   SchedulePage,
+  SubmissionManagementPage,
 } from './pages'
 
 import 'nprogress/nprogress.css'
@@ -82,6 +83,10 @@ const router = createBrowserRouter([
       {
         path: 'planning',
         element: <PlanningPage />,
+      },
+      {
+        path: 'submission-management',
+        element: <SubmissionManagementPage />,
       },
       {
         path: 'schedule',

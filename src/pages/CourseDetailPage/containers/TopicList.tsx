@@ -15,8 +15,8 @@ export const TopicList = ({ forumId }: TopicList) => {
   return (
     <Stack gap={2}>
       {topics ? (
-        topics.content.length ? (
-          topics.content.map((topic) => (
+        topics.length ? (
+          topics.map((topic) => (
             <BoxContent key={topic.id}>
               <ForumTopic data={topic} />
             </BoxContent>

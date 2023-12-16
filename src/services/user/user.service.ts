@@ -1,8 +1,13 @@
 import axiosInstance from '../../axios'
-import { RelativeMemberReponse, ScheduleResponse, UserResponse } from './user.dto'
+import { GetStudentsQuery, RelativeMemberReponse, ScheduleResponse, UserResponse } from './user.dto'
 
 const BASE_USER_URL = 'account'
 export const userService = {
+  getStudents: async (query: GetStudentsQuery) => {
+    const { data } = await axiosInstance.get('/account/all-student', { params: { ...query } })
+
+    return data
+  },
   getCurrentUser: async () => {
     const { data } = await axiosInstance.get<UserResponse>(`${BASE_USER_URL}/me`)
 

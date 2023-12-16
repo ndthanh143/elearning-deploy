@@ -1,13 +1,15 @@
 import { CustomModal, Show } from '@/components'
 import { useBoolean } from '@/hooks'
 import { Course, UpdateCoursePayload } from '@/services/course/course.dto'
+import { courseKeys } from '@/services/course/course.query'
 import { courseService } from '@/services/course/course.service'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Box, Button, Chip, Divider, Stack, TextField, Typography } from '@mui/material'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { array, object, string } from 'yup'
+import { toast } from 'react-toastify'
+import { array, number, object, string } from 'yup'
 
 export type ModalUpdateIntroProps = {
   data: Course
@@ -19,15 +21,21 @@ const schema = object<UpdateCoursePayload>({
   description: string(),
   requirements: array().of(string()),
   objectives: array().of(string()),
+  id: number().required(),
+  state: number().required(),
 })
 
 export const ModalUpdateIntro = ({ isOpen, onClose, data }: ModalUpdateIntroProps) => {
+  const queryClient = useQueryClient()
+
   const { register, setValue, handleSubmit } = useForm<UpdateCoursePayload>({
     resolver: yupResolver(schema),
     defaultValues: {
       description: data.description,
       objectives: data.objectives,
       requirements: data.requirements,
+      id: data.id,
+      state: data.state,
     },
   })
 
@@ -37,7 +45,14 @@ export const ModalUpdateIntro = ({ isOpen, onClose, data }: ModalUpdateIntroProp
   const [requirements, setRequirements] = useState<string[]>(data.requirements)
   const [objectives, setObjectives] = useState<string[]>(data.objectives)
 
-  const { mutate: mutateUpdateCourse } = useMutation({ mutationFn: courseService.update })
+  const { mutate: mutateUpdateCourse } = useMutation({
+    mutationFn: courseService.update,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: courseKeys.details() })
+      onClose()
+      toast.success('Update intro successfully')
+    },
+  })
 
   const handleDeleteRequirement = (chip: string) => {
     const filter = requirements.filter((item) => item !== chip)

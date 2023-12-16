@@ -2,7 +2,15 @@ import { BoxContent, Show } from '@/components'
 import { useAuth, useBoolean, useMenu } from '@/hooks'
 import { AddOutlined, AttachFileOutlined, LinkOutlined, TextFormatOutlined } from '@mui/icons-material'
 import { Button, ListItemIcon, ListItemText, Menu, MenuItem, Stack, Typography } from '@mui/material'
-import { UploadPopup, TextPopup, LinkPopup, FileCard, ReviewSubmissionText, TextCard } from '../components'
+import {
+  UploadPopup,
+  TextPopup,
+  LinkPopup,
+  FileCard,
+  ReviewSubmissionText,
+  TextCard,
+  ReviewSubmissionLink,
+} from '../components'
 import { assignmentSubmissionKeys } from '@/services/assignmentSubmission/assignmentSubmission.query'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { UploadFileData } from '@/services/file/file.dto'
@@ -82,7 +90,7 @@ export const SubmissionContent = ({ assignment, courseId }: SubmissionContentPro
   }
 
   const handleSubmitLink = (link: string) => {
-    console.log(link)
+    mutateSubmit({ assignmentId: assignment.id, linkSubmission: link, courseId })
   }
 
   const checkStatusSubmission =
@@ -141,7 +149,9 @@ export const SubmissionContent = ({ assignment, courseId }: SubmissionContentPro
               onUpdate={handleUpdateText}
             />
           )}
-
+          {submissions && submissions.content[0]?.linkSubmission && (
+            <ReviewSubmissionLink link={submissions.content[0]?.linkSubmission} />
+          )}
           <Show when={!submissions?.content.length}>
             <Button fullWidth variant='outlined' onClick={onOpen}>
               <AddOutlined />

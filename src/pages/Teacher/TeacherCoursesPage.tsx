@@ -21,14 +21,14 @@ export const TeacherCoursesPage = () => {
           subTitle='Unlocking the Potential of Educators through Comprehensive and Specialized Training Programs'
         />
         <Grid container>
-          <Grid item xs={8}>
-            <BoxContent height='70vh' display='flex' flexDirection='column'>
-              <Stack direction='row' justifyContent='space-between'>
+          <Grid item xs={12}>
+            <BoxContent minHeight='70vh' display='flex' flexDirection='column'>
+              <Stack direction='row' justifyContent='space-between' mb={1}>
                 <Typography variant='h5' mb={2}>
                   Your courses
                 </Typography>
                 {courses && courses.content.length && (
-                  <Button variant='contained' size='small' sx={{ my: 1 }} onClick={openCreateCourse}>
+                  <Button variant='contained' sx={{ my: 1 }} onClick={openCreateCourse}>
                     Create new Course
                   </Button>
                 )}
@@ -38,7 +38,7 @@ export const TeacherCoursesPage = () => {
                   <Loading />
                 </Box>
               ) : (
-                <Stack gap={2} maxHeight='100%' sx={{ overflowY: 'scroll' }}>
+                <Stack gap={2} height='100%'>
                   {courses?.content.map((course) => <CourseCard key={course.id} data={course} />)}
                 </Stack>
               )}

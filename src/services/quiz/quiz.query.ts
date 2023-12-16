@@ -1,9 +1,11 @@
 import { defineQuery } from '@/utils'
 import { quizService } from './quiz.service'
-import { GetQuizStartQuery } from './quiz.dto'
+import { GetListQuizQuery, GetQuizStartQuery } from './quiz.dto'
 
 export const quizKey = {
   all: ['quiz'] as const,
+  lists: () => [...quizKey.all, 'list'] as const,
+  list: (query: GetListQuizQuery) => defineQuery([...quizKey.lists(), query], () => quizService.getList(query)),
   details: () => [...quizKey.all, 'detail'] as const,
   detail: (quizId: number, courseId?: number) =>
     defineQuery([...quizKey.details(), quizId, courseId], () => quizService.getQuiz(quizId, courseId)),

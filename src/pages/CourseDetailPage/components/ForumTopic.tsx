@@ -162,7 +162,7 @@ export const ForumTopic = ({ data }: ForumTopicProps) => {
             </Stack>
           </Collapse>
           <Box component='form' onSubmit={handleSubmit(onSubmitHandler)} display='flex' gap={2} alignItems='center'>
-            <Avatar>T</Avatar>
+            <Avatar src={profile?.data.avatarPath} />
             <TextField
               placeholder='Comment to topic...'
               size='small'

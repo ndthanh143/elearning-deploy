@@ -1,7 +1,17 @@
 import axiosInstance from '../../axios'
-import { AssignmentResponse, CreateAssignmentPayload, UpdateAssignmentPayload } from './assignment.dto'
+import {
+  AssignmentResponse,
+  AssignmentsResponse,
+  CreateAssignmentPayload,
+  GetListAssignmentQuery,
+  UpdateAssignmentPayload,
+} from './assignment.dto'
 
 export const assignmentService = {
+  getList: async (query: GetListAssignmentQuery) => {
+    const { data } = await axiosInstance.get<AssignmentsResponse>('/assignment/list', { params: { ...query } })
+    return data.data
+  },
   getDetail: async (assignmentId: number) => {
     const { data } = await axiosInstance.get<AssignmentResponse>(`/assignment/retrieve/${assignmentId}`)
 

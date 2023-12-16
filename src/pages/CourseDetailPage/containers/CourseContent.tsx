@@ -42,7 +42,12 @@ export const CourseContent = ({ data }: CourseContentProps) => {
   }
 
   const isNotEmptyModule = (module: Module) => {
-    return module.lectureInfo?.length || module.resourceInfo?.length || module.assignmentInfo?.length
+    return (
+      module.lectureInfo?.length ||
+      module.resourceInfo?.length ||
+      module.assignmentInfo?.length ||
+      module.quizInfo?.length
+    )
   }
 
   return (

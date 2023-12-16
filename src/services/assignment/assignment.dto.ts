@@ -1,7 +1,8 @@
 import { Submission } from '../assignmentSubmission/assignmentSubmission.dto'
-import { BaseData, BaseResponse } from '../common/base.dto'
+import { BaseData, BasePaginationResponse, BaseResponse } from '../common/base.dto'
 
 export type AssignmentResponse = BaseResponse<Assignment>
+export type AssignmentsResponse = BasePaginationResponse<Assignment[]>
 
 export type Assignment = {
   assignmentContent: string
@@ -33,4 +34,8 @@ export type UpdateAssignmentPayload = {
   state: number
   urlDocument?: string
   id: number
+}
+
+export type GetListAssignmentQuery = {
+  courseId?: number
 }

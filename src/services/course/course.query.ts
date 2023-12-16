@@ -9,5 +9,5 @@ export const courseKeys = {
     defineQuery([...courseKeys.details(), courseId], () => courseService.getCourseDetail(courseId)),
   lists: () => [...courseKeys.all, 'list'] as const,
   list: (query: GetListCoursesQuery = {}) =>
-    defineQuery([...courseKeys.details(), query], () => courseService.getList(query)),
+    defineQuery([...courseKeys.lists(), query], () => courseService.getList(query)),
 }

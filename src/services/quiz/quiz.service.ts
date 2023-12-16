@@ -1,7 +1,18 @@
 import axiosInstance from '@/axios'
-import { CreateQuizPayload, GetQuizStartQuery, QuizResponse, QuizStartResponse, UpdateQuizPayload } from './quiz.dto'
+import {
+  CreateQuizPayload,
+  GetListQuizQuery,
+  GetQuizStartQuery,
+  QuizResponse,
+  QuizStartResponse,
+  UpdateQuizPayload,
+} from './quiz.dto'
 
 export const quizService = {
+  getList: async (query: GetListQuizQuery) => {
+    const { data } = await axiosInstance.get('/quiz/list', { params: { ...query } })
+    return data
+  },
   getQuiz: async (quizId: number, courseId?: number) => {
     const { data } = await axiosInstance.get<QuizResponse>(`/quiz/retrieve/${quizId}`, {
       params: {

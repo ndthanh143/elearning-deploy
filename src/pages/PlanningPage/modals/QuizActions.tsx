@@ -28,6 +28,7 @@ import { quizService } from '@/services/quiz/quiz.service'
 import { toast } from 'react-toastify'
 import { useState } from 'react'
 import { answerService } from '@/services/answer/answer.service'
+import { moduleKey } from '@/services/module/module.query'
 
 export type AddQuizProps = {
   isOpen?: boolean
@@ -81,6 +82,7 @@ export const QuizActions = ({ isOpen = false, onClose, defaultData }: AddQuizPro
     onSuccess: () => {
       onClose()
       toast.success('Update quiz successfully')
+      queryClient.invalidateQueries({ queryKey: moduleKey.lists() })
     },
   })
 

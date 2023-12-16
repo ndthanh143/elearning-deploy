@@ -64,3 +64,7 @@ export type CreateQuizPayload = {
   quizTitle: string
   startDate: string
 }
+
+export type GetListQuizQuery = {
+  courseId?: number
+}

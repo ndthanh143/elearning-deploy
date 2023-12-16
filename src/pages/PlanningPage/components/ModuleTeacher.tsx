@@ -28,7 +28,7 @@ export type ModuleTeacherProps = {
 
 export const ModuleTeacher = ({ lessonPlanId }: ModuleTeacherProps) => {
   const moduleInstance = moduleKey.list({ lessonPlanId })
-  const { data, refetch, isLoading } = useQuery({ ...moduleInstance })
+  const { data: modules, refetch: refetchModules, isLoading: isLoadingModules } = useQuery({ ...moduleInstance })
 
   const [expandModuleList, setExpandModuleList] = useState<number[]>([])
   const [selectedLecture, setSelectedLecture] = useState<Lecture | null>(null)
@@ -42,7 +42,7 @@ export const ModuleTeacher = ({ lessonPlanId }: ModuleTeacherProps) => {
     mutationFn: assignmentService.delete,
     onSuccess: () => {
       toast.success('Delete assignment successfully')
-      refetch()
+      refetchModules()
     },
   })
 
@@ -50,7 +50,7 @@ export const ModuleTeacher = ({ lessonPlanId }: ModuleTeacherProps) => {
     mutationFn: lectureService.delete,
     onSuccess: () => {
       toast.success('Delete lecture successfully')
-      refetch()
+      refetchModules()
     },
   })
 
@@ -58,7 +58,7 @@ export const ModuleTeacher = ({ lessonPlanId }: ModuleTeacherProps) => {
     mutationFn: quizService.delete,
     onSuccess: () => {
       toast.success('Delete quiz successfully')
-      refetch()
+      refetchModules()
     },
     onError: () => {
       toast.error('Fail error')
@@ -69,7 +69,7 @@ export const ModuleTeacher = ({ lessonPlanId }: ModuleTeacherProps) => {
     mutationFn: resourceService.delete,
     onSuccess: () => {
       toast.success('Delete resource successfully')
-      refetch()
+      refetchModules()
     },
   })
 
@@ -82,10 +82,10 @@ export const ModuleTeacher = ({ lessonPlanId }: ModuleTeacherProps) => {
   }
 
   const handleToggleModuleListAll = () => {
-    if (data?.content.length === expandModuleList.length) {
+    if (modules?.content.length === expandModuleList.length) {
       setExpandModuleList([])
     } else {
-      const moduleIdList = data?.content.map((module) => module.id) || []
+      const moduleIdList = modules?.content.map((module) => module.id) || []
       setExpandModuleList(moduleIdList)
     }
   }
@@ -96,26 +96,33 @@ export const ModuleTeacher = ({ lessonPlanId }: ModuleTeacherProps) => {
   }
 
   const isNotEmptyModule = (module: Module) => {
-    return module.lectureInfo?.length || module.resourceInfo?.length || module.assignmentInfo?.length
+    return (
+      module.lectureInfo?.length ||
+      module.resourceInfo?.length ||
+      module.assignmentInfo?.length ||
+      module.quizInfo?.length
+    )
   }
 
-  if (isLoading) {
+  if (isLoadingModules) {
     return <Loading />
   }
 
+  console.log('module', modules)
+
   return (
-    data && (
+    modules && (
       <Stack gap={2} minHeight='70vh'>
         <Button fullWidth variant='outlined' onClick={openAddSection}>
           Add sections
         </Button>
-        {!data.content.length ? (
+        {!modules.content.length ? (
           <NoData title='No content in this plan!' />
         ) : (
           <Box display='flex' justifyContent='space-between' alignItems='center' mb={1}>
-            <Typography variant='body2'>{data.content.length || 0} Sections</Typography>
+            <Typography variant='body2'>{modules.content.length || 0} Sections</Typography>
             <Button variant='text' onClick={handleToggleModuleListAll}>
-              {data.content.length === expandModuleList.length ? (
+              {modules.content.length === expandModuleList.length ? (
                 <>
                   Collapse All <KeyboardArrowUp />
                 </>
@@ -128,7 +135,7 @@ export const ModuleTeacher = ({ lessonPlanId }: ModuleTeacherProps) => {
           </Box>
         )}
         <Stack gap={2}>
-          {data.content.map((module) => (
+          {modules.content.map((module) => (
             <Stack border={1} borderRadius={3} padding={2} gap={2} key={module.id}>
               <ActionsModule module={module} />
               <Divider />

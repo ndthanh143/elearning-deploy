@@ -7,6 +7,11 @@ import { Quiz } from '../quiz/quiz.dto'
 export type UserResponse = BaseResponse<Account>
 export type ScheduleResponse = BaseResponse<ScheduleData>
 export type RelativeMemberReponse = BasePaginationResponse<Account[]>
+export type UsersResponse = BasePaginationResponse<Account[]>
+
+export type GetStudentsQuery = {
+  courseId: number
+}
 
 export type Account = {
   fullName: string

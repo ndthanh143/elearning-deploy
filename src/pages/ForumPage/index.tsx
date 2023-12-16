@@ -1,7 +1,7 @@
 import { BoxContent, Loading, NoData, PageContentHeading } from '@/components'
-import { Avatar, Box, Grid, InputAdornment, Stack, TextField, Typography } from '@mui/material'
-import { useAuth } from '@/hooks'
-import { useQuery } from '@tanstack/react-query'
+import { Avatar, Box, Button, Grid, InputAdornment, Stack, TextField, Typography } from '@mui/material'
+import { useAuth, useBoolean } from '@/hooks'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { SearchOutlined } from '@mui/icons-material'
 import { ChangeEvent, useEffect, useState } from 'react'
 import { topicKeys } from '@/services/topic/topic.query'
@@ -10,21 +10,48 @@ import { forumKeys } from '@/services/forum/forum.query'
 import { Forum } from '@/services/forum/forum.dto'
 import { blue } from '@mui/material/colors'
 import common from '@/assets/images/icons/common'
+import { getAbsolutePathFile } from '@/utils'
+import { ModalCreateTopic } from '../CourseDetailPage/components'
+import { topicService } from '@/services/topic/topic.service'
+import { toast } from 'react-toastify'
 
 export const ForumPage = () => {
+  const queryClient = useQueryClient()
+
   const { profile } = useAuth()
 
   const [search, setSearch] = useState('')
 
+  const { value: isOpenCreateTopic, setTrue: openCreateTopic, setFalse: closeCreateTopic } = useBoolean(false)
+
   const [selectedForum, setSelectedForum] = useState<Forum | undefined>()
 
   const forumsInstance = forumKeys.list({ accountId: Number(profile?.data.id), title: search })
-  const { data: forums, isFetched } = useQuery({ ...forumsInstance, enabled: Boolean(profile) })
+  const { data: forums } = useQuery({ ...forumsInstance, enabled: Boolean(profile) })
 
   const topicInstance = topicKeys.list({ forumId: Number(selectedForum?.id) })
-  const { data: topics } = useQuery({ ...topicInstance, enabled: Boolean(selectedForum) })
+  const {
+    data: topics,
+    isFetched: isFetchedTopics,
+    isLoading: isLoadingTopics,
+  } = useQuery({ ...topicInstance, enabled: Boolean(selectedForum) })
 
   const handleSetSearch = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setSearch(e.target.value)
+
+  const { mutate: mutateCreateTopic } = useMutation({
+    mutationFn: topicService.create,
+    onSuccess: (data) => {
+      queryClient.setQueryData(topicInstance.queryKey, [{ ...data, commentInfo: [] }, ...(topics || [])])
+      closeCreateTopic()
+      toast.success('Create Topic successfully!')
+    },
+  })
+
+  const handleCreateTopic = (values: string) => {
+    if (profile && selectedForum) {
+      mutateCreateTopic({ forumId: selectedForum.id, accountId: profile.data.id, topicContent: values })
+    }
+  }
 
   useEffect(() => {
     if (forums) {
@@ -37,7 +64,7 @@ export const ForumPage = () => {
       <PageContentHeading />
       <Grid container spacing={4}>
         <Grid item xs={4}>
-          <BoxContent minHeight='70vh'>
+          <BoxContent minHeight='70vh' position='sticky' top={90}>
             <TextField
               size='small'
               value={search}
@@ -72,7 +99,7 @@ export const ForumPage = () => {
                     borderRadius={3}
                     onClick={() => setSelectedForum(forum)}
                   >
-                    <Avatar src={forum.courseInfo.thumbnail || common.course} />
+                    <Avatar src={getAbsolutePathFile(forum.courseInfo.thumbnail) || common.course} />
                     <Stack>
                       <Typography fontWeight={500}>{forum.courseInfo.courseName}</Typography>
                     </Stack>
@@ -88,26 +115,31 @@ export const ForumPage = () => {
         </Grid>
         <Grid item xs={8}>
           <Stack gap={3}>
-            {topics && isFetched ? (
-              topics.content.length ? (
-                topics.content.map((topic) => (
-                  <BoxContent key={topic.id}>
-                    <ForumTopic data={topic} />
-                  </BoxContent>
-                ))
-              ) : (
-                <BoxContent minHeight='70vh' display='flex' alignItems='center'>
-                  <NoData title="There isn't any topic in this forum!!" />
-                </BoxContent>
-              )
-            ) : (
+            <BoxContent>
+              <Button variant='outlined' fullWidth onClick={openCreateTopic}>
+                Create Topics
+              </Button>
+            </BoxContent>
+            {isLoadingTopics && (
               <BoxContent minHeight='70vh' display='flex' alignItems='center'>
                 <Loading />
               </BoxContent>
             )}
+            {(isFetchedTopics && !topics?.length) || !topics?.length ? (
+              <BoxContent minHeight='70vh' display='flex' alignItems='center'>
+                <NoData title='No data' />
+              </BoxContent>
+            ) : (
+              topics?.map((topic) => (
+                <BoxContent key={topic.id}>
+                  <ForumTopic data={topic} />
+                </BoxContent>
+              ))
+            )}
           </Stack>
         </Grid>
       </Grid>
+      <ModalCreateTopic isOpen={isOpenCreateTopic} onClose={closeCreateTopic} onSubmit={handleCreateTopic} />
     </Box>
   )
 }

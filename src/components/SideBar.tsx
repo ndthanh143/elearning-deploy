@@ -31,9 +31,9 @@ export const SideBar = () => {
         href: '/forum',
       },
       {
-        title: 'Statistics',
-        icon: <Forum color={startsWith(pathname, '/statistic') ? 'primary' : 'inherit'} />,
-        href: '/statistic',
+        title: 'Submission',
+        icon: <Forum color={startsWith(pathname, '/submission-management') ? 'primary' : 'inherit'} />,
+        href: '/submission-management',
       },
       {
         title: 'Planning',
