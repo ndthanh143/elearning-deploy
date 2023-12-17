@@ -1,9 +1,10 @@
-import { BaseData, BaseResponse } from '../common/base.dto'
+import { BaseData, BasePaginationResponse, BaseResponse } from '../common/base.dto'
 import { Module } from '../module/module.dto'
 import { QuizSubmission } from '../quizSubmission/dto'
 
 export type QuizResponse = BaseResponse<Quiz>
 export type QuizStartResponse = BaseResponse<QuizStartData>
+export type QuizzesResponse = BasePaginationResponse<Quiz[]>
 
 export type GetQuizStartQuery = {
   courseId: number

@@ -31,7 +31,7 @@ export const ActionsModule = ({ module }: ActionsModuleProps) => {
 
   const handleAddQuiz = () => {
     mutateCreateQuiz({
-      quizTitle: 'quiz khong co tieu de',
+      quizTitle: 'Quiz 1',
       modulesId: module.id,
       attemptNumber: 0,
       endDate: dayjs().toISOString(),

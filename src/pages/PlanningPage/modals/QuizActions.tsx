@@ -38,7 +38,7 @@ export type AddQuizProps = {
 
 const schema = object({
   id: number().required(),
-  quizTitle: string().required('Please fill quiz title').default('Quiz khong co tieu de'),
+  quizTitle: string().required('Please fill quiz title').default('Quiz 1'),
   description: string(),
   quizTimeLimit: number().required(),
   startDate: string().required(),

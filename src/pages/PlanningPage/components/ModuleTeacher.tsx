@@ -108,8 +108,6 @@ export const ModuleTeacher = ({ lessonPlanId }: ModuleTeacherProps) => {
     return <Loading />
   }
 
-  console.log('module', modules)
-
   return (
     modules && (
       <Stack gap={2} minHeight='70vh'>

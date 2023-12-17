@@ -11,6 +11,8 @@ import { quizSubmissionService } from '@/services'
 import Countdown from 'react-countdown'
 import { Answer } from '../components'
 import { QuizFinish } from '.'
+import { xor } from 'lodash'
+import { gray } from '@/styles/theme'
 
 export const QuizShow = () => {
   const navigate = useNavigate()
@@ -21,7 +23,7 @@ export const QuizShow = () => {
   const { storedValue: quizTimer } = useLocalStorage('quiz-timer', Date.now())
 
   const { storedValue: quizSubmission, setValue: setQuizSubmission } = useLocalStorage<
-    { questionId: number; answer: number }[]
+    { questionId: number; answer: number[] }[]
   >('quiz', [])
 
   const [currentQuestionIndex, setCurrentQuestion] = useState(0)
@@ -50,25 +52,40 @@ export const QuizShow = () => {
     data && setCurrentQuestion((prev) => (prev === 0 ? data.questions.length - 1 : prev - 1))
   }
 
+  console.log(quizSubmission)
+
   const handleSubmit = () => {
-    const results = quizSubmission.map((item) => ({ answerId: item.answer }))
+    const results = quizSubmission.flatMap((item) => item.answer.map((answer) => ({ answerId: answer })))
+
     const totalTime = Date.now() - quizTimer
     mutateSubmit({ courseId: Number(courseId), quizId: Number(quizId), results, totalTime })
   }
 
   const handleChooseQuestion = (questionId: number, answer: number) => {
     const filterValue = quizSubmission.filter((value) => value.questionId !== questionId)
-    setQuizSubmission([...filterValue, { questionId, answer: answer }])
+    setQuizSubmission([...filterValue, { questionId, answer: [answer] }])
+  }
+
+  const handleChooseQuestionMultiple = (questionId: number, answer: number) => {
+    const submissionValue = quizSubmission.find((value) => value.questionId === questionId)
+
+    const filterValue = quizSubmission.filter((value) => value.questionId !== questionId)
+
+    const currentAnswers = submissionValue?.answer || []
+
+    const newAnswers = xor(currentAnswers, [answer])
+    setQuizSubmission([...filterValue, { questionId, answer: newAnswers }])
   }
 
   const handleReview = () => {
     navigate(`/quiz-submission/`)
   }
 
-  const checkAnswerChose = (anwserId: number) => Boolean(quizSubmission.some((value) => value.answer === anwserId))
+  const checkAnswerChose = (anwserId: number) =>
+    Boolean(quizSubmission.some((value) => value.answer.includes(anwserId)))
 
   useEffect(() => {
-    if (quizSubmission && data) {
+    if (quizSubmission && data && data.questions[currentQuestionIndex].questionType === 1) {
       handleNextQuestion()
     }
   }, [quizSubmission])
@@ -205,17 +222,28 @@ export const QuizShow = () => {
               {data.questions.length > 0 && (
                 <>
                   <Typography> {data.questions[currentQuestionIndex].questionContent}</Typography>
-                  <Stack gap={2} mt={1} mb='auto'>
-                    {data.questions[currentQuestionIndex].answers.map((anwser, index) => (
-                      <Answer
-                        title={anwser.answerContent}
-                        key={anwser.id}
-                        label={generateAwnserKey(index)}
-                        isChosen={checkAnswerChose(anwser.id)}
-                        onClick={() => handleChooseQuestion(data.questions[currentQuestionIndex].id, anwser.id)}
-                      />
-                    ))}
-                  </Stack>
+                  <Box>
+                    {data.questions[currentQuestionIndex].questionType === 2 && (
+                      <Typography color={gray[800]} fontStyle='italic' variant='body1'>
+                        Choose multiple answers
+                      </Typography>
+                    )}
+                    <Stack gap={2} mt={1} mb='auto'>
+                      {data.questions[currentQuestionIndex].answers.map((anwser, index) => (
+                        <Answer
+                          title={anwser.answerContent}
+                          key={anwser.id}
+                          label={generateAwnserKey(index)}
+                          isChosen={checkAnswerChose(anwser.id)}
+                          onClick={() =>
+                            data.questions[currentQuestionIndex].questionType === 1
+                              ? handleChooseQuestion(data.questions[currentQuestionIndex].id, anwser.id)
+                              : handleChooseQuestionMultiple(data.questions[currentQuestionIndex].id, anwser.id)
+                          }
+                        />
+                      ))}
+                    </Stack>
+                  </Box>
                 </>
               )}
               <Divider />
