@@ -107,7 +107,7 @@ export const ForumTopic = ({ data }: ForumTopicProps) => {
             <Avatar src={data.accountInfo.avatarPath}>{data.accountInfo.fullName.charAt(0)}</Avatar>
             <Stack>
               <Typography fontWeight={500}>{data.accountInfo.fullName}</Typography>
-              <Typography variant='caption'>{formatDate.toCommon(data.createDate)}</Typography>
+              <Typography variant='caption'>{formatDate.toDateTime(data.createDate)}</Typography>
             </Stack>
           </Stack>
           {data.accountInfo.id === profile?.data.id && (

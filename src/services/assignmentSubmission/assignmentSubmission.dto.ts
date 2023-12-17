@@ -1,5 +1,6 @@
 import { Assignment } from '../assignment/assignment.dto'
 import { BaseData, BasePaginationResponse, PaginationQuery } from '../common/base.dto'
+import { Account } from '../user/user.dto'
 
 export type SubmissionsResponse = BasePaginationResponse<Submission[]>
 
@@ -23,6 +24,7 @@ export type Submission = {
   fileSubmissionUrl?: string
   textSubmission?: string
   linkSubmission?: string
+  studentInfo: Account
 } & BaseData
 
 export type UpdateSubmissionPayload = {
@@ -30,4 +32,5 @@ export type UpdateSubmissionPayload = {
   fileSubmissionUrl?: string
   textSubmission?: string
   linkSubmission?: string
+  score?: number
 }

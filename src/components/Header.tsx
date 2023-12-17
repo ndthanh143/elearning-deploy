@@ -35,7 +35,7 @@ const parseMessage = (type: string, data: string) => {
                 New topic in forum{' '}
                 <Box
                   component={Link}
-                  to={`/forum/${parseData.forumId}`}
+                  to={`/forum?id=${parseData.forumId}`}
                   sx={{ color: 'primary.main', textDecoration: 'none', fontWeight: 500 }}
                 >
                   {parseData.forumTitle}

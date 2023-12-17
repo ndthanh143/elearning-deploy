@@ -1,7 +1,7 @@
 import { BoxContent, ConfirmPopup, Show } from '@/components'
 import { useAuth, useBoolean, useMenu } from '@/hooks'
 import { AddOutlined, AttachFileOutlined, LinkOutlined, TextFormatOutlined } from '@mui/icons-material'
-import { Button, ListItemIcon, ListItemText, Menu, MenuItem, Stack, Typography } from '@mui/material'
+import { Button, Chip, ListItemIcon, ListItemText, Menu, MenuItem, Stack, Typography } from '@mui/material'
 import {
   UploadPopup,
   TextPopup,
@@ -61,6 +61,7 @@ export const SubmissionContent = ({ assignment, courseId }: SubmissionContentPro
       toast.success('Upload successfully!')
       closeUpload()
       closeText()
+      closeLink()
       queryClient.invalidateQueries({ queryKey: courseKeys.all })
     },
   })
@@ -134,19 +135,26 @@ export const SubmissionContent = ({ assignment, courseId }: SubmissionContentPro
       <BoxContent>
         <Stack gap={2}>
           <Stack direction='row' justifyContent='space-between'>
-            <Typography variant='h5'>Bài tập của bạn</Typography>
+            <Typography variant='h5'>Your submission</Typography>
             {checkStatusSubmission && (
-              <Typography
+              <Chip
+                label={checkStatusSubmission}
                 color={
                   [StatusSubmissionEnum.Expired, StatusSubmissionEnum.Late].includes(checkStatusSubmission)
                     ? 'error'
-                    : ''
+                    : 'success'
                 }
-              >
-                {checkStatusSubmission}
-              </Typography>
+              />
             )}
           </Stack>
+          {submissions?.content.length && (
+            <Stack direction='row' alignItems='center' gap={1}>
+              <Typography>Your score:</Typography>
+              <Typography fontWeight={500} color='success'>
+                {submissions?.content[0].score}
+              </Typography>
+            </Stack>
+          )}
           {submissions && submissions.content[0]?.fileSubmissionUrl && (
             <FileCard filePath={submissions.content[0]?.fileSubmissionUrl} onDelete={openConfirmDelete} />
           )}

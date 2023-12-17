@@ -14,6 +14,7 @@ import { getAbsolutePathFile } from '@/utils'
 import { ModalActionsTopic } from '../CourseDetailPage/components'
 import { topicService } from '@/services/topic/topic.service'
 import { toast } from 'react-toastify'
+import { useSearchParams } from 'react-router-dom'
 
 export const ForumPage = () => {
   const queryClient = useQueryClient()
@@ -21,6 +22,8 @@ export const ForumPage = () => {
   const { profile } = useAuth()
 
   const [search, setSearch] = useState('')
+
+  const [searchParams, _] = useSearchParams()
 
   const { value: isOpenCreateTopic, setTrue: openCreateTopic, setFalse: closeCreateTopic } = useBoolean(false)
 
@@ -55,9 +58,12 @@ export const ForumPage = () => {
 
   useEffect(() => {
     if (forums) {
-      setSelectedForum(forums.content[0])
+      if (searchParams.get('id')) {
+        const forum = forums.content.find((item) => item.id === Number(searchParams.get('id')))
+        setSelectedForum(forum)
+      } else setSelectedForum(forums.content[0])
     }
-  }, [forums])
+  }, [forums, searchParams])
 
   return (
     <Box>

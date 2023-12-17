@@ -9,17 +9,18 @@ export type ReviewSubmissionTextProps = {
   content: string
   isOpen: boolean
   onClose: () => void
-  onUpdate: (value: string) => void
+  onUpdate?: (value: string) => void
+  noEdit?: boolean
 }
 
-export const ReviewSubmissionText = ({ content, isOpen, onClose, onUpdate }: ReviewSubmissionTextProps) => {
+export const ReviewSubmissionText = ({ content, isOpen, onClose, onUpdate, noEdit }: ReviewSubmissionTextProps) => {
   const { value: isUpdate, setTrue: openUpdate, setFalse: closeUpdate } = useBoolean(false)
   const { value: isOpenConfirm, setTrue: openConfirm, setFalse: closeConfirm } = useBoolean(false)
 
   const [value, setValue] = useState(content)
 
   const handleSubmitUpdate = () => {
-    onUpdate(value)
+    onUpdate && onUpdate(value)
     closeConfirm()
     closeUpdate()
   }
@@ -40,6 +41,7 @@ export const ReviewSubmissionText = ({ content, isOpen, onClose, onUpdate }: Rev
             </IconButton>
           </Stack>
           <Divider />
+
           <Box overflow='scroll' height='80vh'>
             {isUpdate ? (
               <Box height='100%'>
@@ -49,20 +51,24 @@ export const ReviewSubmissionText = ({ content, isOpen, onClose, onUpdate }: Rev
               <DangerouseLyRender content={content} />
             )}
           </Box>
-          <Divider />
-          {isUpdate ? (
-            <Stack direction='row' gap={2}>
-              <Button variant='outlined' fullWidth sx={{ marginTop: 2 }} onClick={closeUpdate}>
-                Cancel
-              </Button>
-              <Button variant='contained' fullWidth sx={{ marginTop: 2 }} onClick={openConfirm}>
-                Submit
-              </Button>
-            </Stack>
-          ) : (
-            <Button variant='contained' fullWidth sx={{ marginTop: 2 }} onClick={openUpdate}>
-              Update
-            </Button>
+          {!noEdit && (
+            <>
+              <Divider />
+              {isUpdate ? (
+                <Stack direction='row' gap={2}>
+                  <Button variant='outlined' fullWidth sx={{ marginTop: 2 }} onClick={closeUpdate}>
+                    Cancel
+                  </Button>
+                  <Button variant='contained' fullWidth sx={{ marginTop: 2 }} onClick={openConfirm}>
+                    Submit
+                  </Button>
+                </Stack>
+              ) : (
+                <Button variant='contained' fullWidth sx={{ marginTop: 2 }} onClick={openUpdate}>
+                  Update
+                </Button>
+              )}
+            </>
           )}
         </BoxContent>
       </Modal>

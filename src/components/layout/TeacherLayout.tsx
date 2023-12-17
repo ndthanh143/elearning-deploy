@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom'
 
 export const TeacherLayout = () => {
   return (
-    <Box bgcolor='#ECEFF3' minHeight='100dvh'>
+    <Box bgcolor='#ECEFF3' minHeight='100vh'>
       <Box position='fixed' width='100vw' bgcolor='#ECEFF3' zIndex={10}>
         <Header />
       </Box>

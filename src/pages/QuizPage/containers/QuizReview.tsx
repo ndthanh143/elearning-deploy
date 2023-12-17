@@ -7,6 +7,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useState } from 'react'
 import { Answer } from '../components'
 import { BoxContent } from '@/components'
+import { Question } from '@/services/quizSubmission/dto'
+import { isEqual } from 'lodash'
 
 export const QuizReview = () => {
   const navigate = useNavigate()
@@ -28,6 +30,13 @@ export const QuizReview = () => {
 
   const handlePrevQuestion = () => {
     data && setCurrentQuestionIndex((prev) => (prev === 0 ? data.questions.length - 1 : prev - 1))
+  }
+
+  const checkCorrectQuestion = (question: Question) => {
+    const correctAnswers = question.answers.filter((answer) => answer.isCorrect)
+    const selectedAnswers = question.answers.filter((answer) => answer.isSelected)
+
+    return isEqual(correctAnswers, selectedAnswers)
   }
 
   const correctCounts = data?.questions.reduce((acc, cur) => {
@@ -103,9 +112,7 @@ export const QuizReview = () => {
                           {question.questionContent}
                         </Typography>
                       </Stack>
-                      {question.answers.some((anwser) => anwser.isCorrect && anwser.isSelected) && (
-                        <CheckCircle color='success' />
-                      )}
+                      {checkCorrectQuestion(question) && <CheckCircle color='success' />}
                       {question.answers.some((anwser) => !anwser.isCorrect && anwser.isSelected) && (
                         <ErrorOutline color='error' />
                       )}

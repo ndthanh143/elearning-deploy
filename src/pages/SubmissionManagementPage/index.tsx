@@ -29,7 +29,7 @@ export const SubmissionManagementPage = () => {
 
   const [type, setType] = useState('assignment')
 
-  const [selectedCourse, setSelectedCourse] = useState<number | null>(null)
+  const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null)
   const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null)
   const [selectedQuiz, setSelectedQuiz] = useState<Quiz | null>(null)
 
@@ -40,23 +40,23 @@ export const SubmissionManagementPage = () => {
     select: (data) => data.content,
   })
 
-  const assignmentsInstance = assignmentKeys.list({ courseId: Number(selectedCourse) })
+  const assignmentsInstance = assignmentKeys.list({ courseId: Number(selectedCourseId) })
   const { data: assignments } = useQuery({
     ...assignmentsInstance,
-    enabled: Boolean(selectedCourse),
+    enabled: Boolean(selectedCourseId),
     select: (data) => data.content,
   })
 
-  const quizzesInstance = quizKey.list({ courseId: Number(selectedCourse) })
+  const quizzesInstance = quizKey.list({ courseId: Number(selectedCourseId) })
   const { data: quizzes } = useQuery({
     ...quizzesInstance,
-    enabled: Boolean(selectedCourse),
+    enabled: Boolean(selectedCourseId),
     select: (data) => data.content,
   })
 
   useEffect(() => {
     if (courses) {
-      setSelectedCourse(courses[0].id)
+      setSelectedCourseId(courses[0].id)
     }
   }, [courses])
 
@@ -77,8 +77,8 @@ export const SubmissionManagementPage = () => {
             <Select
               size='small'
               fullWidth
-              value={selectedCourse}
-              onChange={(e) => setSelectedCourse(e.target.value as number)}
+              value={selectedCourseId}
+              onChange={(e) => setSelectedCourseId(e.target.value as number)}
               sx={{ borderRadius: 3 }}
             >
               {courses?.map((course) => <MenuItem value={course.id}>{course.courseName}</MenuItem>)}
@@ -119,11 +119,11 @@ export const SubmissionManagementPage = () => {
       </Grid>
       <Grid item xs={8}>
         <BoxContent height='80vh'>
-          {type === 'assignment' && selectedAssignment && selectedCourse && (
-            <AssignmentSubmission assignmentId={selectedAssignment.id} courseId={selectedCourse} />
+          {type === 'assignment' && selectedAssignment && selectedCourseId && (
+            <AssignmentSubmission assignmentId={selectedAssignment.id} courseId={selectedCourseId} />
           )}
-          {type === 'quiz' && selectedQuiz && selectedCourse && (
-            <QuizSubmission quizId={selectedQuiz.id} courseId={selectedCourse} />
+          {type === 'quiz' && selectedQuiz && selectedCourseId && (
+            <QuizSubmission quizId={selectedQuiz.id} courseId={selectedCourseId} />
           )}
         </BoxContent>
       </Grid>

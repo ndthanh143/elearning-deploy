@@ -1,4 +1,5 @@
 import { BaseData, BasePaginationResponse, BaseResponse, PaginationQuery } from '../common/base.dto'
+import { Account } from '../user/user.dto'
 
 export type QuizSubmissionReviewReponse = BaseResponse<QuizSubmissionReviewData>
 export type QuizSubmissionsReviewReponse = BasePaginationResponse<QuizSubmission[]>
@@ -17,6 +18,7 @@ export type resultPayload = {
 export type QuizSubmission = {
   score: number
   totalTime: number
+  studentInfo: Account
 } & BaseData
 
 export type QuizSubmissionReviewData = {
