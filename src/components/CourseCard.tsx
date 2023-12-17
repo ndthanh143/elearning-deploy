@@ -38,7 +38,7 @@ export const CourseCard = ({ data }: CourseCardProps) => {
             src={getAbsolutePathFile(data.thumbnail) || common.course}
             width='100%'
             height='100%'
-            sx={{ objectFit: 'cover', borderRadius: 3 }}
+            sx={{ objectFit: 'cover', borderRadius: 3, height: 145 }}
           />
         </Grid>
         <Grid item md={12} lg={9}>

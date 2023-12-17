@@ -20,3 +20,8 @@ export type CreateTopicPayload = {
   forumId: number
   topicContent: string
 }
+
+export type UpdateTopicPayload = {
+  topicContent: string
+  id: number
+}

@@ -1,11 +1,4 @@
-import {
-  ArrowDropDown,
-  LogoutOutlined,
-  MessageOutlined,
-  NotificationsOutlined,
-  PersonOutline,
-  TableChart,
-} from '@mui/icons-material'
+import { ArrowDropDown, LogoutOutlined, NotificationsOutlined, PersonOutline } from '@mui/icons-material'
 import {
   Avatar,
   Badge,
@@ -153,14 +146,7 @@ export const Header = () => {
           <PersonOutline />
           <Typography>Profile</Typography>
         </MenuItem>
-        <MenuItem sx={{ display: 'flex', alignItems: 'center', gap: 2, pr: 6 }} onClick={() => handleClickMenuItem('')}>
-          <TableChart />
-          <Typography>Scores</Typography>
-        </MenuItem>
-        <MenuItem sx={{ display: 'flex', alignItems: 'center', gap: 2, pr: 6 }} onClick={() => handleClickMenuItem('')}>
-          <MessageOutlined />
-          <Typography>Message</Typography>
-        </MenuItem>
+
         <Divider />
         <MenuItem sx={{ display: 'flex', alignItems: 'center', gap: 2, pr: 6 }} onClick={logout}>
           <LogoutOutlined />

@@ -1,6 +1,8 @@
+import { ConfirmPopup, ModalLoading } from '@/components'
 import { useAuth, useBoolean, useMenu } from '@/hooks'
 import { Topic } from '@/services/topic/topic.dto'
 import { topicKeys } from '@/services/topic/topic.query'
+import { topicService } from '@/services/topic/topic.service'
 import { CreateTopicCommentPayload, TopicComment } from '@/services/topicComment/topicComment.dto'
 import { topicCommentService } from '@/services/topicComment/topicComment.service'
 import { formatDate } from '@/utils'
@@ -11,6 +13,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { number, object, string } from 'yup'
+import { ModalActionsTopic } from '.'
 
 export type ForumTopicProps = {
   data: Topic
@@ -26,6 +29,8 @@ export const ForumTopic = ({ data }: ForumTopicProps) => {
   const queryClient = useQueryClient()
 
   const { value, toggle } = useBoolean(false)
+  const { value: isOpenConfirmDelete, setTrue: openConfirmDelete, setFalse: closeConfirmDelete } = useBoolean(false)
+  const { value: isOpenEdit, setTrue: openEdit, setFalse: closeEdit } = useBoolean(false)
 
   const { profile } = useAuth()
 
@@ -46,10 +51,18 @@ export const ForumTopic = ({ data }: ForumTopicProps) => {
     },
   })
 
+  const { mutate: mutateDeleteTopic, isPending: isPendingDeleteTopic } = useMutation({
+    mutationFn: topicService.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: topicKeys.lists() })
+      toast.success('Delete topic successfully')
+    },
+  })
+
   const { mutate: mutateCreateComment } = useMutation({
     mutationFn: topicCommentService.create,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['topic'] })
+      queryClient.invalidateQueries({ queryKey: topicKeys.lists() })
       resetField('content')
     },
   })
@@ -63,18 +76,35 @@ export const ForumTopic = ({ data }: ForumTopicProps) => {
     },
   })
 
+  const { mutate: mutateUpdateTopic } = useMutation({
+    mutationFn: topicService.update,
+    onSuccess: () => {
+      closeEdit()
+      toast.success('Update your topic successfully!')
+      queryClient.invalidateQueries({ queryKey: topicKeys.all })
+    },
+  })
+
   const onSubmitHandler = (data: CreateTopicCommentPayload) => {
     mutateCreateComment(data)
   }
 
   const handleDeleteComment = (comment: TopicComment) => mutateDeleteComment(comment.id)
 
+  const handleDeleteTopic = () => {
+    mutateDeleteTopic(data.id)
+  }
+
+  const handleUpdateTopic = (topicContent: string) => {
+    mutateUpdateTopic({ id: data.id, topicContent })
+  }
+
   return (
     <>
       <Stack gap={2}>
         <Stack direction='row' justifyContent='space-between'>
           <Stack direction='row' alignItems='center' gap={1}>
-            <Avatar src={data.accountInfo.avatarPath} />
+            <Avatar src={data.accountInfo.avatarPath}>{data.accountInfo.fullName.charAt(0)}</Avatar>
             <Stack>
               <Typography fontWeight={500}>{data.accountInfo.fullName}</Typography>
               <Typography variant='caption'>{formatDate.toCommon(data.createDate)}</Typography>
@@ -100,7 +130,7 @@ export const ForumTopic = ({ data }: ForumTopicProps) => {
               {data.commentInfo.map((comment) => (
                 <Box display='flex' justifyContent='space-between' key={comment.id}>
                   <Box display='flex' alignItems='start' gap={1}>
-                    <Avatar>N</Avatar>
+                    <Avatar src={data.accountInfo.avatarPath}>{data.accountInfo.fullName.charAt(0)}</Avatar>
                     <Stack gap={0.5}>
                       <Box display='flex' alignItems='center' gap={1}>
                         <Typography variant='body2' fontWeight={500}>
@@ -178,9 +208,25 @@ export const ForumTopic = ({ data }: ForumTopicProps) => {
         </Stack>
       </Stack>
       <Menu open={isOpenMore} anchorEl={anchorMore} onClose={closeMore}>
-        <MenuItem>Edit</MenuItem>
-        <MenuItem>Remove</MenuItem>
+        <MenuItem onClick={openEdit}>Edit</MenuItem>
+        <MenuItem onClick={openConfirmDelete}>Remove</MenuItem>
       </Menu>
+      <ModalActionsTopic
+        status='update'
+        defaultValue={data.topicContent}
+        onClose={closeEdit}
+        onSubmit={handleUpdateTopic}
+        isOpen={isOpenEdit}
+      />
+
+      <ConfirmPopup
+        isOpen={isOpenConfirmDelete}
+        title='Confirm Delete'
+        subtitle='Are you sure you want to delete this topic? This action cannot be undone'
+        onClose={closeConfirmDelete}
+        onAccept={handleDeleteTopic}
+      />
+      <ModalLoading isOpen={isPendingDeleteTopic} />
     </>
   )
 }

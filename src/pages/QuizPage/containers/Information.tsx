@@ -71,9 +71,9 @@ export const Information = () => {
           </Stack>
           <Divider />
           <Stack alignItems='center'>
-            {highestScore ? (
+            {quiz.quizSubmissionInfo.length ? (
               <>
-                <Typography>Highest Score: {highestScore.toFixed(2)}</Typography>
+                <Typography>Highest Score: {highestScore?.toFixed(2)}</Typography>
                 <Button
                   variant='text'
                   sx={{

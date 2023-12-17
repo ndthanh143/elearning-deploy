@@ -1,6 +1,7 @@
-import { BaseData, BaseResponse } from '../common/base.dto'
+import { BaseData, BasePaginationResponse, BaseResponse, PaginationQuery } from '../common/base.dto'
 
 export type QuizSubmissionReviewReponse = BaseResponse<QuizSubmissionReviewData>
+export type QuizSubmissionsReviewReponse = BasePaginationResponse<QuizSubmission[]>
 
 export type QuizSubmissionPayload = {
   courseId: number
@@ -38,3 +39,8 @@ export interface Answer {
   isCorrect: boolean
   isSelected: boolean
 }
+
+export type GetQuizSubmissionsQuery = {
+  courseId?: number
+  quizId?: number
+} & PaginationQuery

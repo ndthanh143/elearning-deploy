@@ -2,7 +2,10 @@ import { BoxContent, NoData, Show } from '@/components'
 import { MenuItem, Select, SelectChangeEvent, Stack, Typography } from '@mui/material'
 import { AssignmentItem, QuizItem } from '../components'
 import { AssignmentsInfo, QuizzesInfo } from '@/services/user/user.dto'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { scrollToElement } from '@/utils'
+import { useSearchParams } from 'react-router-dom'
+import dayjs from 'dayjs'
 
 export type ScheduleListProps = {
   assignments: AssignmentsInfo[]
@@ -14,12 +17,22 @@ type TypeSchedule = 'quiz' | 'assignment'
 export const ScheduleList = ({ assignments, quizzes }: ScheduleListProps) => {
   const [type, setType] = useState<TypeSchedule>('quiz')
 
+  let [_, setSearchParams] = useSearchParams()
+
   const [selectedQuiz, setSelectedQuiz] = useState(quizzes[0])
   const [selectedAssignment, setSelectedAssignment] = useState(assignments[0])
 
   const handleChangeType = (e: SelectChangeEvent) => {
     setType(e.target.value as TypeSchedule)
   }
+
+  useEffect(() => {
+    if (selectedQuiz) {
+      setSearchParams({ date: dayjs(selectedQuiz.quizInfo.endDate).toString() })
+      scrollToElement(selectedQuiz.quizInfo.id.toString())
+    }
+  }, [selectedQuiz])
+
   return (
     <BoxContent>
       <Stack direction='row' justifyContent='space-between' alignItems='center' mb={4}>

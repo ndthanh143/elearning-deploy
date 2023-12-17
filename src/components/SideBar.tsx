@@ -1,6 +1,13 @@
 import { useAuth } from '@/hooks'
 import { RoleEnum } from '@/services/auth/auth.dto'
-import { EventNoteOutlined, Forum, LibraryBooksOutlined, TimelineOutlined } from '@mui/icons-material'
+import {
+  AssignmentIndOutlined,
+  EditCalendarOutlined,
+  EventNoteOutlined,
+  ForumOutlined,
+  LibraryBooksOutlined,
+  TimelineOutlined,
+} from '@mui/icons-material'
 import { List, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material'
 import { startsWith } from 'lodash'
 import { ReactNode } from 'react'
@@ -27,17 +34,17 @@ export const SideBar = () => {
       },
       {
         title: 'Forum',
-        icon: <Forum color={startsWith(pathname, '/forum') ? 'primary' : 'inherit'} />,
+        icon: <ForumOutlined color={startsWith(pathname, '/forum') ? 'primary' : 'inherit'} />,
         href: '/forum',
       },
       {
         title: 'Submission',
-        icon: <Forum color={startsWith(pathname, '/submission-management') ? 'primary' : 'inherit'} />,
+        icon: <AssignmentIndOutlined color={startsWith(pathname, '/submission-management') ? 'primary' : 'inherit'} />,
         href: '/submission-management',
       },
       {
         title: 'Planning',
-        icon: <Forum color={startsWith(pathname, '/planning') ? 'primary' : 'inherit'} />,
+        icon: <EditCalendarOutlined color={startsWith(pathname, '/planning') ? 'primary' : 'inherit'} />,
         href: '/planning',
       },
     ],
@@ -59,7 +66,7 @@ export const SideBar = () => {
       },
       {
         title: 'Forum',
-        icon: <Forum color={startsWith(pathname, '/forum') ? 'primary' : 'inherit'} />,
+        icon: <ForumOutlined color={startsWith(pathname, '/forum') ? 'primary' : 'inherit'} />,
         href: '/forum',
       },
     ],

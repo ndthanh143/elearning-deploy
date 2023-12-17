@@ -1,5 +1,5 @@
 import axiosInstance from '@/axios'
-import { CreateTopicPayload, GetTopicsQuery, TopicResponse, TopicsResponse } from './topic.dto'
+import { CreateTopicPayload, GetTopicsQuery, TopicResponse, TopicsResponse, UpdateTopicPayload } from './topic.dto'
 
 export const topicService = {
   getAll: async (query?: GetTopicsQuery) => {
@@ -11,5 +11,13 @@ export const topicService = {
     const { data } = await axiosInstance.post<TopicResponse>('/topic/create', payload)
 
     return data.data
+  },
+  update: async (payload: UpdateTopicPayload) => {
+    const { data } = await axiosInstance.put<TopicResponse>('/topic/update', payload)
+
+    return data.data
+  },
+  delete: async (id: number) => {
+    await axiosInstance.delete(`/topic/delete/${id}`)
   },
 }

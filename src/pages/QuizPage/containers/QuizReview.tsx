@@ -1,19 +1,26 @@
-import { CheckCircle, ErrorOutline } from '@mui/icons-material'
-import { Box, Button, Divider, Grid, Stack, Typography } from '@mui/material'
+import { ArrowBack, CheckCircle, ErrorOutline } from '@mui/icons-material'
+import { Button, Divider, Grid, Stack, Typography } from '@mui/material'
 import { generateAwnserKey } from '@/utils'
 import { quizSubmissionKeys } from '@/services/quizSubmission/query'
 import { useQuery } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useState } from 'react'
 import { Answer } from '../components'
+import { BoxContent } from '@/components'
 
 export const QuizReview = () => {
+  const navigate = useNavigate()
+
   const { quizSubmissionId } = useParams()
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
 
   const submissionInstance = quizSubmissionKeys.review(Number(quizSubmissionId))
   const { data } = useQuery(submissionInstance)
+
+  const handleBack = () => {
+    navigate(-1)
+  }
 
   const handleNextQuestion = () => {
     data && setCurrentQuestionIndex((prev) => (prev === data.questions.length - 1 ? 0 : prev + 1))
@@ -30,16 +37,20 @@ export const QuizReview = () => {
   return (
     data && (
       <>
+        <Button variant='text' color='secondary' sx={{ mb: 2, display: 'flex', gap: 1 }} onClick={handleBack}>
+          <ArrowBack fontSize='small' />
+          Back
+        </Button>
         <Grid container spacing={4} minHeight={700}>
           <Grid item xs={4}>
-            <Box bgcolor='#fff' padding={3} borderRadius={3} height='100%'>
+            <BoxContent height='80vh'>
               <Stack direction='row' gap={1}>
                 <Typography>Corrects/Question:</Typography>
                 <Typography color='success.main' fontWeight={500}>
                   {correctCounts}/{data.questions.length}
                 </Typography>
               </Stack>
-              <Stack direction='row' gap={1}>
+              <Stack direction='row' gap={1} mb={1}>
                 <Typography>Scores:</Typography>
                 <Typography color='success.main' fontWeight={500}>
                   {data.score.toFixed(2)}
@@ -51,7 +62,7 @@ export const QuizReview = () => {
                 sx={{
                   overflowY: 'auto',
                 }}
-                maxHeight='80vh'
+                maxHeight='70vh'
               >
                 {data.questions.map((question, index) => {
                   const isActivatingQuestion = currentQuestionIndex === index
@@ -102,16 +113,14 @@ export const QuizReview = () => {
                   )
                 })}
               </Stack>
-            </Box>
+            </BoxContent>
           </Grid>
           <Grid item xs={8}>
-            <Box
-              padding={3}
-              bgcolor='#fff'
-              borderRadius={3}
-              height='100%'
+            <BoxContent
               display='flex'
               flexDirection='column'
+              justifyContent='space-between'
+              height='80vh'
               px={10}
               gap={3}
             >
@@ -138,7 +147,7 @@ export const QuizReview = () => {
                   Next Question
                 </Button>
               </Stack>
-            </Box>
+            </BoxContent>
           </Grid>
         </Grid>
       </>

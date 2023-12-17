@@ -1,4 +1,4 @@
-import { BoxContent, Show } from '@/components'
+import { BoxContent, ConfirmPopup, Show } from '@/components'
 import { useAuth, useBoolean, useMenu } from '@/hooks'
 import { AddOutlined, AttachFileOutlined, LinkOutlined, TextFormatOutlined } from '@mui/icons-material'
 import { Button, ListItemIcon, ListItemText, Menu, MenuItem, Stack, Typography } from '@mui/material'
@@ -29,6 +29,7 @@ export enum StatusSubmissionEnum {
   Expired = 'Expired',
   NotSubmit = 'Not Submit',
   Submitted = 'Submitted',
+  Late = 'Lated',
 }
 
 const currentDate = dayjs()
@@ -42,6 +43,7 @@ export const SubmissionContent = ({ assignment, courseId }: SubmissionContentPro
   const { value: isOpenText, setTrue: openText, setFalse: closeText } = useBoolean()
   const { value: isOpenLink, setTrue: openLink, setFalse: closeLink } = useBoolean()
   const { value: isOpenReviewText, setTrue: openReviewText, setFalse: closeReviewText } = useBoolean()
+  const { value: isOpenConfirmDelete, setTrue: openConfirmDelete, setFalse: closeConfirmDelete } = useBoolean()
 
   const { anchorEl, isOpen, onClose, onOpen } = useMenu()
 
@@ -66,6 +68,7 @@ export const SubmissionContent = ({ assignment, courseId }: SubmissionContentPro
   const { mutate: mutateDeleteSubmit } = useMutation({
     mutationFn: assignmentSubmissionService.delete,
     onSuccess: () => {
+      closeConfirmDelete()
       toast.success('Delete your submission successfully!')
       queryClient.setQueryData(submissionInstance.queryKey, null)
       queryClient.invalidateQueries({ queryKey: courseKeys.all })
@@ -99,7 +102,9 @@ export const SubmissionContent = ({ assignment, courseId }: SubmissionContentPro
       ? currentDate > dayjs(assignment.endDate)
         ? StatusSubmissionEnum.Expired
         : StatusSubmissionEnum.NotSubmit
-      : StatusSubmissionEnum.Submitted)
+      : dayjs(submissions.content[0].createDate) > dayjs(assignment.endDate)
+        ? StatusSubmissionEnum.Late
+        : StatusSubmissionEnum.Submitted)
 
   const handleClickItem = {
     file: () => {
@@ -130,15 +135,23 @@ export const SubmissionContent = ({ assignment, courseId }: SubmissionContentPro
         <Stack gap={2}>
           <Stack direction='row' justifyContent='space-between'>
             <Typography variant='h5'>Bài tập của bạn</Typography>
-            <Typography color={checkStatusSubmission === StatusSubmissionEnum.Expired ? 'error' : ''}>
-              {checkStatusSubmission}
-            </Typography>
+            {checkStatusSubmission && (
+              <Typography
+                color={
+                  [StatusSubmissionEnum.Expired, StatusSubmissionEnum.Late].includes(checkStatusSubmission)
+                    ? 'error'
+                    : ''
+                }
+              >
+                {checkStatusSubmission}
+              </Typography>
+            )}
           </Stack>
           {submissions && submissions.content[0]?.fileSubmissionUrl && (
-            <FileCard filePath={submissions.content[0]?.fileSubmissionUrl} onDelete={handleDelete} />
+            <FileCard filePath={submissions.content[0]?.fileSubmissionUrl} onDelete={openConfirmDelete} />
           )}
           {submissions && submissions.content[0]?.textSubmission && (
-            <TextCard onReview={openReviewText} onDelete={handleDelete} />
+            <TextCard onReview={openReviewText} onDelete={openConfirmDelete} />
           )}
 
           {submissions && submissions.content[0]?.textSubmission && (
@@ -150,7 +163,7 @@ export const SubmissionContent = ({ assignment, courseId }: SubmissionContentPro
             />
           )}
           {submissions && submissions.content[0]?.linkSubmission && (
-            <ReviewSubmissionLink link={submissions.content[0]?.linkSubmission} />
+            <ReviewSubmissionLink link={submissions.content[0]?.linkSubmission} onDelete={openConfirmDelete} />
           )}
           <Show when={!submissions?.content.length}>
             <Button fullWidth variant='outlined' onClick={onOpen}>
@@ -184,6 +197,13 @@ export const SubmissionContent = ({ assignment, courseId }: SubmissionContentPro
           <ListItemText>File</ListItemText>
         </MenuItem>
       </Menu>
+      <ConfirmPopup
+        isOpen={isOpenConfirmDelete}
+        onClose={closeConfirmDelete}
+        onAccept={handleDelete}
+        title='Confirm Delete submission'
+        subtitle='Are you sure you want to delete this submission? This action cannot be undone.'
+      />
     </>
   )
 }

@@ -1,7 +1,18 @@
 import axiosInstance from '@/axios'
-import { QuizSubmissionPayload, QuizSubmissionReviewReponse } from './dto'
+import {
+  GetQuizSubmissionsQuery,
+  QuizSubmissionPayload,
+  QuizSubmissionReviewReponse,
+  QuizSubmissionsReviewReponse,
+} from './dto'
 
 export const quizSubmissionService = {
+  getList: async (query: GetQuizSubmissionsQuery) => {
+    const { data } = await axiosInstance.get<QuizSubmissionsReviewReponse>('quiz-submission/list', {
+      params: { ...query },
+    })
+    return data.data
+  },
   submit: async (payload: QuizSubmissionPayload) => {
     const { data } = await axiosInstance.post('quiz-submission/submit', payload)
 

@@ -5,7 +5,7 @@ import { Box, Button, Grid, List, Stack, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { LessonPlanCard, ModuleTeacher } from './components'
 import { LessonPlan } from '@/services/lessonPlan/lessonPlan.dto'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AddPlan } from './modals'
 
 export const PlanningPage = () => {
@@ -17,6 +17,12 @@ export const PlanningPage = () => {
 
   const lessonPlanInstance = lessonPlanKey.list({ teacherId: profile?.data.id as number })
   const { data } = useQuery({ ...lessonPlanInstance, enabled: !!profile?.data.id })
+
+  useEffect(() => {
+    if (data && data.content.length) {
+      setSelectedLessonPlan(data.content[0])
+    }
+  }, [data])
 
   return (
     <Box>

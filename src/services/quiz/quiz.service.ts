@@ -5,13 +5,14 @@ import {
   GetQuizStartQuery,
   QuizResponse,
   QuizStartResponse,
+  QuizzesResponse,
   UpdateQuizPayload,
 } from './quiz.dto'
 
 export const quizService = {
   getList: async (query: GetListQuizQuery) => {
-    const { data } = await axiosInstance.get('/quiz/list', { params: { ...query } })
-    return data
+    const { data } = await axiosInstance.get<QuizzesResponse>('/quiz/list', { params: { ...query } })
+    return data.data
   },
   getQuiz: async (quizId: number, courseId?: number) => {
     const { data } = await axiosInstance.get<QuizResponse>(`/quiz/retrieve/${quizId}`, {

@@ -9,6 +9,7 @@ import { quizService } from '@/services/quiz/quiz.service'
 import dayjs from 'dayjs'
 import { useState } from 'react'
 import { Quiz } from '@/services/quiz/quiz.dto'
+import { ModalLoading } from '@/components'
 type ActionsModuleProps = {
   module: Module
 }
@@ -20,7 +21,7 @@ export const ActionsModule = ({ module }: ActionsModuleProps) => {
 
   const [quiz, setQuiz] = useState<Quiz | null>(null)
 
-  const { mutate: mutateCreateQuiz } = useMutation({
+  const { mutate: mutateCreateQuiz, isPending: isPendingCreateQuiz } = useMutation({
     mutationFn: quizService.create,
     onSuccess: (quiz) => {
       setQuiz(quiz.data)
@@ -31,7 +32,7 @@ export const ActionsModule = ({ module }: ActionsModuleProps) => {
 
   const handleAddQuiz = () => {
     mutateCreateQuiz({
-      quizTitle: 'quiz khong co tieu de',
+      quizTitle: 'Quiz 1',
       modulesId: module.id,
       attemptNumber: 0,
       endDate: dayjs().toISOString(),
@@ -104,6 +105,8 @@ export const ActionsModule = ({ module }: ActionsModuleProps) => {
       <LectureActions status='create' isOpen={isOpenLecture} onClose={closeLecture} moduleId={module.id} />
       <AssignmentActions status='create' isOpen={isOpenAssignment} onClose={closeAssignment} moduleId={module.id} />
       {quiz && <QuizActions isOpen onClose={handleCloseQuiz} defaultData={quiz} />}
+
+      <ModalLoading isOpen={isPendingCreateQuiz} />
     </>
   )
 }

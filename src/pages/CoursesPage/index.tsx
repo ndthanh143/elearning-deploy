@@ -34,7 +34,7 @@ export const CoursesPage = () => {
 
       <Grid container spacing={4}>
         <Grid item xs={8}>
-          <BoxContent>
+          <BoxContent height='70vh'>
             <Box display='flex' justifyContent='space-between' my={1}>
               <Typography variant='h6'>All courses</Typography>
             </Box>
@@ -62,7 +62,7 @@ export const CoursesPage = () => {
         </Grid>
         <Grid item xs={4}>
           <Stack gap={3}>
-            <BoxContent maxHeight='73vh' sx={{ overflow: 'hidden' }}>
+            <BoxContent height='70vh' sx={{ overflow: 'hidden' }}>
               <ListSchedule />
             </BoxContent>
           </Stack>

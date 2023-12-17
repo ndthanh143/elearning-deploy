@@ -1,4 +1,4 @@
-import { CustomModal, ErrorField } from '@/components'
+import { CustomModal, ErrorField, Loading } from '@/components'
 import { Quiz, UpdateQuizPayload } from '@/services/quiz/quiz.dto'
 import { quizQuestionKey } from '@/services/quizQuestion/quizQuestion.query'
 import { quizQuestionService } from '@/services/quizQuestion/quizQuestion.service'
@@ -38,7 +38,7 @@ export type AddQuizProps = {
 
 const schema = object({
   id: number().required(),
-  quizTitle: string().required('Please fill quiz title').default('Quiz khong co tieu de'),
+  quizTitle: string().required('Please fill quiz title').default('Quiz 1'),
   description: string(),
   quizTimeLimit: number().required(),
   startDate: string().required(),
@@ -73,7 +73,11 @@ export const QuizActions = ({ isOpen = false, onClose, defaultData }: AddQuizPro
   })
 
   const quizQuestionsInstance = quizQuestionKey.list({ quizId: id })
-  const { data: questions, refetch: refetchQuestions } = useQuery({
+  const {
+    data: questions,
+    refetch: refetchQuestions,
+    isLoading: isLoadingQuestions,
+  } = useQuery({
     ...quizQuestionsInstance,
   })
 
@@ -191,6 +195,7 @@ export const QuizActions = ({ isOpen = false, onClose, defaultData }: AddQuizPro
           </Stack>
 
           <Divider />
+          {isLoadingQuestions && <Loading />}
           {questions &&
             questions?.map((question, index) =>
               selectedQuestion === question ? (

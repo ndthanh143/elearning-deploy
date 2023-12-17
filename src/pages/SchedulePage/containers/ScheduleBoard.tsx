@@ -4,11 +4,12 @@ import { Box, Divider, IconButton, Menu, MenuItem, Select, Stack, Typography } f
 import { DateBox } from '../components'
 import { useMenu } from '@/hooks'
 import { getWeekDates } from '@/utils'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import dayjs, { Dayjs } from 'dayjs'
 import { QuizzesInfo } from '@/services/user/user.dto'
 import { blue } from '@mui/material/colors'
 import { gray } from '@/styles/theme'
+import { useSearchParams } from 'react-router-dom'
 
 const timestampsInADay = [
   '00:00',
@@ -42,8 +43,10 @@ export type ScheduleBoardProps = { quizzes: QuizzesInfo[] }
 export const ScheduleBoard = ({ quizzes }: ScheduleBoardProps) => {
   const { anchorEl, isOpen, onClose, onOpen: openWeekPicker } = useMenu()
 
-  const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs())
-  const [selectedDay, setSelectedDay] = useState<Dayjs>(dayjs())
+  const [searchParams, _] = useSearchParams()
+
+  const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs(searchParams.get('date')))
+  const [selectedDay, setSelectedDay] = useState<Dayjs>(dayjs(searchParams.get('date')))
 
   const currentWeeks = getWeekDates(currentDate)
 
@@ -58,6 +61,11 @@ export const ScheduleBoard = ({ quizzes }: ScheduleBoardProps) => {
   const filterQuizzes = quizzes.filter(
     (quiz) => dayjs(quiz.quizInfo.startDate).format('DD/MM/YYYY') === selectedDay.format('DD/MM/YYYY'),
   )
+
+  useEffect(() => {
+    setSelectedDay(dayjs(searchParams.get('date')))
+    setCurrentDate(dayjs(searchParams.get('date')))
+  }, [searchParams.get('date')])
 
   return (
     <BoxContent>
@@ -84,7 +92,7 @@ export const ScheduleBoard = ({ quizzes }: ScheduleBoardProps) => {
           </IconButton>
           <Stack direction='row' gap={3}>
             {currentWeeks.map((day, index) => (
-              <DateBox key={index} date={day} isActive={selectedDay.isSame(day)} onClick={setSelectedDay} />
+              <DateBox key={index} date={day} isActive={selectedDay.isSame(day, 'date')} onClick={setSelectedDay} />
             ))}
           </Stack>
           <IconButton onClick={handleNext}>
@@ -111,6 +119,7 @@ export const ScheduleBoard = ({ quizzes }: ScheduleBoardProps) => {
         ))}
         {filterQuizzes.map((quiz) => (
           <BoxContent
+            id={quiz.quizInfo.id.toString()}
             height={150}
             width={(quiz.quizInfo.quizTimeLimit / 60) * 400}
             position='absolute'

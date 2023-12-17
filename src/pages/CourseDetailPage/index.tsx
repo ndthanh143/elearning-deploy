@@ -1,11 +1,11 @@
 import { Box, Button, Grid, Stack } from '@mui/material'
-import { BoxContent, NoData, PageContentHeading } from '../../components'
+import { BoxContent, ModalLoading, NoData, PageContentHeading } from '../../components'
 import { useParams } from 'react-router-dom'
 import { courseKeys } from '../../services/course/course.query'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { TopicList, CourseIntro, CourseContent } from './containers'
 import { CourseFooter } from './containers/CourseFooter'
-import { ModalCreateTopic } from './components'
+import { ModalActionsTopic } from './components'
 import { useAuth, useBoolean } from '@/hooks'
 import { topicService } from '@/services/topic/topic.service'
 import { topicKeys } from '@/services/topic/topic.query'
@@ -23,7 +23,7 @@ export const CourseDetailPage = () => {
   const courseInstance = courseKeys.detail(Number(courseId))
   const { data: course } = useQuery(courseInstance)
 
-  const { mutate: mutateCreateTopic } = useMutation({
+  const { mutate: mutateCreateTopic, isPending: isPendingCreateTopic } = useMutation({
     mutationFn: topicService.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: topicKeys.lists() })
@@ -68,7 +68,13 @@ export const CourseDetailPage = () => {
             </Grid>
           </Grid>
         </Box>
-        <ModalCreateTopic isOpen={isOpenCreateTopic} onClose={closeCreateTopic} onSubmit={handleCreateTopic} />
+        <ModalActionsTopic
+          isOpen={isOpenCreateTopic}
+          onClose={closeCreateTopic}
+          onSubmit={handleCreateTopic}
+          status='create'
+        />
+        <ModalLoading isOpen={isPendingCreateTopic} />
       </>
     )
   )

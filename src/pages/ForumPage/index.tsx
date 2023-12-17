@@ -11,7 +11,7 @@ import { Forum } from '@/services/forum/forum.dto'
 import { blue } from '@mui/material/colors'
 import common from '@/assets/images/icons/common'
 import { getAbsolutePathFile } from '@/utils'
-import { ModalCreateTopic } from '../CourseDetailPage/components'
+import { ModalActionsTopic } from '../CourseDetailPage/components'
 import { topicService } from '@/services/topic/topic.service'
 import { toast } from 'react-toastify'
 
@@ -139,7 +139,12 @@ export const ForumPage = () => {
           </Stack>
         </Grid>
       </Grid>
-      <ModalCreateTopic isOpen={isOpenCreateTopic} onClose={closeCreateTopic} onSubmit={handleCreateTopic} />
+      <ModalActionsTopic
+        isOpen={isOpenCreateTopic}
+        onClose={closeCreateTopic}
+        onSubmit={handleCreateTopic}
+        status='create'
+      />
     </Box>
   )
 }

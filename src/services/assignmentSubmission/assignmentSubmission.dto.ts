@@ -1,5 +1,5 @@
 import { Assignment } from '../assignment/assignment.dto'
-import { BaseData, BasePaginationResponse } from '../common/base.dto'
+import { BaseData, BasePaginationResponse, PaginationQuery } from '../common/base.dto'
 
 export type SubmissionsResponse = BasePaginationResponse<Submission[]>
 
@@ -7,7 +7,7 @@ export type GetSubmissionQuery = {
   studentId?: number
   assignmentId?: number
   courseId?: number
-}
+} & PaginationQuery
 
 export type CreateSubmissionPayload = {
   assignmentId: number
