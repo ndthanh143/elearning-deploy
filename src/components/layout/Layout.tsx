@@ -6,13 +6,16 @@ import { useEffect } from 'react'
 import { useWebSocket } from '@/hooks/useWebSocket'
 
 export const Layout = () => {
+  const { accessToken, profile, isFetched } = useAuth()
+
   const { init } = useWebSocket()
   useEffect(() => {
-    init()
-  }, [])
+    if (profile) {
+      init()
+    }
+  }, [profile])
 
   const navigate = useNavigate()
-  const { accessToken, profile, isFetched } = useAuth()
 
   const { pathname } = useLocation()
 

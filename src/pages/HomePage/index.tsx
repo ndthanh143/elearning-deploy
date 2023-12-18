@@ -6,6 +6,7 @@ import { coursesRegistrationKeys } from '../../services/coursesRegistration/cour
 import { useAuth } from '../../hooks'
 import { useQuery } from '@tanstack/react-query'
 import { ListStudent } from './components'
+import { ModalAddStudentToCourse } from '@/components/ModalAddStudentToCourse'
 
 export type CourseData = {
   thumbnail: string
@@ -32,6 +33,7 @@ export const HomePage = () => {
 
   return (
     <Box>
+      <ModalAddStudentToCourse />
       <PageContentHeading />
       <Grid container spacing={4}>
         <Grid item xs={8}></Grid>
