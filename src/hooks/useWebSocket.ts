@@ -18,7 +18,7 @@ export const useWebSocket = () => {
       const data = JSON.parse(message.data)
 
       if (data.cmd === 'BACKEND_POST_NOTIFICATION') {
-        queryClient.invalidateQueries({ queryKey: notificationKey.lists() })
+        queryClient.invalidateQueries({ queryKey: notificationKey.all })
         Push.create('Thông báo mới', {
           body: 'Kiểm tra thông báo của bạn',
           icon: '/logo.svg',
