@@ -57,6 +57,10 @@ export const useWebSocket = () => {
     }
   }
 
+  const close = () => {
+    websocket.close()
+  }
+
   const doPing = () => {
     const token = Cookies.get('access_token')
 
@@ -81,5 +85,5 @@ export const useWebSocket = () => {
     }, 30000)
   }
 
-  return { init }
+  return { init, close }
 }

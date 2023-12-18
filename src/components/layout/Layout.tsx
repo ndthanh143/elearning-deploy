@@ -8,10 +8,16 @@ import { useWebSocket } from '@/hooks/useWebSocket'
 export const Layout = () => {
   const { accessToken, profile, isFetched } = useAuth()
 
-  const { init } = useWebSocket()
+  const { init, close } = useWebSocket()
   useEffect(() => {
     if (profile) {
       init()
+    } else {
+      close()
+    }
+
+    return () => {
+      close()
     }
   }, [profile])
 
