@@ -6,21 +6,18 @@ import {
   List,
   ListItem,
   ListItemAvatar,
-  ListItemIcon,
   ListItemText,
   Modal,
   Stack,
   TextField,
-  Tooltip,
   Typography,
 } from '@mui/material'
 import { BoxContent, ConfirmPopup, NoData } from '.'
 import { AddOutlined, CloseOutlined } from '@mui/icons-material'
-import { useBoolean, useDebounce } from '@/hooks'
+import { useBoolean } from '@/hooks'
 import { useState } from 'react'
 import { userKeys } from '@/services/user/user.query'
 import { useQuery } from '@tanstack/react-query'
-import { debounce } from 'lodash'
 
 type ModalAddStudentToCourseProps = {
   isOpen: boolean
@@ -33,6 +30,8 @@ export const ModalAddStudentToCourse = ({ isOpen = true, onClose }: ModalAddStud
 
   const studentsInstance = userKeys.list({ courseId: 6900950033432576 })
   const { data: students } = useQuery({ ...studentsInstance, select: (data) => data.content })
+
+  const handleAccept = () => {}
 
   return (
     <Modal open={isOpen} onClose={onClose} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -81,6 +80,7 @@ export const ModalAddStudentToCourse = ({ isOpen = true, onClose }: ModalAddStud
           onClose={closeConfirm}
           title='Confirm Actions'
           subtitle='Are you sure to add this student to your course?'
+          onAccept={handleAccept}
         />
       </BoxContent>
     </Modal>
