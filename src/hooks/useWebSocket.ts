@@ -7,8 +7,6 @@ import { useQueryClient } from '@tanstack/react-query'
 export const useWebSocket = () => {
   const queryClient = useQueryClient()
 
-  const token = Cookies.get('access_token')
-
   const websocket = new WebSocket(import.meta.env.VITE_SOCKET_API_URL)
 
   const webSocket = () => {
@@ -60,6 +58,8 @@ export const useWebSocket = () => {
   }
 
   const doPing = () => {
+    const token = Cookies.get('access_token')
+
     var pingRequest = {
       cmd: 'CLIENT_PING',
       platform: 0,
