@@ -24,3 +24,9 @@ export type CreateModulePayload = {
   lessonPlanId: number
   modulesName: string
 }
+
+export type UpdateModulePayload = {
+  description: string
+  id: number
+  modulesName: string
+}

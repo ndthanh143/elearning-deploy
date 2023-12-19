@@ -1,16 +1,16 @@
 import actions from '@/assets/images/icons/actions'
-import { Loading, NoData } from '@/components'
+import { ConfirmPopup, Loading, NoData } from '@/components'
 import { useBoolean } from '@/hooks'
 import { Module } from '@/services/module/module.dto'
 import { moduleKey } from '@/services/module/module.query'
-import { ArticleOutlined, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material'
+import { ArticleOutlined, DeleteOutline, EditOutlined, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material'
 import { Box, Button, Collapse, Divider, Stack, Typography } from '@mui/material'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { ActionsModule } from './ActionsModule'
 import { downloadFileByLink, getResourceType } from '@/utils'
 import { ContentItem } from './ContentItem'
-import { AddSection, AssignmentActions, LectureActions, QuizActions } from '../modals'
+import { ModalSection, AssignmentActions, LectureActions, QuizActions, SectionModalProps } from '../modals'
 import { assignmentService } from '@/services/assignment/assignment.service'
 import { toast } from 'react-toastify'
 import { lectureService } from '@/services/lecture/lecture.service'
@@ -21,12 +21,15 @@ import { Assignment } from '@/services/assignment/assignment.dto'
 import { Resource } from '@/services/resource/resource.dto'
 import { ResourceActions } from '../modals/ResourceActions'
 import { Quiz } from '@/services/quiz/quiz.dto'
+import { moduleService } from '@/services/module/module.service'
 
 export type ModuleTeacherProps = {
   lessonPlanId: number
+  onEdit: () => void
+  onDelete: () => void
 }
 
-export const ModuleTeacher = ({ lessonPlanId }: ModuleTeacherProps) => {
+export const ModuleTeacher = ({ lessonPlanId, onEdit, onDelete }: ModuleTeacherProps) => {
   const moduleInstance = moduleKey.list({ lessonPlanId })
   const { data: modules, refetch: refetchModules, isLoading: isLoadingModules } = useQuery({ ...moduleInstance })
 
@@ -37,6 +40,7 @@ export const ModuleTeacher = ({ lessonPlanId }: ModuleTeacherProps) => {
   const [selectedQuiz, setSelectedQuiz] = useState<Quiz | null>(null)
 
   const { value: isOpenAddSection, setTrue: openAddSection, setFalse: closeAddSection } = useBoolean()
+  const { value: isOpenConfirm, setTrue: openConfirm, setFalse: closeConfirm } = useBoolean()
 
   const { mutate: deleteAssignment } = useMutation({
     mutationFn: assignmentService.delete,
@@ -64,6 +68,19 @@ export const ModuleTeacher = ({ lessonPlanId }: ModuleTeacherProps) => {
       toast.error('Fail error')
     },
   })
+
+  const { mutate } = useMutation({
+    mutationFn: moduleService.create,
+    onSuccess: () => {
+      closeAddSection()
+      refetchModules()
+      toast.success('Create module successfully!')
+    },
+  })
+
+  const handleCreateSection = (data: SectionModalProps) => {
+    mutate({ ...data, lessonPlanId })
+  }
 
   const { mutate: deleteResource } = useMutation({
     mutationFn: resourceService.delete,
@@ -111,6 +128,15 @@ export const ModuleTeacher = ({ lessonPlanId }: ModuleTeacherProps) => {
   return (
     modules && (
       <Stack gap={2} minHeight='70vh'>
+        <Stack direction='row' gap={2} justifyContent='end'>
+          <Button sx={{ display: 'flex', gap: 1 }} variant='outlined' onClick={onEdit}>
+            <EditOutlined fontSize='small' />
+            Edit
+          </Button>
+          <Button sx={{ display: 'flex', gap: 1 }} color='error' variant='outlined' onClick={openConfirm}>
+            <DeleteOutline fontSize='small' /> Delete
+          </Button>
+        </Stack>
         <Button fullWidth variant='outlined' onClick={openAddSection}>
           Add sections
         </Button>
@@ -248,7 +274,23 @@ export const ModuleTeacher = ({ lessonPlanId }: ModuleTeacherProps) => {
           ))}
         </Stack>
         {selectedQuiz && <QuizActions isOpen onClose={() => setSelectedQuiz(null)} defaultData={selectedQuiz} />}
-        <AddSection isOpen={isOpenAddSection} onClose={closeAddSection} lessonPlanId={lessonPlanId} />
+        <ConfirmPopup
+          title='Confirm delete'
+          subtitle='Are you sure to delete this lesson plan?, this action will be undo.'
+          onClose={closeConfirm}
+          onAccept={() => {
+            onDelete()
+            closeConfirm()
+          }}
+          isOpen={isOpenConfirm}
+        />
+
+        <ModalSection
+          status='create'
+          isOpen={isOpenAddSection}
+          onClose={closeAddSection}
+          onSubmit={handleCreateSection}
+        />
       </Stack>
     )
   )

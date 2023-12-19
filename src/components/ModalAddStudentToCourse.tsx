@@ -1,6 +1,7 @@
 import {
   Avatar,
   Box,
+  CircularProgress,
   Divider,
   IconButton,
   List,
@@ -17,21 +18,56 @@ import { AddOutlined, CloseOutlined } from '@mui/icons-material'
 import { useBoolean } from '@/hooks'
 import { useState } from 'react'
 import { userKeys } from '@/services/user/user.query'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { coursesRegistrationService } from '@/services/coursesRegistration/coursesRegistration.service'
+import { toast } from 'react-toastify'
+import { debounce, differenceBy } from 'lodash'
 
 type ModalAddStudentToCourseProps = {
   isOpen: boolean
   onClose: () => void
+  courseId: number
 }
-export const ModalAddStudentToCourse = ({ isOpen = true, onClose }: ModalAddStudentToCourseProps) => {
+export const ModalAddStudentToCourse = ({ isOpen, courseId, onClose }: ModalAddStudentToCourseProps) => {
+  const queryClient = useQueryClient()
   const [search, setSearch] = useState('')
-
+  const [selectedStudent, setSelectedStudent] = useState<number | null>(null)
   const { value: isOpenConfirm, setFalse: closeConfirm, setTrue: openConfirm } = useBoolean()
 
-  const studentsInstance = userKeys.list({ courseId: 6900950033432576 })
-  const { data: students } = useQuery({ ...studentsInstance, select: (data) => data.content })
+  const studentsInstance = userKeys.list({ courseId })
+  const { data: students, isLoading: isStudentLoading } = useQuery({
+    ...studentsInstance,
+    select: (data) => data.content,
+  })
 
-  const handleAccept = () => {}
+  const searchStudentsInstance = userKeys.search({ email: search })
+  const { data: studentsSearch, isLoading: isSearchLoading } = useQuery({
+    ...searchStudentsInstance,
+    select: (data) => {
+      if (students) {
+        const filterStudents = differenceBy(data.content, students, 'id')
+
+        return filterStudents
+      }
+      return data.content
+    },
+    enabled: Boolean(students),
+  })
+
+  const { mutate: mutateEnroll } = useMutation({
+    mutationFn: coursesRegistrationService.enroll,
+    onSuccess: () => {
+      toast.success('Add student to course successfully!')
+      queryClient.invalidateQueries({ queryKey: userKeys.lists() })
+      closeConfirm()
+    },
+  })
+
+  const handleSearch = debounce(setSearch, 500)
+
+  const handleAccept = () => {
+    selectedStudent && mutateEnroll({ courseId, studentId: selectedStudent })
+  }
 
   return (
     <Modal open={isOpen} onClose={onClose} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -48,17 +84,29 @@ export const ModalAddStudentToCourse = ({ isOpen = true, onClose }: ModalAddStud
           <TextField
             size='small'
             fullWidth
-            value={search}
+            // value={search}
             placeholder='Find student by email...'
-            onChange={(e) => setSearch(e.target.value)}
+            InputProps={{
+              endAdornment: (isSearchLoading || isStudentLoading) && (
+                <CircularProgress sx={{ width: 10 }} size='1.2rem' />
+              ),
+            }}
+            onChange={(e) => handleSearch(e.target.value)}
           />
-          {students?.length ? (
+          {studentsSearch?.length ? (
             <Box sx={{ overflowY: 'scroll', maxHeight: '70vh', mt: 2 }}>
               <List>
-                {students?.map((student) => (
+                {studentsSearch?.map((student) => (
                   <ListItem
                     secondaryAction={
-                      <IconButton edge='end' aria-label='add' onClick={openConfirm}>
+                      <IconButton
+                        edge='end'
+                        aria-label='add'
+                        onClick={() => {
+                          openConfirm()
+                          setSelectedStudent(student.id)
+                        }}
+                      >
                         <AddOutlined />
                       </IconButton>
                     }

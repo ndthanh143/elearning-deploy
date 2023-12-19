@@ -6,6 +6,7 @@ import {
   EventNoteOutlined,
   ForumOutlined,
   LibraryBooksOutlined,
+  PeopleOutline,
   TimelineOutlined,
 } from '@mui/icons-material'
 import { List, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material'
@@ -46,6 +47,11 @@ export const SideBar = () => {
         title: 'Planning',
         icon: <EditCalendarOutlined color={startsWith(pathname, '/planning') ? 'primary' : 'inherit'} />,
         href: '/planning',
+      },
+      {
+        title: 'Students',
+        icon: <PeopleOutline color={startsWith(pathname, '/planning') ? 'primary' : 'inherit'} />,
+        href: '/student-manage',
       },
     ],
     Student: [

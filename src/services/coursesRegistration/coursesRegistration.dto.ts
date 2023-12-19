@@ -13,3 +13,8 @@ export type CourseRegistration = {
 export type getListStudentCourseQuery = {
   studentId: number
 } & PaginationQuery
+
+export type EnrollPayload = {
+  courseId: number
+  studentId: number
+}

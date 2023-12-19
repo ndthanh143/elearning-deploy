@@ -1,23 +1,27 @@
 import actions from '@/assets/images/icons/actions'
 import { BoxContent, NoData } from '@/components'
 import { Course } from '@/services/course/course.dto'
-import { ArticleOutlined, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material'
+import { ArticleOutlined, BookmarkAddOutlined, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material'
 import { Box, Button, Collapse, Divider, Stack, Typography } from '@mui/material'
-import { ContentItem } from '../components'
+import { ContentItem, ModalCustomPlan } from '../components'
 import { downloadFileByLink, getResourceType } from '@/utils'
 import { useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Module } from '@/services/module/module.dto'
+import { useAuth, useBoolean } from '@/hooks'
+import { RoleEnum } from '@/services/auth/auth.dto'
 
 export type CourseContentProps = {
   data: Course
 }
 export const CourseContent = ({ data }: CourseContentProps) => {
+  const { profile } = useAuth()
   const { pathname } = useLocation()
   const { courseId } = useParams()
   const navigate = useNavigate()
 
   const [expandModuleList, setExpandModuleList] = useState<number[]>([])
+  const { value: isOpenCustomPlan, setTrue: openCustomPlan, setFalse: closeCustomPlan } = useBoolean()
 
   const handleDownloadResource = (urlDocument: string) => {
     downloadFileByLink(urlDocument)
@@ -52,9 +56,14 @@ export const CourseContent = ({ data }: CourseContentProps) => {
 
   return (
     <BoxContent>
-      <Typography variant='h5' fontWeight={500}>
-        Course content
-      </Typography>
+      <Stack direction='row' justifyContent='space-between' mb={2}>
+        <Typography variant='h5' fontWeight={500}>
+          Course content
+        </Typography>
+        <Button variant='outlined' sx={{ display: 'flex', gap: 1 }} onClick={openCustomPlan}>
+          <BookmarkAddOutlined /> Choose custom plan
+        </Button>
+      </Stack>
       <Box display='flex' justifyContent='space-between' alignItems='center' mb={1}>
         {data.lessonPlanInfo?.modulesInfo.length ? (
           <>
@@ -154,6 +163,9 @@ export const CourseContent = ({ data }: CourseContentProps) => {
           </Stack>
         ))}
       </Stack>
+      {courseId && profile?.data.roleInfo.name === RoleEnum.Teacher && (
+        <ModalCustomPlan isOpen={isOpenCustomPlan} course={data} onClose={closeCustomPlan} />
+      )}
     </BoxContent>
   )
 }

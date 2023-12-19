@@ -132,7 +132,7 @@ export const ForumPage = () => {
               </BoxContent>
             )}
             {(isFetchedTopics && !topics?.length) || !topics?.length ? (
-              <BoxContent minHeight='70vh' display='flex' alignItems='center'>
+              <BoxContent minHeight='61vh' display='flex' alignItems='center'>
                 <NoData title='No data' />
               </BoxContent>
             ) : (

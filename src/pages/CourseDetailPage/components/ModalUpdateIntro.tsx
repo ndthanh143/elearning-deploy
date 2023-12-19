@@ -17,7 +17,7 @@ export type ModalUpdateIntroProps = {
   onClose: () => void
 }
 
-const schema = object<UpdateCoursePayload>({
+const schema = object({
   description: string(),
   requirements: array().of(string()),
   objectives: array().of(string()),
@@ -28,12 +28,12 @@ const schema = object<UpdateCoursePayload>({
 export const ModalUpdateIntro = ({ isOpen, onClose, data }: ModalUpdateIntroProps) => {
   const queryClient = useQueryClient()
 
-  const { register, setValue, handleSubmit } = useForm<UpdateCoursePayload>({
+  const { register, setValue, handleSubmit } = useForm<any>({
     resolver: yupResolver(schema),
     defaultValues: {
       description: data.description,
-      objectives: data.objectives,
-      requirements: data.requirements,
+      objectives: ['a'],
+      requirements: ['a'],
       id: data.id,
       state: data.state,
     },

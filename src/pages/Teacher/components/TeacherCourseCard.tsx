@@ -48,7 +48,7 @@ export const TeacherCourseCard = ({ data }: TeacherCourseCardProps) => {
           <Groups />
           <Typography variant='body2'>20 students</Typography>
           &#x2022;
-          <Typography variant='body2'>{data.modulesInfo?.length || 0}</Typography>
+          <Typography variant='body2'>{data.modulesInfo?.length || 0} Section</Typography>
         </Stack>
       </Stack>
     </Stack>

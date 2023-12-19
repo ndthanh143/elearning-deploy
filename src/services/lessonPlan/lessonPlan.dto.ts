@@ -18,3 +18,10 @@ export type CreateLessonPlanPayload = {
   description: string
   teacherId: number
 }
+
+export type UpdateLessonPlanPayload = {
+  name: string
+  description: string
+  id: number
+  status: number
+}

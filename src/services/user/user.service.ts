@@ -1,8 +1,20 @@
 import axiosInstance from '../../axios'
-import { GetStudentsQuery, RelativeMemberReponse, ScheduleResponse, UserResponse, UsersResponse } from './user.dto'
+import {
+  GetStudentsQuery,
+  RelativeMemberReponse,
+  ScheduleResponse,
+  SearchStudentQuery,
+  UserResponse,
+  UsersResponse,
+} from './user.dto'
 
 const BASE_USER_URL = 'account'
 export const userService = {
+  searchStudents: async (query: SearchStudentQuery) => {
+    const { data } = await axiosInstance.get<UsersResponse>('account/auto-complete', { params: { ...query } })
+
+    return data.data
+  },
   getStudents: async (query: GetStudentsQuery) => {
     const { data } = await axiosInstance.get<UsersResponse>('/account/all-student', { params: { ...query } })
 

@@ -1,6 +1,6 @@
 import { Assignment } from '../assignment/assignment.dto'
 import { RoleEnum } from '../auth/auth.dto'
-import { BaseData, BasePaginationResponse, BaseResponse } from '../common/base.dto'
+import { BaseData, BasePaginationResponse, BaseResponse, PaginationQuery } from '../common/base.dto'
 import { Course } from '../course/course.dto'
 import { Quiz } from '../quiz/quiz.dto'
 
@@ -11,6 +11,10 @@ export type UsersResponse = BasePaginationResponse<Account[]>
 
 export type GetStudentsQuery = {
   courseId: number
+} & PaginationQuery
+
+export type SearchStudentQuery = {
+  email?: string
 }
 
 export type Account = {

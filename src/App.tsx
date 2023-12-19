@@ -15,6 +15,7 @@ import {
   HomePage,
   LecturePage,
   LoginPage,
+  ManageStudent,
   PlanningPage,
   ProfilePage,
   QuizPage,
@@ -83,6 +84,10 @@ const router = createBrowserRouter([
       {
         path: 'planning',
         element: <PlanningPage />,
+      },
+      {
+        path: 'student-manage',
+        element: <ManageStudent />,
       },
       {
         path: 'submission-management',

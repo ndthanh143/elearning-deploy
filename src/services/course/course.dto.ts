@@ -33,4 +33,16 @@ export type GetListCoursesQuery = {
   teacherId?: number
 } & PaginationQuery
 
-export type UpdateCoursePayload = Partial<Course>
+export type UpdateCoursePayload = {
+  categoryId?: number
+  courseName?: string
+  description?: string
+  id: number
+  lessonPlanId?: number
+  objectives?: string[]
+  requirements?: string[]
+  startDate?: Date
+  state: number
+  teacherId?: number
+  thumbnail?: string
+}
