@@ -1,4 +1,4 @@
-import { ConfirmPopup, ModalLoading } from '@/components'
+import { ConfirmPopup, DangerouseLyRender, ModalLoading } from '@/components'
 import { useAuth, useBoolean, useMenu } from '@/hooks'
 import { Topic } from '@/services/topic/topic.dto'
 import { topicKeys } from '@/services/topic/topic.query'
@@ -116,9 +116,9 @@ export const ForumTopic = ({ data }: ForumTopicProps) => {
             </IconButton>
           )}
         </Stack>
-        <Typography variant='body2' lineHeight={2}>
-          {data.topicContent}
-        </Typography>
+        <Box height='fit-content'>
+          <DangerouseLyRender content={data.topicContent} />
+        </Box>
         <Divider />
         <Stack gap={2}>
           <Box display='flex' gap={1} alignItems='center' onClick={toggle} sx={{ cursor: 'pointer' }}>

@@ -8,7 +8,6 @@ export const DangerouseLyRender = ({ content }: DangerouseLyRenderProps) => {
   return (
     <Box
       dangerouslySetInnerHTML={{ __html: content }}
-      my={4}
       sx={{
         h1: {
           fontSize: '2.3rem',
@@ -32,6 +31,11 @@ export const DangerouseLyRender = ({ content }: DangerouseLyRenderProps) => {
         },
         li: {
           ml: 3,
+        },
+        img: {
+          width: '60%',
+          display: 'flex',
+          margin: 'auto',
         },
       }}
     />

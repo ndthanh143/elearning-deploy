@@ -1,73 +1,105 @@
-import rehypeSanitize from 'rehype-sanitize'
-import MDEditor from '@uiw/react-md-editor'
-import { fileService } from '@/services/file/file.service'
+import ReactQuill from 'react-quill'
+import { Box } from '@mui/material'
+import { useRef } from 'react'
 
 export interface EditorProps {
   value?: string
   onChange: (value: string) => void
 }
 
-const onImagePasted = async (dataTransfer: DataTransfer, setMarkdown: (value: string) => void) => {
-  const files: File[] = []
-  for (let index = 0; index < dataTransfer.items.length; index += 1) {
-    const file = dataTransfer.files.item(index)
-
-    if (file) {
-      files.push(file)
-    }
-  }
-
-  await Promise.all(
-    files.map(async (file: any) => {
-      const data = await fileService.upload({ file, type: 'IMAGE' })
-
-      const insertedMarkdown = insertToTextArea(`![](${data.data.filePath})`)
-      if (!insertedMarkdown) {
-        return
-      }
-      setMarkdown(insertedMarkdown)
-    }),
-  )
-}
-
-const insertToTextArea = (intsertString: string) => {
-  const textarea = document.querySelector('textarea')
-  if (!textarea) {
-    return null
-  }
-
-  let sentence = textarea.value
-  const len = sentence.length
-  const pos = textarea.selectionStart
-  const end = textarea.selectionEnd
-
-  const front = sentence.slice(0, pos)
-  const back = sentence.slice(pos, len)
-
-  sentence = front + intsertString + back
-
-  textarea.value = sentence
-  textarea.selectionEnd = end + intsertString.length
-
-  return sentence
-}
-
 export default function Editor({ value, onChange }: EditorProps) {
+  // return (
+  //   <MDEditor
+  //     value={value}
+  //     previewOptions={{
+  //       rehypePlugins: [[rehypeSanitize]],
+  //     }}
+  //     height='100%'
+  //     preview='edit'
+  //     onChange={(value) => value && onChange(value)}
+  //     onPaste={async (event) => {
+  //       await onImagePasted(event.clipboardData, onChange)
+  //     }}
+  //     onDrop={async (event) => {
+  //       await onImagePasted(event.dataTransfer, onChange)
+  //     }}
+  //   />
+  // )
+
+  const quillRef = useRef<ReactQuill>(null)
+
+  // const handleImageUpload = () => {
+  //   const editor = quillRef.current?.getEditor()
+
+  //   const input = document.createElement('input')
+  //   input.setAttribute('type', 'file')
+  //   input.setAttribute('accept', 'image/*')
+  //   input.click()
+
+  //   input.onchange = async () => {
+  //     const file = input.files?.[0]
+  //     if (file) {
+  //       try {
+  //         const response = await fileService.upload({
+  //           file: file as any,
+  //           type: 'IMAGE',
+  //         })
+
+  //         const imageUrl = getAbsolutePathFile(response.data.filePath)
+
+  //         if (editor) {
+  //           const range = editor.getSelection()
+  //           editor?.insertEmbed(range?.index || 0, 'image', imageUrl)
+  //         }
+  //       } catch (error) {
+  //         console.error('Image upload failed', error)
+  //       }
+  //     }
+  //   }
+  // }
+
+  const modules = {
+    toolbar: {
+      container: [
+        [{ header: [1, 2, false] }],
+        ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+        [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
+        ['link', 'image'],
+        ['clean'],
+      ],
+    },
+    clipboard: {
+      matchVisual: false,
+    },
+  }
+
+  const formats = [
+    'header',
+    'bold',
+    'italic',
+    'underline',
+    'strike',
+    'blockquote',
+    'list',
+    'bullet',
+    'indent',
+    'link',
+    'image',
+  ]
+
   return (
-    <MDEditor
+    <Box
+      ref={quillRef}
+      height='90%'
+      maxWidth='100vw'
+      overflow='hidden'
+      component={ReactQuill}
+      theme='snow'
       value={value}
-      previewOptions={{
-        rehypePlugins: [[rehypeSanitize]],
-      }}
-      height='100%'
-      preview='edit'
-      onChange={(value) => value && onChange(value)}
-      onPaste={async (event) => {
-        await onImagePasted(event.clipboardData, onChange)
-      }}
-      onDrop={async (event) => {
-        await onImagePasted(event.dataTransfer, onChange)
-      }}
+      onChange={onChange}
+      modules={modules}
+      formats={formats}
+      placeholder='Write something...'
     />
   )
 }
