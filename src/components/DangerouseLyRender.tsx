@@ -26,7 +26,7 @@ export const DangerouseLyRender = ({ content }: DangerouseLyRenderProps) => {
         },
         p: {
           fontSize: '1.1rem',
-          lineHeight: 2.2,
+          lineHeight: 1.6,
           color: '#334155',
         },
         li: {
