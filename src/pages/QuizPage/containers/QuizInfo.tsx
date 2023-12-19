@@ -9,7 +9,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ModalAttempts } from '../components'
 
-export const Information = () => {
+export const QuizInfo = () => {
   const navigate = useNavigate()
 
   const { quizId, courseId } = useParams()
@@ -44,7 +44,7 @@ export const Information = () => {
           <ArrowBack />
           Back
         </Button>
-        <PageContentHeading title={quiz.modulesInfo.modulesName} subTitle={quiz.modulesInfo.description} />
+        <PageContentHeading title={quiz.modulesInfo.modulesName} />
         <BoxContent display='flex' flexDirection='column' gap={2}>
           <Stack alignItems='center' gap={1}>
             <Typography variant='h5'>{quiz.quizTitle}</Typography>
@@ -90,12 +90,21 @@ export const Information = () => {
               <Typography>You haven't get attempt!</Typography>
             )}
           </Stack>
-          {(!quiz.attemptNumber || quiz.quizSubmissionInfo.length < quiz.attemptNumber) && (
+          {(!quiz.attemptNumber || quiz.quizSubmissionInfo.length < quiz.attemptNumber) &&
+            new Date(quiz.endDate) > new Date() && (
+              <>
+                <Divider />
+                <Button variant='contained' onClick={handleStartQuiz} sx={{ my: 1 }}>
+                  Start Quiz
+                </Button>
+              </>
+            )}
+          {new Date(quiz.endDate) < new Date() && (
             <>
               <Divider />
-              <Button variant='contained' onClick={handleStartQuiz} sx={{ my: 1 }}>
-                Start Quiz
-              </Button>
+              <Typography textAlign='center' color={gray[500]}>
+                This quiz is expired, you can't access this quiz
+              </Typography>
             </>
           )}
         </BoxContent>

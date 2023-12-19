@@ -1,4 +1,4 @@
 export * from './QuizShow'
-export * from './Information'
+export * from './QuizInfo'
 export * from './QuizFinish'
 export * from './QuizReview'
