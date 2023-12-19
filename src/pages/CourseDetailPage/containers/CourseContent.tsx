@@ -60,9 +60,11 @@ export const CourseContent = ({ data }: CourseContentProps) => {
         <Typography variant='h5' fontWeight={500}>
           Course content
         </Typography>
-        <Button variant='outlined' sx={{ display: 'flex', gap: 1 }} onClick={openCustomPlan}>
-          <BookmarkAddOutlined /> Choose custom plan
-        </Button>
+        {profile?.data.roleInfo.name === RoleEnum.Teacher && (
+          <Button variant='outlined' sx={{ display: 'flex', gap: 1 }} onClick={openCustomPlan}>
+            <BookmarkAddOutlined /> Choose custom plan
+          </Button>
+        )}
       </Stack>
       <Box display='flex' justifyContent='space-between' alignItems='center' mb={1}>
         {data.lessonPlanInfo?.modulesInfo.length ? (
