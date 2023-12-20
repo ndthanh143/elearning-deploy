@@ -36,6 +36,8 @@ export const QuizReview = () => {
     const correctAnswers = question.answers.filter((answer) => answer.isCorrect)
     const selectedAnswers = question.answers.filter((answer) => answer.isSelected)
 
+    console.log(isEqual({}, { a: 1 }))
+
     return isEqual(correctAnswers, selectedAnswers)
   }
 
@@ -113,7 +115,8 @@ export const QuizReview = () => {
                         </Typography>
                       </Stack>
                       {checkCorrectQuestion(question) && <CheckCircle color='success' />}
-                      {question.answers.some((anwser) => !anwser.isCorrect && anwser.isSelected) && (
+                      {(question.answers.some((anwser) => !anwser.isCorrect && anwser.isSelected) ||
+                        question.answers.filter((item) => Boolean(item.isSelected)).length === 0) && (
                         <ErrorOutline color='error' />
                       )}
                     </Stack>

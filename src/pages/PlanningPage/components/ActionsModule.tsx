@@ -188,7 +188,7 @@ export const ActionsModule = ({ module }: ActionsModuleProps) => {
       {quiz && <QuizActions isOpen onClose={handleCloseQuiz} defaultData={quiz} />}
       <ConfirmPopup
         title='Confirm delete'
-        subtitle='Are you sure to delete this module, this action will be undo'
+        subtitle='Are you sure to delete this section, all relative data will be remove.'
         onClose={closeConfirm}
         isOpen={isOpenConfirm}
         onAccept={handleDelete}

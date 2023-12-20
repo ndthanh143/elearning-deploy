@@ -4,7 +4,7 @@ import { ReviewSubmissionText } from '@/pages/AssignmentPage/components'
 import { Submission } from '@/services/assignmentSubmission/assignmentSubmission.dto'
 import { assignmentSubmissionKeys } from '@/services/assignmentSubmission/assignmentSubmission.query'
 import { downloadFileByLink, formatDate } from '@/utils'
-import { BlockOutlined, Edit, FileDownloadOutlined, VisibilityOutlined } from '@mui/icons-material'
+import { BarChart, BlockOutlined, Edit, FileDownloadOutlined, VisibilityOutlined } from '@mui/icons-material'
 import {
   Box,
   Button,
@@ -25,6 +25,7 @@ import { ModalEditScore, ModalUnsubmit } from '.'
 import { assignmentSubmissionService } from '@/services/assignmentSubmission/assignmentSubmission.service'
 import { toast } from 'react-toastify'
 import { userKeys } from '@/services/user/user.query'
+import { ModalAssignmentStatistic } from './ModalAssignmentStatistic'
 
 type AssignmentSubmissionProps = {
   courseId: number
@@ -39,6 +40,7 @@ export const AssignmentSubmission = ({ courseId, assignmentId }: AssignmentSubmi
   const { value: isOpenEditScore, setTrue: openEditScore, setFalse: closeEditScore } = useBoolean(false)
   const { value: isOpenTextReview, setTrue: openTextReview, setFalse: closeTextReview } = useBoolean(false)
   const { value: isOpenUnsubmit, setTrue: openUnsubmit, setFalse: closeUnsubmit } = useBoolean(false)
+  const { value: isOpenViewStatistic, setTrue: openViewStatistic, setFalse: closeViewStatistic } = useBoolean(false)
 
   const assignmentSubmissionInstance = assignmentSubmissionKeys.list({
     courseId: courseId,
@@ -96,8 +98,16 @@ export const AssignmentSubmission = ({ courseId, assignmentId }: AssignmentSubmi
         </Box>
       )}
       <Box>
-        {students?.length && <ModalUnsubmit isOpen={isOpenUnsubmit} onClose={closeUnsubmit} data={students} />}
-        {students?.length && <Button onClick={openUnsubmit}>View Unsubmitted students</Button>}
+        {students && students.length > 0 && (
+          <ModalUnsubmit isOpen={isOpenUnsubmit} onClose={closeUnsubmit} data={students} />
+        )}
+        <Stack direction='row' justifyContent='space-between'>
+          {students && students.length > 0 && <Button onClick={openUnsubmit}>View Unsubmitted students</Button>}
+          <Button sx={{ display: 'flex', gap: 1 }} variant='outlined' onClick={openViewStatistic}>
+            <BarChart />
+            View Statistics
+          </Button>
+        </Stack>
         {(isFetchedAssignmentSubmission && !assignmentSubmissions?.content.length) ||
         !assignmentSubmissions?.content.length ? (
           <Box display='flex' alignItems='center' height='100%'>
@@ -211,6 +221,13 @@ export const AssignmentSubmission = ({ courseId, assignmentId }: AssignmentSubmi
           content={selectedSubmission.textSubmission}
           noEdit
           onClose={handleCloseReview}
+        />
+      )}
+      {assignmentSubmissions && assignmentSubmissions.content.length > 0 && (
+        <ModalAssignmentStatistic
+          data={assignmentSubmissions?.content}
+          isOpen={isOpenViewStatistic}
+          onClose={closeViewStatistic}
         />
       )}
     </Stack>

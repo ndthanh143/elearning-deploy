@@ -147,7 +147,7 @@ export const SubmissionContent = ({ assignment, courseId }: SubmissionContentPro
               />
             )}
           </Stack>
-          {submissions?.content.length && (
+          {submissions && submissions.content.length > 0 && (
             <Stack direction='row' alignItems='center' gap={1}>
               <Typography>Your score:</Typography>
               <Typography fontWeight={500} color='success'>

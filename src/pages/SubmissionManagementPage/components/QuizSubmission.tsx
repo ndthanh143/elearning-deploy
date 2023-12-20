@@ -6,8 +6,9 @@ import { Box, Button, Pagination, Stack, Table, TableBody, TableCell, TableHead,
 import { useQuery } from '@tanstack/react-query'
 import { groupBy, mapValues, maxBy } from 'lodash'
 import { useState } from 'react'
-import { ModalUnsubmit } from '.'
+import { ModalQuizStatistic, ModalUnsubmit } from '.'
 import { useBoolean } from '@/hooks'
+import { BarChart } from '@mui/icons-material'
 
 type QuizSubmissionProps = {
   courseId: number
@@ -17,6 +18,7 @@ const DEFAULT_LIMIT = 12
 export const QuizSubmission = ({ courseId, quizId }: QuizSubmissionProps) => {
   const [page, setPage] = useState(0)
   const { value: isOpenUnsubmit, setTrue: openUnsubmit, setFalse: closeUnsubmit } = useBoolean(false)
+  const { value: isOpenViewStatistic, setTrue: openViewStatistic, setFalse: closeViewStatistic } = useBoolean(false)
 
   const quizSubmissionInstance = quizSubmissionKeys.list({ courseId, quizId, page: page, size: DEFAULT_LIMIT })
   const {
@@ -41,9 +43,7 @@ export const QuizSubmission = ({ courseId, quizId }: QuizSubmissionProps) => {
   const filterQuizSubmissions = groupBy(quizSubmissions?.content, (data) => data.studentInfo.id)
 
   const data = mapValues(filterQuizSubmissions, (submissions) => {
-    const highestScore = maxBy(submissions, 'score')
-    console.log('highestScore', highestScore)
-    return highestScore
+    return maxBy(submissions, 'score')
   })
 
   const filterData = Object.values(data)
@@ -52,9 +52,19 @@ export const QuizSubmission = ({ courseId, quizId }: QuizSubmissionProps) => {
 
   return (
     <Stack height='100%' justifyContent='space-between'>
-      {students?.length && <ModalUnsubmit isOpen={isOpenUnsubmit} onClose={closeUnsubmit} data={students} />}
+      {students && students.length > 0 && (
+        <ModalUnsubmit isOpen={isOpenUnsubmit} onClose={closeUnsubmit} data={students} />
+      )}
       <Box>
-        {students?.length && <Button onClick={openUnsubmit}>View Unsubmitted students</Button>}
+        <Stack direction='row' justifyContent='space-between'>
+          {students && students.length > 0 && <Button onClick={openUnsubmit}>View Unsubmitted students</Button>}
+          {filterData.length > 0 && (
+            <Button sx={{ display: 'flex', gap: 1 }} variant='outlined' onClick={openViewStatistic}>
+              <BarChart />
+              View Statistics
+            </Button>
+          )}
+        </Stack>
         {isLoading && (
           <Box display='flex' alignItems='center' height='100%'>
             <Loading />
@@ -100,6 +110,13 @@ export const QuizSubmission = ({ courseId, quizId }: QuizSubmissionProps) => {
         count={quizSubmissions?.totalPages}
         sx={{ mt: 2, justifyContent: 'center', display: 'start' }}
       />
+      {filterData && (
+        <ModalQuizStatistic
+          isOpen={isOpenViewStatistic}
+          onClose={closeViewStatistic}
+          data={(filterData as any) || []}
+        />
+      )}
     </Stack>
   )
 }

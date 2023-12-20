@@ -1,10 +1,10 @@
-import { Box } from '@mui/material'
+import { Box, BoxProps } from '@mui/material'
 
-export type DangerouseLyRenderProps = {
+export type DangerouseLyRenderProps = BoxProps & {
   content: string
 }
 
-export const DangerouseLyRender = ({ content }: DangerouseLyRenderProps) => {
+export const DangerouseLyRender = ({ content, ...props }: DangerouseLyRenderProps) => {
   return (
     <Box
       dangerouslySetInnerHTML={{ __html: content }}
@@ -38,6 +38,7 @@ export const DangerouseLyRender = ({ content }: DangerouseLyRenderProps) => {
           margin: 'auto',
         },
       }}
+      {...props}
     />
   )
 }

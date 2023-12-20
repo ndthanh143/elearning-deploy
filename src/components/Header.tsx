@@ -14,10 +14,9 @@ import {
 } from '@mui/material'
 
 import { images } from '../assets/images'
-import { CustomMenu } from '.'
+import { CustomMenu, DangerouseLyRender } from '.'
 import { useAuth, useMenu } from '../hooks'
 import { Link, useNavigate } from 'react-router-dom'
-import { gray } from '@/styles/theme'
 import { notificationKey } from '@/services/notification/notification.query'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { notificationService } from '@/services/notification/notification.service'
@@ -41,7 +40,7 @@ const parseMessage = (type: string, data: string) => {
                   {parseData.forumTitle}
                 </Box>
               </Typography>
-              <Typography color={gray[800]}>{parseData.topicContent}</Typography>
+              <DangerouseLyRender content={parseData.topicContent} maxHeight={120} overflow='hidden' />
             </Stack>
           </Stack>
         </Box>
@@ -169,7 +168,7 @@ export const Header = () => {
         }}
       >
         <Box sx={{ maxHeight: '50vh', overflow: 'scroll' }}>
-          {notifications && notifications.map((noti) => parseMessage('topic', noti.message))}
+          {notifications && notifications.map((noti) => <Box key={noti.id}>{parseMessage('topic', noti.message)}</Box>)}
         </Box>
       </CustomMenu>
     </Box>

@@ -21,8 +21,7 @@ import {
 import { blue } from '@mui/material/colors'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { AssignmentSubmission } from './components'
-import { QuizSubmission } from './components/QuizSubmission'
+import { AssignmentSubmission, QuizSubmission } from './components'
 
 export const SubmissionManagementPage = () => {
   const { profile } = useAuth()
