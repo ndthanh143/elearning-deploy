@@ -103,10 +103,12 @@ export const AssignmentSubmission = ({ courseId, assignmentId }: AssignmentSubmi
         )}
         <Stack direction='row' justifyContent='space-between'>
           {students && students.length > 0 && <Button onClick={openUnsubmit}>View Unsubmitted students</Button>}
-          <Button sx={{ display: 'flex', gap: 1 }} variant='outlined' onClick={openViewStatistic}>
-            <BarChart />
-            View Statistics
-          </Button>
+          {assignmentSubmissions && assignmentSubmissions.content.length > 0 && (
+            <Button sx={{ display: 'flex', gap: 1 }} variant='outlined' onClick={openViewStatistic}>
+              <BarChart />
+              View Statistics
+            </Button>
+          )}
         </Stack>
         {(isFetchedAssignmentSubmission && !assignmentSubmissions?.content.length) ||
         !assignmentSubmissions?.content.length ? (

@@ -97,6 +97,7 @@ export const ModalQuizStatistic = ({ isOpen, onClose, data }: IModalQuizStatisti
           display: true,
           text: 'Number of Students',
         },
+        stepSize: 1,
       },
     },
   }
