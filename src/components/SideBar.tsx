@@ -76,6 +76,7 @@ export const SideBar = () => {
         href: '/forum',
       },
     ],
+    Admin: [],
   }
 
   return (

@@ -9,10 +9,14 @@ import { gapi } from 'gapi-script'
 import { useAuth } from '../hooks'
 import { useLocation, useNavigate } from 'react-router-dom'
 import GoogleLogin from 'react-google-login'
-// import { GoogleLogin } from '@react-oauth/google'
+import { images } from '@/assets/images'
+import { LoginAdminPayload, RoleEnum } from '@/services/auth/auth.dto'
+import { useMutation } from '@tanstack/react-query'
+import authService from '@/services/auth/auth.service'
+import { toast } from 'react-toastify'
 
 const schema = object({
-  username: string().required('Please fill in your username'),
+  email: string().required('Please fill in your username'),
   password: string().required('Please fill in your password'),
 })
 
@@ -34,10 +38,20 @@ export const LoginPage = () => {
 
   const handleClickShowPassword = () => setShowPassword((show) => !show)
 
+  const { mutate: mutateLoginAdmin } = useMutation({
+    mutationFn: authService.loginAdmin,
+    onSuccess: () => {
+      toast.success('Login by admin role successfully')
+      navigate('/admin')
+    },
+  })
+
   const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
   }
-  const onSubmitHandler = () => {}
+  const onSubmitHandler = (data: LoginAdminPayload) => {
+    mutateLoginAdmin(data)
+  }
 
   const responseGoogle = ({ accessToken }: any) => loginGoogle(accessToken)
 
@@ -53,7 +67,11 @@ export const LoginPage = () => {
 
   useEffect(() => {
     if (profile) {
-      navigate(state?.form || '/')
+      if (profile.data.roleInfo.name === RoleEnum.Admin) {
+        navigate('/admin')
+      } else {
+        navigate(state?.form || '/')
+      }
     }
   }, [profile])
 
@@ -64,8 +82,7 @@ export const LoginPage = () => {
       overflow='hidden'
       position='relative'
       sx={{
-        backgroundImage:
-          'url(https://nienlich.vn/Userfiles/Upload/images/309029473_819241772825135_7321420649589543852_n.jpg), linear-gradient(rgba(0,0,0,0.3),rgba(0,0,0,0.3))',
+        backgroundImage: 'url(background-login.jpg), linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4))',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -92,17 +109,41 @@ export const LoginPage = () => {
         }}
         borderRadius={4}
       >
+        <Box
+          display='flex'
+          position='absolute'
+          top={-60}
+          right={10}
+          justifyContent='center'
+          width='100%'
+          alignItems='center'
+          gap={2}
+        >
+          <Box
+            component='img'
+            src={images.logo}
+            alt='logo'
+            width={40}
+            height={40}
+            style={{
+              objectFit: 'cover',
+            }}
+          />
+          <Typography variant='h5' fontWeight={700} color='primary.contrastText'>
+            BrainStone
+          </Typography>
+        </Box>
         <Typography textAlign='center' variant='h5' fontWeight={700}>
           Sign in
         </Typography>
         <Box>
           <Typography variant='caption' color='text.secondary' marginBottom={4}>
-            Email
+            Username
           </Typography>
-          <TextField placeholder='example@gmail.com' fullWidth size='small' {...register('username')} />
-          {errors.username && (
+          <TextField placeholder='example@gmail.com' fullWidth size='small' {...register('email')} />
+          {errors.email && (
             <Typography variant='caption' color='error.main'>
-              {errors.username.message}
+              {errors.email.message}
             </Typography>
           )}
         </Box>
@@ -134,9 +175,9 @@ export const LoginPage = () => {
             </Typography>
           )}
         </Box>
-        <Typography variant='body2' color='primary'>
+        {/* <Typography variant='body2' color='primary'>
           Forgot password?
-        </Typography>
+        </Typography> */}
 
         <Button variant='contained' fullWidth type='submit'>
           Sign in

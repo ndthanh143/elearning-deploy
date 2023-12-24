@@ -24,6 +24,6 @@ export type BasePaginationData<T> = {
   content: T
   pageIndex: number
   pageSize: number
-  totalELements: number
+  totalElements: number
   totalPages: number
 }

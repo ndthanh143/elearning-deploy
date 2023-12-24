@@ -24,13 +24,14 @@ export type Account = {
   isSuperAdmin: boolean
   kind: number
   roleInfo: Role
+  nationInfo: any
 } & BaseData
 
 export type Role = {
   description: string
   kind: number
   name: RoleEnum
-}
+} & BaseData
 
 export interface ScheduleData {
   assignmentsInfo: AssignmentsInfo[]

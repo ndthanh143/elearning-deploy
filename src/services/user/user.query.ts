@@ -4,6 +4,8 @@ import { userService } from './user.service'
 
 export const userKeys = {
   all: ['users'] as const,
+  fullLists: () => [...userKeys.all, 'full-list'] as const,
+  fullList: (query: any) => defineQuery([...userKeys.fullLists(), query], () => userService.getAll(query)),
   profiles: () => [...userKeys.all, 'profile'] as const,
   profile: () => defineQuery([...userKeys.profiles()], userService.getCurrentUser),
   schedules: () => [...userKeys.all, 'schedule'] as const,

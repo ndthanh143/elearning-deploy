@@ -37,6 +37,8 @@ import { configs } from './configs'
 import { QuizReview } from './pages/QuizPage/containers'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { AdminLayout } from './components/layout/AdminLayout'
+import { Dashboard, UserManagement } from './pages/Admin'
 
 const router = createBrowserRouter([
   {
@@ -112,6 +114,20 @@ const router = createBrowserRouter([
   {
     path: 'login',
     element: <LoginPage />,
+  },
+  {
+    path: 'admin',
+    element: <AdminLayout />,
+    children: [
+      {
+        index: true,
+        element: <Dashboard />,
+      },
+      {
+        path: 'users',
+        element: <UserManagement />,
+      },
+    ],
   },
 
   { path: '*', element: <NotFound /> },

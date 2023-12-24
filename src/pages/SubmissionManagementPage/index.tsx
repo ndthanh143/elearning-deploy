@@ -55,7 +55,7 @@ export const SubmissionManagementPage = () => {
 
   useEffect(() => {
     if (courses) {
-      setSelectedCourseId(courses[0].id)
+      setSelectedCourseId(courses[0]?.id)
     }
   }, [courses])
 

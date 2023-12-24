@@ -4,6 +4,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks'
 import { useEffect } from 'react'
 import { useWebSocket } from '@/hooks/useWebSocket'
+import { RoleEnum } from '@/services/auth/auth.dto'
 
 export const Layout = () => {
   const { accessToken, profile, isFetched } = useAuth()
@@ -41,6 +42,10 @@ export const Layout = () => {
       })
     }
   }, [profile])
+
+  if (profile && profile.data.roleInfo.name === RoleEnum.Admin) {
+    navigate('/admin')
+  }
 
   return (
     profile && (
