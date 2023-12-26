@@ -71,7 +71,7 @@ export const ModalCreateUser = ({ isOpen, onClose, defaultValue, status }: IModa
       <BoxContent minWidth={500} component='form' onSubmit={handleSubmit(onSubmitHandler)}>
         <Stack direction='row' justifyContent='space-between'>
           <Typography variant='h5' mb={1}>
-            Update User
+            {status === 'create' ? 'Create' : 'Update'} User
           </Typography>
           <IconButton onClick={onClose}>
             <CloseOutlined />
@@ -85,12 +85,20 @@ export const ModalCreateUser = ({ isOpen, onClose, defaultValue, status }: IModa
           </Stack>
           <Stack>
             <Typography>Email</Typography>
-            <TextField size='small' fullWidth placeholder='Email' {...register('email')} />
+            <TextField
+              size='small'
+              fullWidth
+              placeholder='Email'
+              {...register('email')}
+              disabled={status === 'update'}
+            />
           </Stack>
-          <Stack>
-            <Typography>Password</Typography>
-            <TextField size='small' fullWidth placeholder='Password' type='password' {...register('password')} />
-          </Stack>
+          {status === 'create' && (
+            <Stack>
+              <Typography>Password</Typography>
+              <TextField size='small' fullWidth placeholder='Password' type='password' {...register('password')} />
+            </Stack>
+          )}
           <Stack>
             <Typography>Role</Typography>
             <Select {...register('roleId')} size='small' defaultValue={defaultValue?.roleInfo?.id}>
