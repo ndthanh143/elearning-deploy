@@ -130,7 +130,7 @@ export const ForumTopic = ({ data }: ForumTopicProps) => {
               {data.commentInfo.map((comment) => (
                 <Box display='flex' justifyContent='space-between' key={comment.id}>
                   <Box display='flex' alignItems='start' gap={1}>
-                    <Avatar src={data.accountInfo.avatarPath}>{data.accountInfo.fullName.charAt(0)}</Avatar>
+                    <Avatar src={comment.accountInfo.avatarPath}>{data.accountInfo.fullName.charAt(0)}</Avatar>
                     <Stack gap={0.5}>
                       <Box display='flex' alignItems='center' gap={1}>
                         <Typography variant='body2' fontWeight={500}>

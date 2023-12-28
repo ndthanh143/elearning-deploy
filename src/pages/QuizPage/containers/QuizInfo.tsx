@@ -91,7 +91,8 @@ export const QuizInfo = () => {
             )}
           </Stack>
           {(!quiz.attemptNumber || quiz.quizSubmissionInfo.length < quiz.attemptNumber) &&
-            new Date(quiz.endDate) > new Date() && (
+            new Date(quiz.endDate) > new Date() &&
+            new Date(quiz.startDate) < new Date() && (
               <>
                 <Divider />
                 <Button variant='contained' onClick={handleStartQuiz} sx={{ my: 1 }}>
@@ -104,6 +105,14 @@ export const QuizInfo = () => {
               <Divider />
               <Typography textAlign='center' color={gray[500]}>
                 This quiz is expired, you can't access this quiz
+              </Typography>
+            </>
+          )}
+          {new Date(quiz.startDate) > new Date() && (
+            <>
+              <Divider />
+              <Typography textAlign='center' color={gray[500]}>
+                This quiz is not open, please wait
               </Typography>
             </>
           )}

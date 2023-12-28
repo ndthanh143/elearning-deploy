@@ -57,6 +57,7 @@ export const QuizActions = ({ isOpen = false, onClose, defaultData }: AddQuizPro
   const {
     register,
     getValues,
+    setValue,
     handleSubmit,
     formState: { errors },
   } = useForm<UpdateQuizPayload>({
@@ -161,11 +162,20 @@ export const QuizActions = ({ isOpen = false, onClose, defaultData }: AddQuizPro
               <DateTimePicker
                 defaultValue={dayjs(getValues('startDate'))}
                 slotProps={{ textField: { size: 'small' } }}
+                onChange={(value) => {
+                  setValue('startDate', dayjs(value).toISOString())
+                }}
               />
             </Stack>
             <Stack>
               <Typography fontWeight={500}>End time</Typography>
-              <DateTimePicker defaultValue={dayjs(getValues('endDate'))} slotProps={{ textField: { size: 'small' } }} />
+              <DateTimePicker
+                defaultValue={dayjs(getValues('endDate'))}
+                slotProps={{ textField: { size: 'small' } }}
+                onChange={(value) => {
+                  setValue('endDate', dayjs(value).toISOString())
+                }}
+              />
             </Stack>
           </Stack>
           <Stack direction='row' gap={2}>
