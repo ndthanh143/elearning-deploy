@@ -67,8 +67,8 @@ export const QuizActions = ({ isOpen = false, onClose, defaultData }: AddQuizPro
       quizTitle,
       description,
       attemptNumber,
-      endDate: dayjs(startDate).toISOString(),
-      startDate: dayjs(endDate).toISOString(),
+      endDate: dayjs(endDate).toISOString(),
+      startDate: dayjs(startDate).toISOString(),
       quizTimeLimit,
     },
   })
