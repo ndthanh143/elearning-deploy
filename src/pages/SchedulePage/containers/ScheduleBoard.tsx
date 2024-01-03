@@ -45,8 +45,8 @@ export const ScheduleBoard = ({ quizzes }: ScheduleBoardProps) => {
 
   const [searchParams, _] = useSearchParams()
 
-  const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs(searchParams.get('date')))
-  const [selectedDay, setSelectedDay] = useState<Dayjs>(dayjs(searchParams.get('date')))
+  const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs(searchParams.get('date') || new Date()))
+  const [selectedDay, setSelectedDay] = useState<Dayjs>(dayjs(searchParams.get('date') || new Date()))
 
   const currentWeeks = getWeekDates(currentDate)
 
@@ -63,8 +63,8 @@ export const ScheduleBoard = ({ quizzes }: ScheduleBoardProps) => {
   )
 
   useEffect(() => {
-    setSelectedDay(dayjs(searchParams.get('date')))
-    setCurrentDate(dayjs(searchParams.get('date')))
+    setSelectedDay(dayjs(searchParams.get('date') || new Date()))
+    setCurrentDate(dayjs(searchParams.get('date') || new Date()))
   }, [searchParams.get('date')])
 
   return (

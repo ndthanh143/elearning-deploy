@@ -32,8 +32,8 @@ export const ModalUpdateIntro = ({ isOpen, onClose, data }: ModalUpdateIntroProp
     resolver: yupResolver(schema),
     defaultValues: {
       description: data.description,
-      objectives: ['a'],
-      requirements: ['a'],
+      objectives: data.objectives || [],
+      requirements: data.requirements || [],
       id: data.id,
       state: data.state,
     },
@@ -92,10 +92,12 @@ export const ModalUpdateIntro = ({ isOpen, onClose, data }: ModalUpdateIntroProp
               placeholder='Add new requirement'
               onKeyDown={(e: any) => {
                 if (e.key === 'Enter') {
+                  e.preventDefault()
                   setRequirements((prev) => [...prev, e.target.value])
                   setValue('requirements', requirements)
                 }
               }}
+              sx={{ flex: 1 }}
             />
           ) : (
             <Button variant='outlined' onClick={openAddRequirement}>
@@ -120,6 +122,7 @@ export const ModalUpdateIntro = ({ isOpen, onClose, data }: ModalUpdateIntroProp
               placeholder='Add new key of course'
               onKeyDown={(e: any) => {
                 if (e.key === 'Enter') {
+                  e.preventDefault()
                   setObjectives((prev) => [...prev, e.target.value])
                   setValue('objectives', objectives)
                 }
