@@ -126,7 +126,11 @@ export const QuizActions = ({ isOpen = false, onClose, defaultData }: AddQuizPro
   const handleUpdateQuestion = (data: UpdateQuestionPayload) => {
     const newAnwsers = data.answers.filter((answer) => !answer.id)
     const currentQuestion = questions?.find((item) => item.id === data.id)
-    const deletedAnwser = currentQuestion?.answers.filter((answer) => !data.answers.includes(answer))
+
+    const dataAnswersId = data.answers.map((item) => item.id)
+
+    const deletedAnwser = currentQuestion?.answers.filter((answer) => !dataAnswersId.includes(answer.id))
+
     if (deletedAnwser?.length) {
       mutateDeleteAnswers(deletedAnwser.map((item) => item.id))
     }
