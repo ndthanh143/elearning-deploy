@@ -32,7 +32,7 @@ export const LoginPage = () => {
     handleSubmit,
   } = useForm({ resolver: yupResolver(schema) })
 
-  const { profile, loginGoogle } = useAuth()
+  const { profile, loginGoogle, refetch } = useAuth()
 
   const [showPassword, setShowPassword] = useState(false)
 
@@ -41,6 +41,7 @@ export const LoginPage = () => {
   const { mutate: mutateLoginAdmin } = useMutation({
     mutationFn: authService.loginAdmin,
     onSuccess: () => {
+      refetch()
       toast.success('Login by admin role successfully')
       navigate('/admin')
     },
