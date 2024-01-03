@@ -3,7 +3,7 @@ import { configs } from '@/configs'
 import { useBoolean, useMenu } from '@/hooks'
 import { Assignment } from '@/services/assignment/assignment.dto'
 import { gray } from '@/styles/theme'
-import { formatDate } from '@/utils'
+import { downloadFileByLink, formatDate, getAbsolutePathFile } from '@/utils'
 import { MoreVert, PeopleAltOutlined } from '@mui/icons-material'
 import {
   Alert,
@@ -19,6 +19,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useLocation } from 'react-router-dom'
+import { FileCard } from '../components'
 
 export type AssignmentContentProps = {
   assignment: Assignment
@@ -85,9 +86,19 @@ export const AssignmentContent = ({ assignment }: AssignmentContentProps) => {
         )}
         <DangerouseLyRender content={assignment.assignmentContent} />
         <Grid container spacing={4}>
-          <Grid item xs={12} md={6}>
-            <YoutubeCard videoUrl={assignment.urlDocument} height={250} />
-          </Grid>
+          {assignment.urlDocument &&
+            (assignment.urlDocument.includes('youtube.com') ? (
+              <Grid item xs={12} md={6}>
+                <YoutubeCard videoUrl={assignment.urlDocument} height={250} />
+              </Grid>
+            ) : (
+              <Grid item xs={12} md={6}>
+                <FileCard
+                  filePath={getAbsolutePathFile(assignment.urlDocument) || ''}
+                  onClick={() => downloadFileByLink(assignment.urlDocument)}
+                />
+              </Grid>
+            ))}
         </Grid>
         <Divider sx={{ marginY: 2 }} />
         <Stack direction='row' gap={1} alignItems='center'>

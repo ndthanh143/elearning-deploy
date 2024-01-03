@@ -7,14 +7,15 @@ import { Box, Card, CardContent, IconButton, Typography } from '@mui/material'
 export type FileCardProps = {
   filePath: string
   onDelete?: () => void
+  onClick?: () => void
 }
 
-export const FileCard = ({ filePath, onDelete }: FileCardProps) => {
+export const FileCard = ({ filePath, onDelete, onClick }: FileCardProps) => {
   const { value: isOpenConfirm, setTrue: openConfirm, setFalse: closeConfirm } = useBoolean()
 
   return (
     <>
-      <Card sx={{ display: 'flex', cursor: 'pointer', borderRadius: 3, alignItems: 'center' }}>
+      <Card sx={{ display: 'flex', cursor: 'pointer', borderRadius: 3, alignItems: 'center' }} onClick={onClick}>
         {/* <CardMedia
           component='img'
           src={`${configs.API_URL}/api/file/download${filePath}` as string}
