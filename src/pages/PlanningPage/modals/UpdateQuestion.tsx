@@ -49,8 +49,6 @@ export const UpdateQuestion = ({ isOpen, defaultQuestion, onClose, onSave }: Cre
 
   const handleCheckBoxAnwser = (index: number) => {
     answers[index].isCorrect = true
-    console.log(answers[index])
-    console.log(answers)
   }
 
   const handleSubmit = () => {

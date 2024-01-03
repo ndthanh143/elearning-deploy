@@ -34,7 +34,6 @@ export const CourseDetailPage = () => {
 
   const handleCreateTopic = (values: string) => {
     if (profile && course) {
-      console.log(course)
       mutateCreateTopic({ forumId: course.forumInfo.id, accountId: profile.data.id, topicContent: values })
     }
   }

@@ -1,4 +1,4 @@
-import { CustomModal, ErrorField, Loading } from '@/components'
+import { ConfirmPopup, CustomModal, ErrorField, Loading } from '@/components'
 import { Quiz, UpdateQuizPayload } from '@/services/quiz/quiz.dto'
 import { quizQuestionKey } from '@/services/quizQuestion/quizQuestion.query'
 import { quizQuestionService } from '@/services/quizQuestion/quizQuestion.service'
@@ -52,6 +52,7 @@ export const QuizActions = ({ isOpen = false, onClose, defaultData }: AddQuizPro
   const { value: isOpenAddQuestion, setFalse: closeAddQuestion, setTrue: openAddQuestion } = useBoolean(false)
 
   const [selectedQuestion, setSelectedQuestion] = useState<QuizQuestion | null>(null)
+  const [selectedDeleteQuestion, setSelectedDeleteQuestion] = useState<number | null>(null)
 
   const { id, quizTitle, description, attemptNumber, endDate, startDate, quizTimeLimit } = defaultData
   const {
@@ -107,6 +108,15 @@ export const QuizActions = ({ isOpen = false, onClose, defaultData }: AddQuizPro
       // queryClient.setQueryData(quizQuestionsInstance.queryKey, newData)
 
       refetchQuestions()
+    },
+  })
+
+  const { mutate: mutateDeleteQuestion } = useMutation({
+    mutationFn: quizQuestionService.delete,
+    onSuccess: () => {
+      setSelectedDeleteQuestion(null)
+      const newData = questions?.filter((question) => question.id !== selectedDeleteQuestion) || []
+      queryClient.setQueryData(quizQuestionsInstance.queryKey, newData)
     },
   })
 
@@ -221,7 +231,13 @@ export const QuizActions = ({ isOpen = false, onClose, defaultData }: AddQuizPro
                 />
               ) : (
                 <Stack key={question.id}>
-                  <Button onClick={() => setSelectedQuestion(question)}>Edit</Button>
+                  <Stack direction='row' gap={2} justifyContent='center'>
+                    <Button onClick={() => setSelectedQuestion(question)}>Edit</Button>
+                    <Button onClick={() => setSelectedDeleteQuestion(question.id)} variant='outlined' color='error'>
+                      Delete
+                    </Button>
+                  </Stack>
+
                   <Stack>
                     <Typography>Question {index + 1}</Typography>
                     <Stack direction='row' gap={2}>
@@ -260,6 +276,15 @@ export const QuizActions = ({ isOpen = false, onClose, defaultData }: AddQuizPro
           Save
         </Button>
       </Box>
+      {selectedDeleteQuestion && (
+        <ConfirmPopup
+          isOpen={Boolean(selectedDeleteQuestion)}
+          onClose={() => setSelectedDeleteQuestion(null)}
+          onAccept={() => mutateDeleteQuestion(selectedDeleteQuestion)}
+          title='Are you sure to delete this question'
+          subtitle='This action can not be undo'
+        />
+      )}
     </CustomModal>
   )
 }

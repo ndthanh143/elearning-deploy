@@ -36,8 +36,6 @@ export const QuizReview = () => {
     const correctAnswers = question.answers.filter((answer) => answer.isCorrect)
     const selectedAnswers = question.answers.filter((answer) => answer.isSelected)
 
-    console.log(isEqual({}, { a: 1 }))
-
     return isEqual(correctAnswers, selectedAnswers)
   }
 

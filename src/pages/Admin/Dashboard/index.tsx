@@ -71,8 +71,6 @@ export function Dashboard() {
   const teacherCount = users?.content.filter((user) => user.roleInfo.name === RoleEnum.Teacher).length
   const studentCount = users?.content.filter((user) => user.roleInfo.name === RoleEnum.Student).length
 
-  console.log('users', users)
-
   return (
     <Grid container spacing={4}>
       <Grid item xs={4}>

@@ -24,7 +24,6 @@ type CreateQuestionProps = {
   defaultQuestion?: QuizQuestion
 }
 export const CreateQuestion = ({ quizId, isOpen, defaultQuestion, onClose, onSave }: CreateQuestionProps) => {
-  console.log('hahahahahaha', defaultQuestion)
   const [questionContent, setQuestionContent] = useState(defaultQuestion?.questionContent || '')
   const [questionType, setQuestionType] = useState<number>(defaultQuestion?.questionType || 1)
   const [answers, setAnwsers] = useState<AnwserCreate[]>(defaultQuestion?.answers || [])
@@ -51,8 +50,6 @@ export const CreateQuestion = ({ quizId, isOpen, defaultQuestion, onClose, onSav
 
   const handleCheckBoxAnwser = (index: number) => {
     answers[index].isCorrect = true
-    console.log(answers[index])
-    console.log(answers)
   }
 
   const handleSubmit = () => {

@@ -23,4 +23,7 @@ export const quizQuestionService = {
 
     return data.data
   },
+  delete: async (id: number) => {
+    await axiosInstance.delete(`/quiz-question/delete/${id}`)
+  },
 }

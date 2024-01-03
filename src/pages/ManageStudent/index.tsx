@@ -41,8 +41,6 @@ export const ManageStudent = () => {
   const studentsInstance = userKeys.list({ courseId: Number(selectedCourse?.id), page, size: 6 })
   const { data: students } = useQuery({ ...studentsInstance, enabled: Boolean(selectedCourse) })
 
-  console.log('students', students)
-
   const handleDelete = () => {}
 
   const headings = ['Avatar', 'ID', 'Name', 'Email', '']

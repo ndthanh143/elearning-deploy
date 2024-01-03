@@ -54,8 +54,6 @@ export const QuizShow = () => {
     data && setCurrentQuestion((prev) => (prev === 0 ? data.questions.length - 1 : prev - 1))
   }
 
-  console.log(quizSubmission)
-
   const handleSubmit = () => {
     const results = quizSubmission.flatMap((item) => item.answer.map((answer) => ({ answerId: answer })))
 
