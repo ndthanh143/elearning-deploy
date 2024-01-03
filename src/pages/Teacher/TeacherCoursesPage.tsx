@@ -1,10 +1,13 @@
-import { BoxContent, Loading, NoData, PageContentHeading } from '@/components'
+import { BoxContent, ConfirmPopup, Loading, NoData, PageContentHeading } from '@/components'
 import { useAuth, useBoolean } from '@/hooks'
-import { Box, Button, Grid, Pagination, Stack, Typography } from '@mui/material'
+import { Box, Button, Grid, IconButton, Pagination, Stack, Tooltip, Typography } from '@mui/material'
 import { TeacherCourseCard as CourseCard, ModalCreateCourse } from './components'
 import { courseKeys } from '@/services/course/course.query'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
+import { DeleteOutline } from '@mui/icons-material'
+import { courseService } from '@/services/course/course.service'
+import { toast } from 'react-toastify'
 
 const DEFAULT_LIMIT = 5
 export const TeacherCoursesPage = () => {
@@ -12,10 +15,35 @@ export const TeacherCoursesPage = () => {
 
   const [page, setPage] = useState(0)
 
+  const queryClient = useQueryClient()
+
   const { value: isOpenCreateCourse, setTrue: openCreateCourse, setFalse: closeCreateCourse } = useBoolean(false)
+
+  const [selectedCourse, setSelectedCourse] = useState<number | null>(null)
 
   const courseInstance = courseKeys.list({ teacherId: Number(profile?.data.id), page, size: DEFAULT_LIMIT })
   const { data: courses, isFetched, isLoading } = useQuery({ ...courseInstance, enabled: Boolean(profile) })
+
+  const { mutate: mutateDeleteCourse } = useMutation({
+    mutationFn: courseService.delete,
+    onSuccess: () => {
+      if (courses) {
+        const newCourses = courses
+        newCourses.content = newCourses?.content.filter((course) => course.id !== selectedCourse)
+
+        queryClient.setQueriesData({ queryKey: courseInstance.queryKey }, newCourses)
+      }
+
+      setSelectedCourse(null)
+      toast.success('Delete course successfully')
+    },
+  })
+
+  const handleDeleteCourse = () => {
+    if (selectedCourse) {
+      mutateDeleteCourse(selectedCourse)
+    }
+  }
 
   return (
     profile && (
@@ -44,7 +72,18 @@ export const TeacherCoursesPage = () => {
                   </Box>
                 ) : (
                   <Stack gap={2} height='100%'>
-                    {courses?.content.map((course) => <CourseCard key={course.id} data={course} />)}
+                    {courses?.content.map((course) => (
+                      <Stack direction='row' gap={2} width='100%' alignItems='center'>
+                        <Box flex={1}>
+                          <CourseCard key={course.id} data={course} />
+                        </Box>
+                        <Tooltip title='Delete this course'>
+                          <IconButton color='error' onClick={() => setSelectedCourse(course.id)}>
+                            <DeleteOutline />
+                          </IconButton>
+                        </Tooltip>
+                      </Stack>
+                    ))}
                   </Stack>
                 )}
 
@@ -66,6 +105,15 @@ export const TeacherCoursesPage = () => {
             </BoxContent>
           </Grid>
         </Grid>
+        {selectedCourse && (
+          <ConfirmPopup
+            isOpen={Boolean(selectedCourse)}
+            onClose={() => setSelectedCourse(null)}
+            onAccept={handleDeleteCourse}
+            title='Confirm Delete'
+            subtitle='Are you sure to delete this course, this action will delete course forever'
+          />
+        )}
         <ModalCreateCourse isOpen={isOpenCreateCourse} onClose={closeCreateCourse} />
       </Box>
     )

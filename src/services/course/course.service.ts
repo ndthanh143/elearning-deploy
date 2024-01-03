@@ -31,4 +31,7 @@ export const courseService = {
 
     return data
   },
+  delete: async (id: number) => {
+    await axiosInstance.delete(`/course/delete/${id}`)
+  },
 }
