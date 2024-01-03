@@ -92,7 +92,7 @@ export default function Editor({ value, onChange }: EditorProps) {
       ref={quillRef}
       height='90%'
       maxWidth='100vw'
-      overflow='hidden'
+      overflow='scroll'
       component={ReactQuill}
       theme='snow'
       value={value}

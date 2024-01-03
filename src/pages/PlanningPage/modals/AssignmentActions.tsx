@@ -48,7 +48,7 @@ export const AssignmentActions = ({ isOpen, onClose, moduleId, status, defaultDa
     defaultValues: {
       modulesId: moduleId,
       state: defaultData?.state || 1,
-      urlDocument: defaultData?.urlDocument,
+      urlDocument: defaultData?.urlDocument || '',
       assignmentContent: defaultData?.assignmentContent,
       assignmentTitle: defaultData?.assignmentTitle,
       startDate: dayjs(defaultData?.startDate).toISOString(),
@@ -142,7 +142,7 @@ export const AssignmentActions = ({ isOpen, onClose, moduleId, status, defaultDa
               </IconButton>
             </Tooltip>
           </Stack>
-          <Box height='40vh' pb={4}>
+          <Box pb={4}>
             <Typography fontWeight={500} mb={1}>
               Content
             </Typography>
@@ -154,7 +154,7 @@ export const AssignmentActions = ({ isOpen, onClose, moduleId, status, defaultDa
             />
           </Box>
         </Stack>
-        <Stack direction='row' gap={2}>
+        <Stack direction='row' gap={2} pb={2}>
           <Button variant='outlined' fullWidth onClick={onClose}>
             Cancel
           </Button>
