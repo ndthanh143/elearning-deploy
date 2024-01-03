@@ -65,7 +65,7 @@ export const ModuleTeacher = ({ lessonPlanId, onEdit, onDelete }: ModuleTeacherP
       refetchModules()
     },
     onError: () => {
-      toast.error('Fail error')
+      toast.error('This quiz had submission before, can not delete it')
     },
   })
 

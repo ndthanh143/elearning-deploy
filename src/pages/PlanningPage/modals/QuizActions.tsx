@@ -118,13 +118,21 @@ export const QuizActions = ({ isOpen = false, onClose, defaultData }: AddQuizPro
       const newData = questions?.filter((question) => question.id !== selectedDeleteQuestion) || []
       queryClient.setQueryData(quizQuestionsInstance.queryKey, newData)
     },
+    onError: () => {
+      toast.error('Can not delete this question, this quiz had submission before')
+    },
   })
 
   const { mutate: mutateCreateAnswers, data: anwsersCreated } = useMutation({
     mutationFn: answerService.bulkCreate,
   })
 
-  const { mutate: mutateDeleteAnswers } = useMutation({ mutationFn: answerService.delete })
+  const { mutate: mutateDeleteAnswers } = useMutation({
+    mutationFn: answerService.delete,
+    onError: () => {
+      toast.error('This quiz have submission before, can not modified it')
+    },
+  })
 
   const onSubmitHandler = (data: UpdateQuizPayload) => {
     mutateUpdateQuiz({ ...data, quizTimeLimit: data.quizTimeLimit })

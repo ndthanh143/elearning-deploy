@@ -27,6 +27,9 @@ export const PlanningPage = () => {
       refetch()
       toast.success('Delete lesson plan successfully')
     },
+    onError: () => {
+      toast.error('This plan is being used by some course, please delete this course or change plan before delete')
+    },
   })
 
   const { mutate: mutateUpdate } = useMutation({
