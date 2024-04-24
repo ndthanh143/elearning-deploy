@@ -1,5 +1,5 @@
 import actions from '@/assets/images/icons/actions'
-import { BoxContent, NoData } from '@/components'
+import { BoxContent, MindMap, NoData } from '@/components'
 import { Course } from '@/services/course/course.dto'
 import { ArticleOutlined, BookmarkAddOutlined, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material'
 import { Box, Button, Collapse, Divider, Stack, Typography } from '@mui/material'
@@ -7,9 +7,10 @@ import { ContentItem, ModalCustomPlan } from '../components'
 import { downloadFileByLink, getResourceType } from '@/utils'
 import { useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { Module } from '@/services/module/module.dto'
+import { Module as Unit } from '@/services/module/module.dto'
 import { useAuth, useBoolean } from '@/hooks'
 import { RoleEnum } from '@/services/auth/auth.dto'
+import { MindMapStudent } from '@/components/MindMap/MindMapStudent'
 
 export type CourseContentProps = {
   data: Course
@@ -20,7 +21,7 @@ export const CourseContent = ({ data }: CourseContentProps) => {
   const { courseId } = useParams()
   const navigate = useNavigate()
 
-  const [expandModuleList, setExpandModuleList] = useState<number[]>([])
+  const [expandUnitList, setExpandModuleList] = useState<number[]>([])
   const { value: isOpenCustomPlan, setTrue: openCustomPlan, setFalse: closeCustomPlan } = useBoolean()
 
   const handleDownloadResource = (urlDocument: string) => {
@@ -29,7 +30,7 @@ export const CourseContent = ({ data }: CourseContentProps) => {
   }
 
   const handleExpandModuleList = (moduleId: number) => {
-    if (expandModuleList.includes(moduleId)) {
+    if (expandUnitList.includes(moduleId)) {
       setExpandModuleList((prev) => prev.filter((item) => item !== moduleId))
     } else {
       setExpandModuleList((prev) => [...prev, moduleId])
@@ -37,36 +38,31 @@ export const CourseContent = ({ data }: CourseContentProps) => {
   }
 
   const handleToggleModuleListAll = () => {
-    if (data.lessonPlanInfo?.modulesInfo.length === expandModuleList.length) {
+    if (data.lessonPlanInfo?.units.length === expandUnitList.length) {
       setExpandModuleList([])
     } else {
-      const moduleIdList = data.lessonPlanInfo?.modulesInfo.map((module) => module.id) || []
-      setExpandModuleList(moduleIdList)
+      const unitIdList = data.lessonPlanInfo?.units.map((unit) => unit.id) || []
+      setExpandModuleList(unitIdList)
     }
   }
 
-  const isNotEmptyModule = (module: Module) => {
-    return (
-      module.lectureInfo?.length ||
-      module.resourceInfo?.length ||
-      module.assignmentInfo?.length ||
-      module.quizInfo?.length
-    )
+  const isNotEmptyUnit = (unit: Unit) => {
+    return unit.lectureInfo?.length || unit.resourceInfo?.length || unit.assignmentInfo?.length || unit.quizInfo?.length
   }
 
   return (
-    <BoxContent>
+    <Box>
       <Stack direction='row' justifyContent='space-between' mb={2}>
-        <Typography variant='h5' fontWeight={500}>
+        {/* <Typography variant='h5' fontWeight={500}>
           Course content
-        </Typography>
+        </Typography> */}
         {profile?.data.roleInfo.name === RoleEnum.Teacher && (
           <Button variant='outlined' sx={{ display: 'flex', gap: 1 }} onClick={openCustomPlan}>
             <BookmarkAddOutlined /> Choose custom plan
           </Button>
         )}
       </Stack>
-      <Box display='flex' justifyContent='space-between' alignItems='center' mb={1}>
+      {/* <Box display='flex' justifyContent='space-between' alignItems='center' mb={1}>
         {data.lessonPlanInfo?.modulesInfo.length ? (
           <>
             <Typography variant='body2'>{data.lessonPlanInfo?.modulesInfo.length || 0} Sections</Typography>
@@ -85,9 +81,10 @@ export const CourseContent = ({ data }: CourseContentProps) => {
         ) : (
           <NoData title='No content about course yet!' />
         )}
-      </Box>
+      </Box> */}
       <Stack gap={2}>
-        {data.lessonPlanInfo?.modulesInfo.map((module) => (
+        {data.lessonPlanInfo && <MindMapStudent lessonPlan={data.lessonPlanInfo} />}
+        {/* {data.lessonPlanInfo?.modulesInfo.map((module) => (
           <Stack border={1} borderRadius={3} padding={2} gap={2} key={module.id}>
             <Box
               display='flex'
@@ -163,11 +160,11 @@ export const CourseContent = ({ data }: CourseContentProps) => {
               )}
             </Collapse>
           </Stack>
-        ))}
+        ))} */}
       </Stack>
       {courseId && profile?.data.roleInfo.name === RoleEnum.Teacher && (
         <ModalCustomPlan isOpen={isOpenCustomPlan} course={data} onClose={closeCustomPlan} />
       )}
-    </BoxContent>
+    </Box>
   )
 }

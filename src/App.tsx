@@ -11,6 +11,7 @@ import {
   AssignmentPage,
   CourseDetailPage,
   CoursesPage,
+  CreateNewCoursePage,
   ForumPage,
   HomePage,
   LecturePage,
@@ -30,6 +31,8 @@ import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 import 'react-quill/dist/quill.snow.css'
+import 'slick-carousel/slick/slick.css'
+import 'slick-carousel/slick/slick-theme.css'
 import './App.css'
 import { Suspense, useEffect } from 'react'
 import { GoogleOAuthProvider } from '@react-oauth/google'
@@ -39,8 +42,35 @@ import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { AdminLayout } from './components/layout/AdminLayout'
 import { Dashboard, UserManagement } from './pages/Admin'
+import { ReactFlowProvider } from 'reactflow'
+import { PlanningDetailPage } from './pages/PlanningDetailPage'
+import { CourseDetailLayout } from './components/layout/CourseDetailLayout'
 
 const router = createBrowserRouter([
+  {
+    path: 'courses/:courseId',
+    element: <CourseDetailLayout />,
+    children: [
+      { index: true, element: <CourseDetailPage /> },
+      {
+        path: 'assign',
+        children: [
+          {
+            path: ':assignmentId',
+            element: <AssignmentPage />,
+          },
+        ],
+      },
+      {
+        path: 'quiz/:quizId',
+        element: <QuizPage />,
+      },
+      {
+        path: 'lecture/:lectureId',
+        element: <LecturePage />,
+      },
+    ],
+  },
   {
     path: '/',
     element: (
@@ -55,29 +85,7 @@ const router = createBrowserRouter([
         path: 'courses',
         children: [
           { index: true, element: <CoursesPage /> },
-          {
-            path: ':courseId',
-            children: [
-              { index: true, element: <CourseDetailPage /> },
-              {
-                path: 'assign',
-                children: [
-                  {
-                    path: ':assignmentId',
-                    element: <AssignmentPage />,
-                  },
-                ],
-              },
-              {
-                path: 'quiz/:quizId',
-                element: <QuizPage />,
-              },
-              {
-                path: ':lectureId',
-                element: <LecturePage />,
-              },
-            ],
-          },
+          { path: 'create', element: <CreateNewCoursePage /> },
         ],
       },
       {
@@ -86,7 +94,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'planning',
-        element: <PlanningPage />,
+        children: [{ index: true, element: <PlanningPage /> }],
       },
       {
         path: 'student-manage',
@@ -129,6 +137,15 @@ const router = createBrowserRouter([
       },
     ],
   },
+  {
+    path: 'planning',
+    children: [
+      {
+        path: ':lessonPlanId',
+        element: <PlanningDetailPage />,
+      },
+    ],
+  },
 
   { path: '*', element: <NotFound /> },
 ])
@@ -153,15 +170,17 @@ function App() {
 
   return (
     <GoogleOAuthProvider clientId={configs.GOOGLE_CLIENT_ID}>
-      <QueryClientProvider client={queryClient}>
-        <ToastContainer position='bottom-right' />
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <RouterProvider router={router} />
-          </LocalizationProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
+      <ReactFlowProvider>
+        <QueryClientProvider client={queryClient}>
+          <ToastContainer position='bottom-right' />
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <RouterProvider router={router} />
+            </LocalizationProvider>
+          </ThemeProvider>
+        </QueryClientProvider>
+      </ReactFlowProvider>
     </GoogleOAuthProvider>
   )
 }

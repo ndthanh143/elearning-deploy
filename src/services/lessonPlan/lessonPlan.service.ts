@@ -2,6 +2,7 @@ import axiosInstance from '@/axios'
 import {
   CreateLessonPlanPayload,
   GetLessonPlanQuery,
+  LessonPlanResponse,
   LessonPlansResponse,
   UpdateLessonPlanPayload,
 } from './lessonPlan.dto'
@@ -14,9 +15,9 @@ export const lessonPlanService = {
   },
 
   create: async (payload: CreateLessonPlanPayload) => {
-    const { data } = await axiosInstance.post('lesson-plan/create', payload)
+    const { data } = await axiosInstance.post<LessonPlanResponse>('lesson-plan/create', payload)
 
-    return data
+    return data.data
   },
   update: async (payload: UpdateLessonPlanPayload) => {
     const { data } = await axiosInstance.put('lesson-plan/update', payload)

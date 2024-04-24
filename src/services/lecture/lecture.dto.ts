@@ -8,7 +8,6 @@ export type Lecture = {
 } & BaseData
 
 export type CreateLecturePayload = {
-  modulesId: number
   lectureName: string
   lectureContent: string
 }

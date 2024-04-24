@@ -1,4 +1,5 @@
 import { createTheme } from '@mui/material'
+import { green } from '@mui/material/colors'
 
 declare module '@mui/material/styles' {
   interface PaletteOptions {}
@@ -33,9 +34,9 @@ export const gray = {
 export const theme = createTheme({
   palette: {
     // primary: {
-    //   light: blue[50],
-    //   main: 'blue',
-    //   dark: 'blue',
+    //   light: green[200],
+    //   main: green[500],
+    //   dark: green,
     //   contrastText: '#fff',
     // },
     secondary: {

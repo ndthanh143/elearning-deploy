@@ -1,17 +1,30 @@
-import { useAuth } from '@/hooks'
+import { images } from '@/assets/images'
+import { useAuth, useBoolean, useMenu } from '@/hooks'
 import { RoleEnum } from '@/services/auth/auth.dto'
+import { blue } from '@/styles/theme'
 import {
   AssignmentIndOutlined,
   EditCalendarOutlined,
   EventNoteOutlined,
   ForumOutlined,
+  KeyboardDoubleArrowLeftOutlined,
   LibraryBooksOutlined,
   PeopleOutline,
   TimelineOutlined,
 } from '@mui/icons-material'
-import { List, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material'
+import {
+  Box,
+  IconButton,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Popover,
+  Tooltip,
+  Typography,
+} from '@mui/material'
 import { startsWith } from 'lodash'
-import { ReactNode } from 'react'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 type MenuItemProps = {
@@ -19,7 +32,13 @@ type MenuItemProps = {
   icon: ReactNode
   href: string
 }
-export const SideBar = () => {
+
+interface ISideBarProps {
+  isCollapse: boolean
+  onCollapse: () => void
+}
+
+export const SideBar = ({ isCollapse, onCollapse }: ISideBarProps) => {
   const { profile } = useAuth()
 
   const { pathname } = useLocation()
@@ -30,27 +49,34 @@ export const SideBar = () => {
     Teacher: [
       {
         title: 'Courses',
-        icon: <LibraryBooksOutlined color={startsWith(pathname, '/course') ? 'primary' : 'inherit'} />,
+        icon: <LibraryBooksOutlined fontSize='small' color={startsWith(pathname, '/course') ? 'primary' : 'inherit'} />,
         href: '/courses',
       },
       {
         title: 'Forum',
-        icon: <ForumOutlined color={startsWith(pathname, '/forum') ? 'primary' : 'inherit'} />,
+        icon: <ForumOutlined fontSize='small' color={startsWith(pathname, '/forum') ? 'primary' : 'inherit'} />,
         href: '/forum',
       },
       {
         title: 'Submission',
-        icon: <AssignmentIndOutlined color={startsWith(pathname, '/submission-management') ? 'primary' : 'inherit'} />,
+        icon: (
+          <AssignmentIndOutlined
+            fontSize='small'
+            color={startsWith(pathname, '/submission-management') ? 'primary' : 'inherit'}
+          />
+        ),
         href: '/submission-management',
       },
       {
         title: 'Planning',
-        icon: <EditCalendarOutlined color={startsWith(pathname, '/planning') ? 'primary' : 'inherit'} />,
+        icon: (
+          <EditCalendarOutlined fontSize='small' color={startsWith(pathname, '/planning') ? 'primary' : 'inherit'} />
+        ),
         href: '/planning',
       },
       {
         title: 'Students',
-        icon: <PeopleOutline color={startsWith(pathname, '/planning') ? 'primary' : 'inherit'} />,
+        icon: <PeopleOutline fontSize='small' color={startsWith(pathname, '/planning') ? 'primary' : 'inherit'} />,
         href: '/student-manage',
       },
     ],
@@ -62,17 +88,17 @@ export const SideBar = () => {
       },
       {
         title: 'Courses',
-        icon: <LibraryBooksOutlined color={startsWith(pathname, '/course') ? 'primary' : 'inherit'} />,
+        icon: <LibraryBooksOutlined fontSize='small' color={startsWith(pathname, '/course') ? 'primary' : 'inherit'} />,
         href: '/courses',
       },
       {
         title: 'Schedule',
-        icon: <EventNoteOutlined color={startsWith(pathname, '/schedule') ? 'primary' : 'inherit'} />,
+        icon: <EventNoteOutlined fontSize='small' color={startsWith(pathname, '/schedule') ? 'primary' : 'inherit'} />,
         href: '/schedule',
       },
       {
         title: 'Forum',
-        icon: <ForumOutlined color={startsWith(pathname, '/forum') ? 'primary' : 'inherit'} />,
+        icon: <ForumOutlined fontSize='small' color={startsWith(pathname, '/forum') ? 'primary' : 'inherit'} />,
         href: '/forum',
       },
     ],
@@ -81,33 +107,108 @@ export const SideBar = () => {
 
   return (
     profile && (
-      <List sx={{ minWidth: 250 }}>
-        {listMenu[profile.data.roleInfo.name].map((item) => (
-          <ListItemButton
-            sx={{
-              borderRadius: 3,
-              margin: 1,
-              '&.Mui-selected': {
-                bgcolor: 'primary.contrastText',
-                ':hover': {
-                  bgcolor: 'primary.contrastText',
-                },
-              },
-              bgcolor: item.href === '/' && pathname === '/' ? '#fff' : 'inherit',
-            }}
-            selected={startsWith(pathname, item.href) && item.href !== '/'}
-            key={item.title}
-            onClick={() => navigate(item.href)}
-          >
-            <ListItemIcon>{item.icon}</ListItemIcon>
-            <ListItemText
-              primary={
-                <Typography sx={{ ...(item.href === pathname && { fontWeight: 500 }) }}>{item.title}</Typography>
-              }
+      <Box
+        width={isCollapse ? 0 : 200}
+        overflow='hidden'
+        sx={{ transition: 'all ease 0.2s' }}
+        maxWidth={250}
+        borderRight={1}
+        borderColor={'#ededed'}
+      >
+        <Box display='flex' justifyContent='space-between' py={1} px={2} alignItems='center'>
+          <Box display='flex' alignItems='center' gap={2}>
+            <Box
+              component='img'
+              src={images.logo}
+              alt='logo'
+              width={30}
+              height={30}
+              style={{
+                objectFit: 'cover',
+              }}
             />
-          </ListItemButton>
-        ))}
-      </List>
+          </Box>
+          <Tooltip title='Close sidebar'>
+            <IconButton onClick={onCollapse}>
+              <KeyboardDoubleArrowLeftOutlined />
+            </IconButton>
+          </Tooltip>
+        </Box>
+        <List>
+          {listMenu[profile.data.roleInfo.name].map((item) => (
+            <ListItemButton
+              sx={{
+                borderRadius: 3,
+                margin: 1,
+                '&.Mui-selected': {
+                  bgcolor: blue[50],
+                  ':hover': {
+                    bgcolor: blue[50],
+                  },
+                },
+                bgcolor: item.href === '/' && pathname === '/' ? '#fff' : 'inherit',
+              }}
+              selected={startsWith(pathname, item.href) && item.href !== '/'}
+              key={item.title}
+              onClick={() => navigate(item.href)}
+            >
+              <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
+              <ListItemText
+                primary={
+                  <Typography
+                    variant='body2'
+                    sx={{
+                      fontWeight: item.href === pathname ? 500 : 400,
+                      color: item.href === pathname ? 'primary.main' : '#000',
+                    }}
+                  >
+                    {item.title}
+                  </Typography>
+                }
+              />
+            </ListItemButton>
+          ))}
+        </List>
+        {/* <Box display='flex' justifyContent='start' alignItems='center'>
+            <Popover
+              open={isOpenMiniSideBar}
+              anchorEl={anchorElMini}
+              onClose={closeMiniSideBar}
+              anchorOrigin={{
+                horizontal: 'left',
+                vertical: 'center',
+              }}
+            >
+              <List sx={{ minWidth: 250 }}>
+                {listMenu[profile.data.roleInfo.name].map((item) => (
+                  <ListItemButton
+                    sx={{
+                      borderRadius: 3,
+                      margin: 1,
+                      '&.Mui-selected': {
+                        bgcolor: 'primary.contrastText',
+                        ':hover': {
+                          bgcolor: 'primary.contrastText',
+                        },
+                      },
+                      bgcolor: item.href === '/' && pathname === '/' ? '#fff' : 'inherit',
+                    }}
+                    selected={startsWith(pathname, item.href) && item.href !== '/'}
+                    key={item.title}
+                    onClick={() => navigate(item.href)}
+                  >
+                    <ListItemIcon>{item.icon}</ListItemIcon>
+                    <ListItemText
+                      primary={
+                        <Typography sx={{ ...(item.href === pathname && { fontWeight: 500 }) }}>{item.title}</Typography>
+                      }
+                    />
+                  </ListItemButton>
+                ))}
+              </List>
+            </Popover>
+          </Box> */}
+      </Box>
     )
   )
 }

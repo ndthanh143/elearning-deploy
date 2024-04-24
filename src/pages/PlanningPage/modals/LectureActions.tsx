@@ -1,67 +1,37 @@
 import { CustomModal } from '@/components'
 import Editor from '@/components/Editor'
-import { CreateLecturePayload, Lecture } from '@/services/lecture/lecture.dto'
-import { lectureService } from '@/services/lecture/lecture.service'
-import { moduleKey } from '@/services/module/module.query'
+import { CreateLecturePayload, Lecture, UpdateLecturePayload } from '@/services/lecture/lecture.dto'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Box, Button, TextField } from '@mui/material'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
-import { toast } from 'react-toastify'
-import { number, object, string } from 'yup'
+import { object, string } from 'yup'
 
-export type AddLectureProps = { onClose: () => void } & (
-  | {
-      isOpen: boolean
-      moduleId: number
-      defaultData?: Lecture
-      status: 'create'
-    }
-  | { status: 'update'; defaultData: Lecture; moduleId?: number; isOpen: boolean }
-)
+export type AddLectureProps = {
+  isOpen: boolean
+  defaultData?: Lecture
+  onClose: () => void
+  onCreate?: (payload: CreateLecturePayload) => void
+  onUpdate?: (payload: UpdateLecturePayload) => void
+}
 
 const schema = object({
-  modulesId: number().required(),
   lectureContent: string().required(),
   lectureName: string().required(),
 })
 
-export const LectureActions = ({ isOpen, onClose, moduleId, defaultData, status }: AddLectureProps) => {
-  const queryClient = useQueryClient()
-
-  const { register, reset, handleSubmit, setValue, watch } = useForm<CreateLecturePayload>({
+export const LectureActions = ({ isOpen, onClose, defaultData, onCreate, onUpdate }: AddLectureProps) => {
+  const { register, handleSubmit, setValue, watch } = useForm<CreateLecturePayload>({
     resolver: yupResolver(schema),
     defaultValues: {
-      modulesId: moduleId,
       lectureContent: defaultData?.lectureContent,
       lectureName: defaultData?.lectureName,
     },
   })
 
-  const { mutate: mutateCreateLecture } = useMutation({
-    mutationFn: lectureService.create,
-    onSuccess: () => {
-      toast.success('Add new lecture successfully')
-      onClose()
-      reset()
-      queryClient.invalidateQueries({ queryKey: moduleKey.lists() })
-    },
-  })
-
-  const { mutate: mutateUpdateLecture } = useMutation({
-    mutationFn: lectureService.update,
-    onSuccess: () => {
-      toast.success('Update lecture successfully')
-      onClose()
-      reset()
-      queryClient.invalidateQueries({ queryKey: moduleKey.lists() })
-    },
-  })
-
   const onSubmitHandler = (data: CreateLecturePayload) => {
-    status === 'update'
-      ? mutateUpdateLecture({ id: defaultData.id, lectureName: data.lectureName, lectureContent: data.lectureContent })
-      : mutateCreateLecture(data)
+    onUpdate &&
+      onUpdate({ id: Number(defaultData?.id), lectureName: data.lectureName, lectureContent: data.lectureContent })
+    onCreate && onCreate(data)
   }
 
   return (

@@ -21,9 +21,9 @@ export const courseService = {
   },
 
   create: async (payload: CreateCoursePayload) => {
-    const { data } = await axiosInstance.post('/course/create', payload)
+    const { data } = await axiosInstance.post<CourseResponse>('/course/create', payload)
 
-    return data
+    return data.data
   },
 
   update: async (payload: UpdateCoursePayload) => {

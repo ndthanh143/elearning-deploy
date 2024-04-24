@@ -14,6 +14,7 @@ import { LoginAdminPayload, RoleEnum } from '@/services/auth/auth.dto'
 import { useMutation } from '@tanstack/react-query'
 import authService from '@/services/auth/auth.service'
 import { toast } from 'react-toastify'
+import { MindMap } from '@/components'
 
 const schema = object({
   email: string().required('Please fill in your username'),
@@ -195,4 +196,6 @@ export const LoginPage = () => {
       </Box>
     </Box>
   )
+
+  // return <MindMap/>
 }

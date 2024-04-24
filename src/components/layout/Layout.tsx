@@ -1,13 +1,28 @@
 import { Header, SideBar } from '..'
-import { Box } from '@mui/material'
+import { Box, Stack } from '@mui/material'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks'
-import { useEffect } from 'react'
+import { PropsWithChildren, useEffect, useState } from 'react'
 import { useWebSocket } from '@/hooks/useWebSocket'
 import { RoleEnum } from '@/services/auth/auth.dto'
 
-export const Layout = () => {
+import 'reactflow/dist/style.css'
+
+export const Layout = ({ children = null }: PropsWithChildren) => {
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
+
   const { accessToken, profile, isFetched } = useAuth()
+
+  const [isCollapse, setIsCollapse] = useState(false)
+
+  const handleCollapse = () => {
+    setIsCollapse(true)
+  }
+
+  const handleExpand = () => {
+    setIsCollapse(false)
+  }
 
   const { init, close } = useWebSocket()
   useEffect(() => {
@@ -22,9 +37,9 @@ export const Layout = () => {
     }
   }, [profile])
 
-  const navigate = useNavigate()
-
-  const { pathname } = useLocation()
+  if (profile && profile.data.roleInfo.name === RoleEnum.Admin) {
+    navigate('/admin')
+  }
 
   useEffect(() => {
     if (!accessToken) {
@@ -43,24 +58,16 @@ export const Layout = () => {
     }
   }, [profile])
 
-  if (profile && profile.data.roleInfo.name === RoleEnum.Admin) {
-    navigate('/admin')
-  }
-
   return (
     profile && (
-      <Box bgcolor='#ECEFF3' minHeight='100vh'>
-        <Box position='fixed' width='100vw' bgcolor='#ECEFF3' zIndex={10}>
-          <Header />
-        </Box>
-        <Box display='flex' gap={3} pr={2} pb={3} pt={12}>
-          <Box position='fixed'>
-            <SideBar />
+      <Box bgcolor='white' height='100vh' display='flex' overflow='hidden'>
+        <SideBar isCollapse={isCollapse} onCollapse={handleCollapse} />
+        <Stack flex={1}>
+          <Header isCollapseSideBar={isCollapse} onExpand={handleExpand} />
+          <Box padding={2} maxHeight='100vh' sx={{ overflowY: 'scroll' }}>
+            {children || <Outlet />}
           </Box>
-          <Box flex={1} ml={35} pt={2}>
-            <Outlet />
-          </Box>
-        </Box>
+        </Stack>
       </Box>
     )
   )

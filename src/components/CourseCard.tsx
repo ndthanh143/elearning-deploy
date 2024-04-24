@@ -73,7 +73,7 @@ export const CourseCard = ({ data }: CourseCardProps) => {
               <Divider variant='middle' orientation='vertical' />
               <Box display='flex' alignItems='center' gap={1}>
                 <CastForEducationOutlined />
-                <Typography variant='body2'>{data.modulesInfo?.length || 0} Sections</Typography>
+                <Typography variant='body2'>{data.unit?.length || 0} Sections</Typography>
               </Box>
             </Box>
             <Grid container>

@@ -4,7 +4,7 @@ import { CreateLecturePayload, LectureResponse, UpdateLecturePayload } from './l
 export const lectureService = {
   getById: async (lectureId: number) => {
     const { data } = await axiosInstance.get<LectureResponse>(`/lecture/retrieve/${lectureId}`)
-
+    console.log('haha', data)
     return data.data
   },
   create: async (payload: CreateLecturePayload) => {

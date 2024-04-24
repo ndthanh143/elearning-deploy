@@ -1,22 +1,22 @@
-import { useState, MouseEvent } from 'react';
+import { useState, MouseEvent, MutableRefObject } from 'react'
 
 interface UseMenuOutput {
-  anchorEl: HTMLElement | null;
-  isOpen: boolean;
-  onOpen: (event: MouseEvent<HTMLElement>) => void;
-  onClose: () => void;
+  anchorEl: HTMLElement | null
+  isOpen: boolean
+  onOpen: (event: MouseEvent<HTMLElement>) => void
+  onClose: () => void
 }
 
-export const useMenu = (): UseMenuOutput => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const isOpen = Boolean(anchorEl);
+export const useMenu = (ref?: MutableRefObject<HTMLDivElement | null>): UseMenuOutput => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(ref?.current || null)
+  const isOpen = Boolean(anchorEl)
 
   const onOpen = (event: MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(ref?.current || event.currentTarget)
+  }
   const onClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
-  return { anchorEl, isOpen, onOpen, onClose };
-};
+  return { anchorEl, isOpen, onOpen, onClose }
+}

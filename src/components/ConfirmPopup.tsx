@@ -1,4 +1,4 @@
-import { Button, Modal, Stack, Typography } from '@mui/material'
+import { Button, CircularProgress, Modal, Stack, Typography } from '@mui/material'
 import { BoxContent } from '.'
 import { grey } from '@mui/material/colors'
 
@@ -18,7 +18,7 @@ export const ConfirmPopup = ({ onAccept, onClose, isOpen, title, subtitle, isLoa
         <Typography variant='h5' fontWeight={500} mb={1}>
           {title}
         </Typography>
-        <Typography color={grey[600]} mb={6}>
+        <Typography color={grey[600]} mb={2}>
           {subtitle}
         </Typography>
         <Stack direction='row' justifyContent='center' gap={1}>
@@ -31,8 +31,14 @@ export const ConfirmPopup = ({ onAccept, onClose, isOpen, title, subtitle, isLoa
           >
             Cancel
           </Button>
-          <Button variant='contained' onClick={onAccept} sx={{ display: 'flex', alignItems: 'center' }} fullWidth>
-            {isLoading ? 'Loading...' : 'Accept'}
+          <Button
+            variant='contained'
+            onClick={onAccept}
+            sx={{ display: 'flex', alignItems: 'center' }}
+            fullWidth
+            disabled={isLoading}
+          >
+            {isLoading ? <CircularProgress size={12} color='secondary' /> : 'Accept'}
           </Button>
         </Stack>
       </BoxContent>

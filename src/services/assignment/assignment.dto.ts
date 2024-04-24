@@ -19,7 +19,6 @@ export type CreateAssignmentPayload = {
   assignmentContent: string
   assignmentTitle: string
   endDate?: string
-  modulesId: number
   startDate?: string
   state: number
   urlDocument?: string

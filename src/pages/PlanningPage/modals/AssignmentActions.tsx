@@ -18,14 +18,13 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { number, object, string } from 'yup'
 
-export type AddAssignmentProps = { onClose: () => void } & (
+export type AddAssignmentProps = { onClose: () => void; onCreate: (payload: CreateAssignmentPayload) => void } & (
   | {
       isOpen: boolean
-      moduleId: number
       defaultData?: Assignment
       status: 'create'
     }
-  | { status: 'update'; defaultData: Assignment; moduleId?: number; isOpen: boolean }
+  | { status: 'update'; defaultData: Assignment; isOpen: boolean }
 )
 
 const schema = object({
@@ -33,11 +32,10 @@ const schema = object({
   assignmentTitle: string().required(),
   endDate: string(),
   startDate: string(),
-  modulesId: number().required(),
   state: number().required(),
   urlDocument: string(),
 })
-export const AssignmentActions = ({ isOpen, onClose, moduleId, status, defaultData }: AddAssignmentProps) => {
+export const AssignmentActions = ({ isOpen, onClose, status, defaultData, onCreate }: AddAssignmentProps) => {
   const queryClient = useQueryClient()
 
   const { value: isOpenUpload, setTrue: openUpload, setFalse: closeUpload } = useBoolean(false)
@@ -46,22 +44,12 @@ export const AssignmentActions = ({ isOpen, onClose, moduleId, status, defaultDa
   const { register, handleSubmit, setValue, getValues, watch } = useForm<CreateAssignmentPayload>({
     resolver: yupResolver(schema),
     defaultValues: {
-      modulesId: moduleId,
       state: defaultData?.state || 1,
       urlDocument: defaultData?.urlDocument || '',
       assignmentContent: defaultData?.assignmentContent,
       assignmentTitle: defaultData?.assignmentTitle,
       startDate: dayjs(defaultData?.startDate).toISOString(),
       endDate: dayjs(defaultData?.endDate).toISOString(),
-    },
-  })
-
-  const { mutate: mutateCreate } = useMutation({
-    mutationFn: assignmentService.create,
-    onSuccess: () => {
-      toast.success('Add new assignment successfully')
-      onClose()
-      queryClient.invalidateQueries({ queryKey: moduleKey.lists() })
     },
   })
 
@@ -99,7 +87,7 @@ export const AssignmentActions = ({ isOpen, onClose, moduleId, status, defaultDa
   }
 
   const onSubmitHandler = (data: CreateAssignmentPayload) => {
-    status === 'update' ? mutateUpdate({ id: defaultData.id, ...data }) : mutateCreate(data)
+    status === 'update' ? mutateUpdate({ id: defaultData.id, ...data }) : onCreate(data)
   }
 
   return (

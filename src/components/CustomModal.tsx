@@ -11,15 +11,11 @@ export type CustomModalProps = {
 
 export const CustomModal = ({ isOpen, onClose, title, children, ...props }: PropsWithChildren<CustomModalProps>) => {
   return (
-    <Modal open={isOpen} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <Modal open={isOpen} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} onClose={onClose}>
       <BoxContent width='80vw' {...props}>
-        <Stack direction='row' alignItems='center' justifyContent='space-between' pb={1}>
-          <Typography variant='h5'>{title}</Typography>
-          <IconButton onClick={onClose}>
-            <CloseOutlined />
-          </IconButton>
+        <Stack direction='row' alignItems='center' justifyContent='space-between' mb={2}>
+          <Typography variant='body1'>{title}</Typography>
         </Stack>
-        <Divider />
         {children}
       </BoxContent>
     </Modal>

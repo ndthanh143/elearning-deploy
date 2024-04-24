@@ -1,10 +1,18 @@
 import actions from '@/assets/images/icons/actions'
-import { ConfirmPopup, Loading, NoData } from '@/components'
-import { useBoolean } from '@/hooks'
+import { ConfirmPopup, Loading, MindMap, NoData } from '@/components'
+import { useAuth, useBoolean } from '@/hooks'
 import { Module } from '@/services/module/module.dto'
 import { moduleKey } from '@/services/module/module.query'
-import { ArticleOutlined, DeleteOutline, EditOutlined, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material'
-import { Box, Button, Collapse, Divider, Stack, Typography } from '@mui/material'
+import {
+  ArticleOutlined,
+  ChevronLeftOutlined,
+  DeleteOutline,
+  EditOutlined,
+  KeyboardArrowDown,
+  KeyboardArrowUp,
+  MoreHorizOutlined,
+} from '@mui/icons-material'
+import { Box, Button, Collapse, Divider, IconButton, Stack, Typography } from '@mui/material'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { ActionsModule } from './ActionsModule'
@@ -22,16 +30,27 @@ import { Resource } from '@/services/resource/resource.dto'
 import { ResourceActions } from '../modals/ResourceActions'
 import { Quiz } from '@/services/quiz/quiz.dto'
 import { moduleService } from '@/services/module/module.service'
+import { lessonPlanKey } from '@/services/lessonPlan/lessonPlan.query'
+import { useNavigate } from 'react-router-dom'
+import { gray } from '@/styles/theme'
 
-export type ModuleTeacherProps = {
+export type BasicPlanTeacherProps = {
   lessonPlanId: number
   onEdit: () => void
   onDelete: () => void
 }
 
-export const ModuleTeacher = ({ lessonPlanId, onEdit, onDelete }: ModuleTeacherProps) => {
+export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTeacherProps) => {
+  const { profile } = useAuth()
+
   const moduleInstance = moduleKey.list({ lessonPlanId })
   const { data: modules, refetch: refetchModules, isLoading: isLoadingModules } = useQuery({ ...moduleInstance })
+
+  const navigate = useNavigate()
+
+  const lessonPlanInstance = lessonPlanKey.list({ teacherId: profile?.data.id as number })
+  const { data: lessonPlans } = useQuery({ ...lessonPlanInstance })
+  const currentLessonPlan = lessonPlans?.content.find((lessonPlan) => lessonPlan.id === lessonPlanId)
 
   const [expandModuleList, setExpandModuleList] = useState<number[]>([])
   const [selectedLecture, setSelectedLecture] = useState<Lecture | null>(null)
@@ -121,13 +140,47 @@ export const ModuleTeacher = ({ lessonPlanId, onEdit, onDelete }: ModuleTeacherP
     )
   }
 
+  const handleBackPage = () => {
+    navigate('/planning')
+  }
+
   if (isLoadingModules) {
     return <Loading />
   }
 
   return (
     modules && (
-      <Stack gap={2} minHeight='70vh'>
+      <Stack gap={2} paddingX={4}>
+        <Box
+          borderRadius={4}
+          bgcolor='white'
+          display='flex'
+          border={1}
+          borderColor={gray[200]}
+          gap={1}
+          top={20}
+          px={2}
+          py={1}
+          width='fit-content'
+          left={20}
+          zIndex={10}
+        >
+          <IconButton onClick={handleBackPage} color='secondary'>
+            <ChevronLeftOutlined />
+          </IconButton>
+          <Button
+            variant='text'
+            color='secondary'
+            sx={{ display: 'flex', alignItems: 'center', px: 2, fontWeight: 700 }}
+          >
+            {currentLessonPlan?.name}
+            <ChevronLeftOutlined sx={{ rotate: '-90deg' }} fontSize='small' />
+          </Button>
+          <Divider orientation='vertical' flexItem />
+          <IconButton color='secondary'>
+            <MoreHorizOutlined />
+          </IconButton>
+        </Box>
         <Stack direction='row' gap={2} justifyContent='end'>
           <Button sx={{ display: 'flex', gap: 1 }} variant='outlined' onClick={onEdit}>
             <EditOutlined fontSize='small' />
@@ -292,6 +345,8 @@ export const ModuleTeacher = ({ lessonPlanId, onEdit, onDelete }: ModuleTeacherP
           onSubmit={handleCreateSection}
         />
       </Stack>
+
+      // <MindMap module={modules.content} lessonPlanId={lessonPlanId} />
     )
   )
 }

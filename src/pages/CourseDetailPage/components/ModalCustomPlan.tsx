@@ -53,6 +53,7 @@ export const ModalCustomPlan = ({ isOpen, onClose, course }: ModalCustomPlanProp
         <List>
           {data?.map((lessonPlan) => (
             <ListItem
+              key={lessonPlan.id}
               secondaryAction={
                 lessonPlan.id === course.lessonPlanInfo?.id ? (
                   <Tooltip title='Current plan' sx={{ mr: 1 }}>

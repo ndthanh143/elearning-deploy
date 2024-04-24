@@ -104,12 +104,14 @@ export const QuizSubmission = ({ courseId, quizId }: QuizSubmissionProps) => {
         )}
       </Box>
 
-      <Pagination
-        page={page + 1}
-        onChange={(_, page) => setPage(page - 1)}
-        count={quizSubmissions?.totalPages}
-        sx={{ mt: 2, justifyContent: 'center', display: 'start' }}
-      />
+      {quizSubmissions && quizSubmissions.totalPages > 1 && (
+        <Pagination
+          page={page + 1}
+          onChange={(_, page) => setPage(page - 1)}
+          count={quizSubmissions?.totalPages}
+          sx={{ mt: 2, justifyContent: 'center', display: 'start' }}
+        />
+      )}
       {filterData && (
         <ModalQuizStatistic
           isOpen={isOpenViewStatistic}

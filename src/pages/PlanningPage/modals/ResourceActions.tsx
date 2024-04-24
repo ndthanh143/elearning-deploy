@@ -13,22 +13,20 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { number, object, string } from 'yup'
 
-export type AddResourceProps = { onClose: () => void } & (
+export type AddResourceProps = { onClose: () => void; onCreate: (payload: CreateResourcePayload) => void } & (
   | {
       isOpen: boolean
-      moduleId: number
       defaultData?: Resource
       status: 'create'
     }
-  | { status: 'update'; defaultData: Resource; moduleId?: number; isOpen: boolean }
+  | { status: 'update'; defaultData: Resource; isOpen: boolean }
 )
 
 const schema = object({
-  modulesId: number().required(),
   urlDocument: string().required(),
   title: string().required('Please fill resource name'),
 })
-export const ResourceActions = ({ isOpen, onClose, moduleId, status, defaultData }: AddResourceProps) => {
+export const ResourceActions = ({ isOpen, onClose, status, defaultData, onCreate }: AddResourceProps) => {
   const queryClient = useQueryClient()
 
   const { value: isOpenUpload, setTrue: openUpload, setFalse: closeUpload } = useBoolean()
@@ -43,19 +41,8 @@ export const ResourceActions = ({ isOpen, onClose, moduleId, status, defaultData
   } = useForm<CreateResourcePayload>({
     resolver: yupResolver(schema),
     defaultValues: {
-      modulesId: moduleId,
       title: defaultData?.title,
       urlDocument: defaultData?.urlDocument,
-    },
-  })
-
-  const { mutate: mutateUploadResource } = useMutation({
-    mutationFn: resourceService.create,
-    onSuccess: () => {
-      toast.success('Add resource successfully')
-      onClose()
-      reset()
-      queryClient.invalidateQueries({ queryKey: moduleKey.lists() })
     },
   })
 
@@ -75,7 +62,7 @@ export const ResourceActions = ({ isOpen, onClose, moduleId, status, defaultData
   }
 
   const onSubmitHandler = (data: CreateResourcePayload) => {
-    status === 'update' ? mutateUpdateResource({ id: defaultData.id, ...data }) : mutateUploadResource(data)
+    status === 'update' ? mutateUpdateResource({ id: defaultData.id, ...data }) : onCreate(data)
   }
 
   return (

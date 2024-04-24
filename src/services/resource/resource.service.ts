@@ -1,12 +1,12 @@
 import axiosInstance from '@/axios'
 
-import { CreateResourcePayload, UpdateResourcePayload } from './resource.dto'
+import { CreateResourcePayload, GetResourceResponse, UpdateResourcePayload } from './resource.dto'
 
 export const resourceService = {
   create: async (payload: CreateResourcePayload) => {
-    const { data } = await axiosInstance.post('/resources/create', payload)
+    const { data } = await axiosInstance.post<GetResourceResponse>('/resources/create', payload)
 
-    return data
+    return data.data
   },
   update: async (payload: UpdateResourcePayload) => {
     const { data } = await axiosInstance.put('/resources/update', payload)

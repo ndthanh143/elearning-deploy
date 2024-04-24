@@ -1,8 +1,8 @@
-import Module from 'module'
 import { BaseData, BasePaginationResponse, BaseResponse, PaginationQuery } from '../common/base.dto'
 import { Forum } from '../forum/forum.dto'
 import { LessonPlan } from '../lessonPlan/lessonPlan.dto'
 import { Account } from '../user/user.dto'
+import { Unit } from '../unit/types'
 
 export type CourseResponse = BaseResponse<Course>
 export type CoursesResponse = BasePaginationResponse<Course[]>
@@ -17,16 +17,24 @@ export type Course = {
   lessonPlanInfo?: LessonPlan
   objectives: string[]
   requirements: string[]
-  forumInfo: Forum
-  modulesInfo?: Module[]
+  forumInfo?: Forum
+  unit?: Unit[]
 } & BaseData
 
 export type CreateCoursePayload = {
-  name: string
+  courseName: string
   description: string
   objectives: string[]
   requirements: string[]
   thumbnail: string
+  startDate?: Date
+  currency?: string
+  price?: number
+  categoryId: number
+  welcome?: string
+  state?: number
+  lessonPlanId?: number
+  congratulation?: string
 }
 
 export type GetListCoursesQuery = {
