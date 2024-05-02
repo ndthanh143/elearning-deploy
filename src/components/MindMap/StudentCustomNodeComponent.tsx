@@ -143,7 +143,7 @@ export const StudentCustomNodeComponent = (
     }
 
     const payload: CreateUnitPayload = {
-      name: data.modulesName,
+      name: data.name,
       description: data.description,
       lessonPlanId: unit.lessonPlanInfo.id,
       parentId: unit.id,

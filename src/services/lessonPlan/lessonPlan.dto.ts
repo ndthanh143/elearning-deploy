@@ -7,7 +7,7 @@ export type LessonPlanResponse = BaseResponse<LessonPlan>
 export type LessonPlan = {
   name: string
   description: string
-  type?: string
+  type?: 'mindmap' | 'basic'
   units: Unit[]
 } & BaseData
 

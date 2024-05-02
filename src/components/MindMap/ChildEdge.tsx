@@ -32,14 +32,29 @@
 //   )
 // }
 
+import { Box } from '@mui/material'
 import { useCallback } from 'react'
-import { useStore, getStraightPath, EdgeProps } from 'reactflow'
+import { useStore, getStraightPath, EdgeProps, BaseEdge, getBezierPath } from 'reactflow'
 
-import { Position, MarkerType } from 'reactflow'
+import { Position, MarkerType, Node } from 'reactflow'
+
+interface IntersectionNode extends Node {
+  positionAbsolute: {
+    x: number
+    y: number
+  }
+  width: number
+  height: number
+}
+
+interface IntersectionPoint {
+  x: number
+  y: number
+}
 
 // this helper function returns the intersection point
 // of the line between the center of the intersectionNode and the target node
-function getNodeIntersection(intersectionNode, targetNode) {
+function getNodeIntersection(intersectionNode: IntersectionNode, targetNode: IntersectionNode) {
   // https://math.stackexchange.com/questions/1724792/an-algorithm-for-finding-the-intersection-point-between-a-center-of-vision-and-a
   const {
     width: intersectionNodeWidth,
@@ -68,7 +83,7 @@ function getNodeIntersection(intersectionNode, targetNode) {
 }
 
 // returns the position (top,right,bottom or right) passed node compared to the intersection point
-function getEdgePosition(node, intersectionPoint) {
+function getEdgePosition(node: IntersectionNode, intersectionPoint: IntersectionPoint) {
   const n = { ...node.positionAbsolute, ...node }
   const nx = Math.round(n.x)
   const ny = Math.round(n.y)
@@ -92,7 +107,7 @@ function getEdgePosition(node, intersectionPoint) {
 }
 
 // returns the parameters (sx, sy, tx, ty, sourcePos, targetPos) you need to create an edge
-export function getEdgeParams(source, target) {
+export function getEdgeParams(source: IntersectionNode, target: IntersectionNode) {
   const sourceIntersectionPoint = getNodeIntersection(source, target)
   const targetIntersectionPoint = getNodeIntersection(target, source)
 
@@ -138,7 +153,7 @@ export function createNodesAndEdges() {
   return { nodes, edges }
 }
 
-export function ChildEdge({ id, source, target, markerEnd, style }: EdgeProps) {
+export function ChildEdge({ id, source, target, markerEnd }: EdgeProps) {
   const sourceNode = useStore(useCallback((store) => store.nodeInternals.get(source), [source]))
   const targetNode = useStore(useCallback((store) => store.nodeInternals.get(target), [target]))
 
@@ -146,7 +161,7 @@ export function ChildEdge({ id, source, target, markerEnd, style }: EdgeProps) {
     return null
   }
 
-  const { sx, sy, tx, ty } = getEdgeParams(sourceNode, targetNode)
+  const { sx, sy, tx, ty } = getEdgeParams(sourceNode as IntersectionNode, targetNode as IntersectionNode)
 
   const [edgePath] = getStraightPath({
     sourceX: sx,
@@ -155,5 +170,13 @@ export function ChildEdge({ id, source, target, markerEnd, style }: EdgeProps) {
     targetY: ty,
   })
 
-  return <path id={id} className='react-flow__edge-path' d={edgePath} markerEnd={markerEnd} style={style} />
+  return (
+    <Box
+      component={BaseEdge}
+      id={id}
+      path={edgePath}
+      markerEnd={markerEnd}
+      style={{ stroke: '#7EB6C0', strokeWidth: 4 }}
+    />
+  )
 }

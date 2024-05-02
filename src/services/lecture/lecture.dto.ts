@@ -14,6 +14,6 @@ export type CreateLecturePayload = {
 
 export type UpdateLecturePayload = {
   id: number
-  lectureName: string
-  lectureContent: string
+  lectureName?: string
+  lectureContent?: string
 }

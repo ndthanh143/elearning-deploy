@@ -32,8 +32,8 @@ const schema = object({
 
 export type CreateCourseForm = UseFormReturn<
   {
-    requirements?: (string | undefined)[] | undefined
-    objectives?: (string | undefined)[] | undefined
+    requirements?: string[]
+    objectives?: string[]
     state: number
     teacherId: number
     courseName: string
@@ -42,7 +42,7 @@ export type CreateCourseForm = UseFormReturn<
     startDate: string
     welcome?: string
     congratulation?: string
-    planId?: number
+    lessonPlanId?: number
     currency?: string
     price?: number
     categoryId: number
@@ -58,7 +58,7 @@ export function CreateNewCoursePage() {
   const [step, setStep] = useState(0)
 
   const { profile } = useAuth()
-  const form: CreateCourseForm = useForm({
+  const form = useForm<CreateCourseForm>({
     resolver: yupResolver(schema),
     defaultValues: {
       ...(profile && {
@@ -71,13 +71,13 @@ export function CreateNewCoursePage() {
     },
   })
 
-  const { reset, getValues } = form
+  const { reset, getValues, watch } = form
 
   const { mutate: mutateCreateCourse, isPending: isLoadingCreate } = useMutation({
     mutationFn: courseService.create,
     onSuccess: (data) => {
       toast.success('Create course successfully!')
-      navigate(`/courses/${data.id}`)
+      // navigate(`/courses/${data.id}`)
       reset()
       queryClient.invalidateQueries({ queryKey: courseKeys.lists() })
     },
@@ -100,6 +100,8 @@ export function CreateNewCoursePage() {
   const handleNextStep = () => {
     setStep((prev) => prev + 1)
   }
+
+  console.log('watch', watch())
 
   const steps = [
     <BasicInformation onNext={handleNextStep} form={form} />,

@@ -45,7 +45,7 @@ export const LectureActions = ({ isOpen, onClose, defaultData, onCreate, onUpdat
           fullWidth
           {...register('lectureName')}
         />
-        <Box height='70vh' mb={2}>
+        <Box mb={2}>
           <Editor
             value={watch('lectureContent')}
             onChange={(value) => {

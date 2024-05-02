@@ -19,25 +19,17 @@ import ReactFlow, {
 } from 'reactflow'
 
 import 'reactflow/dist/style.css'
-import { Module } from '@/services/module/module.dto'
 import { CustomEdge } from './CustomEdge'
 import { ChildEdge } from './ChildEdge'
 import { CustomNodeComponent } from './CustomNodeComponent'
 import { ChildNodeComponent } from './ChildNodeComponent'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { moduleService } from '@/services/module/module.service'
-import { moduleKey } from '@/services/module/module.query'
-import { ModalSection, SectionModalProps } from '@/pages/PlanningPage/modals'
-import { toast } from 'react-toastify'
-import { AddCircleOutlineOutlined, ChevronLeftOutlined, MoreHorizOutlined, MoreOutlined } from '@mui/icons-material'
-import { blue, green, grey, purple } from '@mui/material/colors'
-import { lessonPlanKey } from '@/services/lessonPlan/lessonPlan.query'
-import { useNavigate } from 'react-router-dom'
-import { ActionSetting, DrawerNodeDetail } from './components'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { ActionSetting } from './components'
 import { RightAction } from './components/RightAction'
 import { unitKey } from '@/services/unit/query'
 import { unitService } from '@/services/unit'
 import { Flex, Loading } from '..'
+import { CustomConnectionLine } from './CustomConnectionLine'
 
 const nodeTypes = {
   customNode: CustomNodeComponent, // Define your custom node type
@@ -49,21 +41,21 @@ const edgeTypes = {
   childEdge: ChildEdge,
 }
 
+const connectionLineStyle = {
+  strokeWidth: 3,
+  stroke: '#F1D1C3',
+}
+
 interface IMindMapProps {
   lessonPlanId: number
 }
 
 export function MindMap({ lessonPlanId }: IMindMapProps) {
-  let outgoers: any[] = []
-  let connectedEdges: any[] = []
-  let stack: any[] = []
-
   const { profile } = useAuth()
   const isTeacher = profile?.data.roleInfo.name === 'Teacher'
 
   const [nodes, setNodes] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
-  const [hidden, setHidden] = useState(false)
   const scrollContainerRef = useRef(null)
 
   const unitInstance = unitKey.list({ lessonPlanId, unpaged: true })
@@ -74,11 +66,6 @@ export function MindMap({ lessonPlanId }: IMindMapProps) {
     isFetched: isFetchedUnits,
   } = useQuery({ ...unitInstance })
   const { mutate: mutateUpdateUnit, isPending: isLoadingUpdateUnit } = useMutation({ mutationFn: unitService.update })
-
-  const hide = (hidden: boolean, childEdgeID: number[], childNodeID: number[]) => (nodeOrEdge: any) => {
-    if (childEdgeID.includes(nodeOrEdge.id) || childNodeID.includes(nodeOrEdge.id)) nodeOrEdge.hidden = hidden
-    return nodeOrEdge
-  }
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => {
@@ -99,8 +86,6 @@ export function MindMap({ lessonPlanId }: IMindMapProps) {
     [setNodes],
   )
 
-  const checkTarget = (edges: Edge[], id: string) => edges.filter((ed) => ed.target !== id)
-
   const onEdgeUpdate = useCallback(
     (oldEdge: Edge, newConnection: Connection) => setEdges((els) => updateEdge(oldEdge, newConnection, els)),
     [],
@@ -114,48 +99,6 @@ export function MindMap({ lessonPlanId }: IMindMapProps) {
       }),
     [],
   )
-
-  const handleNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-    let currentNodeID = node.id
-
-    // setFocusId(currentNodeID)
-
-    // fitView({
-    //   nodes: [{ id: currentNodeID }],
-    //   duration: 500,
-    // })
-
-    stack.push(node)
-    while (stack.length > 0) {
-      const lastNOde = stack.pop()
-      const childnode = getOutgoers(lastNOde, nodes, edges).filter((node) => node.type === 'childNode')
-
-      const childNodeIds = Object.values(childnode).map((node) => node.id)
-
-      const childedge = checkTarget(getConnectedEdges([lastNOde], edges), currentNodeID).filter((edge: Edge) =>
-        childNodeIds.includes(edge.target),
-      )
-
-      childnode.map((goer) => {
-        stack.push(goer)
-        outgoers.push(goer)
-      })
-      childedge.map((edge: Edge) => {
-        connectedEdges.push(edge)
-      })
-    }
-
-    const childNodeID = outgoers.map((node) => {
-      return node.id
-    })
-    const childEdgeID = connectedEdges.map((edge) => {
-      return edge.id
-    })
-
-    setNodes((node) => node.map(hide(hidden, childEdgeID, childNodeID)))
-    setEdges((edge) => edge.map(hide(hidden, childEdgeID, childNodeID)))
-    setHidden(!hidden)
-  }, [])
 
   useEffect(() => {
     const initialEdges: Edge[] = []
@@ -178,14 +121,12 @@ export function MindMap({ lessonPlanId }: IMindMapProps) {
         source: parentNodeId || '',
         target: currentNodeId,
         type: isDefaultUnit ? 'customEdge' : 'childEdge',
-        ...(isDefaultUnit && {
-          markerEnd: {
-            type: MarkerType.ArrowClosed,
-            width: 10,
-            height: 10,
-            color: '#F79B8D',
-          },
-        }),
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          width: 10,
+          height: 10,
+          color: isDefaultUnit ? '#F79B8D' : '#7EB6C0',
+        },
       })
     }
 
@@ -213,7 +154,7 @@ export function MindMap({ lessonPlanId }: IMindMapProps) {
         style={{
           width: '100%',
           height: '100vh',
-          // background: 'linear-gradient(135deg, #007BFF 0%, #FFA500 100%)',
+          background: '#FFFDF5',
         }}
         py={4}
         ref={scrollContainerRef}
@@ -231,7 +172,6 @@ export function MindMap({ lessonPlanId }: IMindMapProps) {
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
-          onNodeClick={handleNodeClick}
           onConnect={onConnect}
           // fitView
           onEdgeUpdate={onEdgeUpdate}
@@ -242,6 +182,8 @@ export function MindMap({ lessonPlanId }: IMindMapProps) {
           zoomOnDoubleClick={false}
           zoomOnScroll={false}
           preventScrolling={false}
+          connectionLineComponent={CustomConnectionLine}
+          connectionLineStyle={connectionLineStyle}
         ></Box>
       </Box>
 

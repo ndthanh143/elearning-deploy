@@ -14,7 +14,7 @@ import {
 } from '@mui/icons-material'
 import { Box, Button, Collapse, Divider, IconButton, Stack, Typography } from '@mui/material'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ActionsModule } from './ActionsModule'
 import { downloadFileByLink, getResourceType } from '@/utils'
 import { ContentItem } from './ContentItem'
@@ -33,6 +33,9 @@ import { moduleService } from '@/services/module/module.service'
 import { lessonPlanKey } from '@/services/lessonPlan/lessonPlan.query'
 import { useNavigate } from 'react-router-dom'
 import { gray } from '@/styles/theme'
+import { unitKey } from '@/services/unit/query'
+import { unitService } from '@/services/unit'
+import { Unit } from '@/services/unit/types'
 
 export type BasicPlanTeacherProps = {
   lessonPlanId: number
@@ -43,8 +46,8 @@ export type BasicPlanTeacherProps = {
 export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTeacherProps) => {
   const { profile } = useAuth()
 
-  const moduleInstance = moduleKey.list({ lessonPlanId })
-  const { data: modules, refetch: refetchModules, isLoading: isLoadingModules } = useQuery({ ...moduleInstance })
+  const unitInstance = unitKey.list({ lessonPlanId, unpaged: true })
+  const { data: units, refetch: refetchUnits, isLoading: isLoadingUnits } = useQuery({ ...unitInstance })
 
   const navigate = useNavigate()
 
@@ -65,7 +68,7 @@ export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTe
     mutationFn: assignmentService.delete,
     onSuccess: () => {
       toast.success('Delete assignment successfully')
-      refetchModules()
+      refetchUnits()
     },
   })
 
@@ -73,7 +76,7 @@ export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTe
     mutationFn: lectureService.delete,
     onSuccess: () => {
       toast.success('Delete lecture successfully')
-      refetchModules()
+      refetchUnits()
     },
   })
 
@@ -81,7 +84,7 @@ export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTe
     mutationFn: quizService.delete,
     onSuccess: () => {
       toast.success('Delete quiz successfully')
-      refetchModules()
+      refetchUnits()
     },
     onError: () => {
       toast.error('This quiz had submission before, can not delete it')
@@ -89,23 +92,23 @@ export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTe
   })
 
   const { mutate } = useMutation({
-    mutationFn: moduleService.create,
+    mutationFn: unitService.create,
     onSuccess: () => {
       closeAddSection()
-      refetchModules()
-      toast.success('Create module successfully!')
+      refetchUnits()
+      toast.success('Create section successfully!')
     },
   })
 
   const handleCreateSection = (data: SectionModalProps) => {
-    mutate({ ...data, lessonPlanId })
+    mutate({ name: data.name, description: data.description, lessonPlanId })
   }
 
   const { mutate: deleteResource } = useMutation({
     mutationFn: resourceService.delete,
     onSuccess: () => {
       toast.success('Delete resource successfully')
-      refetchModules()
+      refetchUnits()
     },
   })
 
@@ -118,10 +121,10 @@ export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTe
   }
 
   const handleToggleModuleListAll = () => {
-    if (modules?.content.length === expandModuleList.length) {
+    if (units?.content.length === expandModuleList.length) {
       setExpandModuleList([])
     } else {
-      const moduleIdList = modules?.content.map((module) => module.id) || []
+      const moduleIdList = units?.content.map((module) => module.id) || []
       setExpandModuleList(moduleIdList)
     }
   }
@@ -130,6 +133,15 @@ export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTe
     downloadFileByLink(urlDocument)
     // mutateDownloadFile(urlDocument)
   }
+
+  const isMicroItem = (unit: Unit) => {
+    return unit.lectureInfo || unit.resourceInfo || unit.assignmentInfo || unit.quizInfo
+  }
+
+  // useEffect(() => {
+
+  //   console.log(mappedUnits)
+  // }, [units])
 
   const isNotEmptyModule = (module: Module) => {
     return (
@@ -144,12 +156,43 @@ export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTe
     navigate('/planning')
   }
 
-  if (isLoadingModules) {
+  console.log('units', units)
+
+  if (isLoadingUnits) {
     return <Loading />
   }
 
+  const mappedUnits = units?.content.reduce(
+    (acc, cur) => {
+      if (isMicroItem(cur)) {
+        return {
+          ...acc,
+          children: [...acc.children, cur],
+        }
+      } else {
+        return {
+          ...acc,
+          group: [...acc.group, cur],
+        }
+      }
+    },
+    { group: [] as Unit[], children: [] as Unit[] },
+  )
+
+  const renderData = mappedUnits?.group.reduce((acc, cur) => {
+    const listChildren = mappedUnits.children.filter((child) => child.parent?.id === cur.id)
+
+    return {
+      ...acc,
+      [cur.id]: {
+        ...cur,
+        children: listChildren,
+      },
+    }
+  }, {})
+
   return (
-    modules && (
+    units && (
       <Stack gap={2} paddingX={4}>
         <Box
           borderRadius={4}
@@ -193,13 +236,13 @@ export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTe
         <Button fullWidth variant='outlined' onClick={openAddSection}>
           Add sections
         </Button>
-        {!modules.content.length ? (
+        {!units.content.length ? (
           <NoData title='No content in this plan!' />
         ) : (
           <Box display='flex' justifyContent='space-between' alignItems='center' mb={1}>
-            <Typography variant='body2'>{modules.content.length || 0} Sections</Typography>
+            <Typography variant='body2'>{units.content.length || 0} Sections</Typography>
             <Button variant='text' onClick={handleToggleModuleListAll}>
-              {modules.content.length === expandModuleList.length ? (
+              {units.content.length === expandModuleList.length ? (
                 <>
                   Collapse All <KeyboardArrowUp />
                 </>
@@ -212,41 +255,62 @@ export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTe
           </Box>
         )}
         <Stack gap={2}>
-          {modules.content.map((module) => (
-            <Stack border={1} borderRadius={3} padding={2} gap={2} key={module.id}>
-              <ActionsModule module={module} />
+          {mappedUnits?.group.map((unit) => (
+            <Stack border={1} borderRadius={3} padding={2} gap={2} key={unit.id}>
+              <ActionsModule data={unit} />
               <Divider />
               <Box
                 display='flex'
                 alignItems='center'
                 justifyContent='space-between'
                 sx={{ cursor: 'pointer' }}
-                onClick={() => handleExpandModuleList(module.id)}
+                onClick={() => handleExpandModuleList(unit.id)}
               >
                 <Box display='flex' alignItems='center' gap={2}>
                   <KeyboardArrowDown />
-                  <Typography fontWeight={500}>{module.modulesName}</Typography>
+                  <Typography fontWeight={500}>{unit.name}</Typography>
                 </Box>
                 <Stack direction='row' gap={3}>
                   <Box display='flex' alignItems='center' gap={1}>
                     <ArticleOutlined color='primary' />
-                    <Typography>{module.lectureInfo?.length}</Typography>
+                    {/* <Typography>{unit.lectureInfo?.length}</Typography> */}
                   </Box>
                   <Box display='flex' alignItems='center' gap={1}>
                     <Box component='img' src={actions.assignment} alt='assignment' width={25} />
-                    <Typography>{module.assignmentInfo?.length}</Typography>
+                    {/* <Typography>{unit.assignmentInfo?.length}</Typography> */}
                   </Box>
                   <Box display='flex' alignItems='center' gap={1}>
                     <Box component='img' src={actions.quiz} alt='assignment' width={25} />
-                    <Typography>{module.quizInfo?.length}</Typography>
+                    {/* <Typography>{unit.quizInfo?.length}</Typography> */}
                   </Box>
                 </Stack>
               </Box>
-              <Collapse in={expandModuleList.includes(module.id)} timeout='auto' unmountOnExit>
+              <Collapse in={expandModuleList.includes(unit.id)} timeout='auto' unmountOnExit>
                 <Divider />
-                {isNotEmptyModule(module) ? (
+                <Stack gap={1}>
+                  {renderData[unit.id]?.children.map((child) => {
+                    let childType = 'lecture'
+                    if (child.lectureInfo) {
+                      childType = 'lecture'
+                    }
+                    if (child.assignmentInfo) {
+                      childType = 'assignment'
+                    }
+
+                    return (
+                      <ContentItem
+                        title={child.name}
+                        iconUrl={actions[childType]}
+                        key={child.id}
+                        onEdit={() => setSelectedLecture(child)}
+                        onDelete={() => deleteLecture(child.id)}
+                      />
+                    )
+                  })}
+                </Stack>
+                {/* {isNotEmptyModule(unit) ? (
                   <Stack gap={1} mt={1}>
-                    {module.lectureInfo.map((lecture) => (
+                    {unit.lectureInfo.map((lecture) => (
                       <>
                         <ContentItem
                           title={lecture.lectureName}
@@ -261,12 +325,12 @@ export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTe
                             onClose={() => setSelectedLecture(null)}
                             defaultData={selectedLecture}
                             status='update'
-                            moduleId={module.id}
+                            moduleId={unit.id}
                           />
                         )}
                       </>
                     ))}
-                    {module.assignmentInfo.map((assignment) => (
+                    {unit.assignmentInfo.map((assignment) => (
                       <>
                         <ContentItem
                           title={assignment.assignmentTitle}
@@ -281,12 +345,12 @@ export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTe
                             onClose={() => setSelectedAssignment(null)}
                             defaultData={selectedAssignment}
                             status='update'
-                            moduleId={module.id}
+                            moduleId={unit.id}
                           />
                         )}
                       </>
                     ))}
-                    {module.quizInfo.map((quiz) => (
+                    {unit.quizInfo.map((quiz) => (
                       <>
                         <ContentItem
                           title={quiz.quizTitle}
@@ -297,7 +361,7 @@ export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTe
                         />
                       </>
                     ))}
-                    {module.resourceInfo.map((resource) => (
+                    {unit.resourceInfo.map((resource) => (
                       <>
                         <ContentItem
                           title={resource.title}
@@ -313,7 +377,7 @@ export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTe
                             onClose={() => setSelectedResource(null)}
                             defaultData={selectedResource}
                             status='update'
-                            moduleId={module.id}
+                            moduleId={unit.id}
                           />
                         )}
                       </>
@@ -321,7 +385,7 @@ export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTe
                   </Stack>
                 ) : (
                   <NoData title='No content in this module' />
-                )}
+                )} */}
               </Collapse>
             </Stack>
           ))}

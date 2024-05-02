@@ -61,3 +61,10 @@ export type UpdateUnitPayload = {
 export interface PrerequisiteUpdate {
   prerequisiteId: number
 }
+
+export type SearchUnitQuery = {
+  q?: string
+  page?: number
+  size?: number
+  lessonPlanId?: number
+}

@@ -143,7 +143,7 @@ export const TeacherCustomNodeComponent = (
     }
 
     const payload: CreateUnitPayload = {
-      name: data.modulesName,
+      name: data.name,
       description: data.description,
       lessonPlanId: unit.lessonPlanInfo.id,
       parentId: unit.id,
@@ -151,18 +151,6 @@ export const TeacherCustomNodeComponent = (
     }
 
     mutateCreateUnit(payload)
-  }
-
-  const nodeStatusProperties: Record<StatusNodeType, any> = {
-    lock: {
-      backgroundColor: '#F79B8D',
-    },
-    done: {
-      backgroundColor: green[500],
-    },
-    current: {
-      backgroundColor: blue[500],
-    },
   }
 
   let statusNodes: StatusNodeType = 'current'
@@ -175,7 +163,7 @@ export const TeacherCustomNodeComponent = (
       <Box
         sx={{
           // position: 'relative',
-          backgroundColor: nodeStatusProperties[statusNodes].backgroundColor,
+          backgroundColor: '#F79B8D',
           // boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.75)',
           color: 'white',
           borderRadius: 4,
@@ -200,29 +188,6 @@ export const TeacherCustomNodeComponent = (
         <Typography variant='body2' textAlign={'center'}>
           {unit.name}
         </Typography>
-
-        <Handle
-          id='b'
-          type='source'
-          position={Position.Left}
-          style={{
-            background: isTeacher ? '#F1D1C3' : 'transparent',
-            border: isTeacher ? 1 : 0,
-            position: 'absolute',
-            zIndex: 1,
-          }}
-        />
-        <Handle
-          id='b'
-          type='source'
-          position={Position.Right}
-          style={{
-            background: isTeacher ? '#F1D1C3' : 'transparent',
-            border: isTeacher ? 1 : 0,
-            position: 'absolute',
-            zIndex: 1,
-          }}
-        />
 
         <Handle
           type='source'

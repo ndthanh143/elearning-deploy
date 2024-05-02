@@ -21,13 +21,13 @@ export function CoursePlanSelection({ onNext, form }: ICoursePlanSelectionProps)
 
   const navigate = useNavigate()
 
+  const { setValue, watch } = form
+
   const lessonPlanInstance = lessonPlanKey.list({ teacherId: profile?.data.id as number })
   const { data: lessonPlans } = useQuery({
     ...lessonPlanInstance,
     enabled: !!profile?.data.id,
   })
-
-  const [selectedPlan, setSelectedPlan] = useState<LessonPlan>()
 
   const sliderSettings: Settings = {
     slidesToShow: 3,
@@ -51,9 +51,9 @@ export function CoursePlanSelection({ onNext, form }: ICoursePlanSelectionProps)
         {lessonPlans?.content.map((plan) => (
           <Box mx={-2} px={2}>
             <Box
-              onClick={() => setSelectedPlan(plan)}
+              onClick={() => setValue('lessonPlanId', plan.id)}
               border='4px solid'
-              borderColor={selectedPlan?.id === plan.id ? 'primary.main' : 'transparent'}
+              borderColor={watch('lessonPlanId') === plan.id ? 'primary.main' : 'transparent'}
               borderRadius={6}
               p={1}
               sx={{ transition: 'all ease-in-out 0.2s' }}
