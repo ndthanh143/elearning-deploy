@@ -13,6 +13,10 @@ export const lessonPlanService = {
 
     return data.data
   },
+  getDetail: async (lessonPlanId: number) => {
+    const { data } = await axiosInstance.get<LessonPlanResponse>(`lesson-plan/retrieve/${lessonPlanId}`)
+    return data.data
+  },
 
   create: async (payload: CreateLessonPlanPayload) => {
     const { data } = await axiosInstance.post<LessonPlanResponse>('lesson-plan/create', payload)

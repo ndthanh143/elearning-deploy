@@ -4,10 +4,16 @@ import {
   GetDetailUnitResponse,
   GetListUnitQuery,
   GetListUnitResponse,
+  SearchUnitQuery,
   UpdateUnitPayload,
 } from './types'
 
 export const unitService = {
+  search: async (query: SearchUnitQuery) => {
+    const { data } = await axiosInstance.get<GetListUnitResponse>('unit/auto-complete', { params: query })
+
+    return data.data
+  },
   create: async (payload: CreateUnitPayload) => {
     const { data } = await axiosInstance.post<GetDetailUnitResponse>('unit/create', payload)
 

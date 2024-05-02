@@ -149,7 +149,7 @@ export const CustomNodeComponent = (props: NodeProps<Unit & { parentRef: Mutable
     }
 
     const payload: CreateUnitPayload = {
-      name: data.modulesName,
+      name: data.name,
       description: data.description,
       lessonPlanId: unit.lessonPlanInfo.id,
       parentId: unit.id,

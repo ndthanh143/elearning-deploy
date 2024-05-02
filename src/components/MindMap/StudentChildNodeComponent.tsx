@@ -108,6 +108,12 @@ export const StudentChildNodeComponent = (props: NodeProps<Unit>) => {
         <Typography variant='body2' fontWeight={700}>
           {unit.name}
         </Typography>
+        <Typography
+          variant='body2'
+          sx={{ textOverflow: 'ellipsis', overflow: 'hidden', lineClamp: 3, whiteSpace: 'nowrap', maxWidth: '100%' }}
+        >
+          {unit.description}
+        </Typography>
         {(status === 'current' || status === 'lock') && (
           <Typography variant='caption' color={gray[500]}>
             2 mins study

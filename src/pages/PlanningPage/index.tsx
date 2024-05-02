@@ -1,19 +1,33 @@
-import { BoxContent, ConfirmPopup, Flex, LoadingOverlay } from '@/components'
-import { useAuth, useBoolean, useMenu } from '@/hooks'
-import { lessonPlanKey } from '@/services/lessonPlan/lessonPlan.query'
-import { Box, Chip, Divider, Grid, IconButton, ListItemIcon, Menu, MenuItem, Typography } from '@mui/material'
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { AddPlanSection } from './components'
-import { LessonPlan } from '@/services/lessonPlan/lessonPlan.dto'
-import { useEffect, useState } from 'react'
-import { UpdatePlan, UpdatePlanProps } from './modals'
-import { lessonPlanService } from '@/services/lessonPlan/lessonPlan.service'
 import { toast } from 'react-toastify'
-
-import { gray } from '@/styles/theme'
-import { formatDate } from '@/utils'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { AutoFixNormal, DeleteOutline, MoreHorizOutlined } from '@mui/icons-material'
+import { Box, Chip, Divider, Grid, IconButton, ListItemIcon, Menu, MenuItem, Typography } from '@mui/material'
+
+import { formatDate } from '@/utils'
+import { gray } from '@/styles/theme'
+import { ConfirmPopup, Flex } from '@/components'
+import { useAuth, useBoolean, useMenu } from '@/hooks'
+import { LessonPlan } from '@/services/lessonPlan/lessonPlan.dto'
+import { lessonPlanKey } from '@/services/lessonPlan/lessonPlan.query'
+import { lessonPlanService } from '@/services/lessonPlan/lessonPlan.service'
+
+import { AddPlanSection } from './components'
+import { UpdatePlan, UpdatePlanProps } from './modals'
+
+import thumbnailBasic from '@/assets/images/planingPage/thumbnail-basic.webp'
+
+const thumbnailProps = {
+  basic: {
+    src: thumbnailBasic,
+    alt: 'basic',
+  },
+  mindmap: {
+    src: 'https://images.wondershare.com/edrawmind/articles2023/how-to-make-a-mind-map/mind-map.png',
+    alt: 'mindmap',
+  },
+}
 
 export const PlanningPage = () => {
   const { profile } = useAuth()
@@ -85,8 +99,8 @@ export const PlanningPage = () => {
             >
               <Box
                 component='img'
-                src='https://images.wondershare.com/edrawmind/articles2023/how-to-make-a-mind-map/mind-map.png'
-                alt='mindmap'
+                src={thumbnailProps[(plan.type as 'basic' | 'mindmap') || 'basic'].src}
+                alt={thumbnailProps[(plan.type as 'basic' | 'mindmap') || 'basic'].alt}
                 sx={{ width: '100%', height: 150, backgroundColor: 'white' }}
                 onClick={() => navigate(`/planning/${plan.id}`)}
               />

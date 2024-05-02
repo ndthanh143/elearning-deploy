@@ -8,7 +8,7 @@ interface INewsLetterSettingProps {
   onSubmit: () => void
 }
 export function NewsLetterSetting({ form, onSubmit }: INewsLetterSettingProps) {
-  const { setValue } = form
+  const { setValue, watch } = form
 
   return (
     <Stack gap={4}>
@@ -25,12 +25,12 @@ export function NewsLetterSetting({ form, onSubmit }: INewsLetterSettingProps) {
 
       <Stack gap={1}>
         <Typography fontWeight={700}>Welcome message</Typography>
-        <Editor onChange={(value) => setValue('welcome', value)} />
+        <Editor onChange={(value) => setValue('welcome', value)} value={watch('welcome')} />
       </Stack>
 
       <Stack gap={1}>
         <Typography fontWeight={700}>Congratulation message</Typography>
-        <Editor onChange={(value) => setValue('congratulation', value)} />
+        <Editor onChange={(value) => setValue('congratulation', value)} value={watch('congratulation')} />
       </Stack>
       <Divider />
       <Flex justifyContent='end'>

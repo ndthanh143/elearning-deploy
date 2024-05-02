@@ -9,7 +9,6 @@ import {
 } from '@mui/icons-material'
 import { IconButton, Stack, Tooltip } from '@mui/material'
 import { ModalSection, AssignmentActions, LectureActions, QuizActions, SectionModalProps } from '../modals'
-import { Module } from '@/services/module/module.dto'
 import { ResourceActions } from '../modals/ResourceActions'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { quizService } from '@/services/quiz/quiz.service'
@@ -17,14 +16,15 @@ import dayjs from 'dayjs'
 import { useState } from 'react'
 import { Quiz } from '@/services/quiz/quiz.dto'
 import { ConfirmPopup, ModalLoading } from '@/components'
-import { moduleService } from '@/services/module/module.service'
 import { moduleKey } from '@/services/module/module.query'
 import { toast } from 'react-toastify'
+import { Unit } from '@/services/unit/types'
+import { unitService } from '@/services/unit'
 type ActionsModuleProps = {
-  module: Module
+  data: Unit
 }
 
-export const ActionsModule = ({ module }: ActionsModuleProps) => {
+export const ActionsModule = ({ data: unit }: ActionsModuleProps) => {
   const queryClient = useQueryClient()
 
   const { value: isOpenLecture, setTrue: openLecture, setFalse: closeLecture } = useBoolean()
@@ -44,8 +44,8 @@ export const ActionsModule = ({ module }: ActionsModuleProps) => {
 
   const handleCloseQuiz = () => setQuiz(null)
 
-  const { mutate: mutateUpdateModule } = useMutation({
-    mutationFn: moduleService.update,
+  const { mutate: mutateUpdate } = useMutation({
+    mutationFn: unitService.update,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: moduleKey.lists() })
       toast.success('Update Section successfully')
@@ -54,7 +54,7 @@ export const ActionsModule = ({ module }: ActionsModuleProps) => {
   })
 
   const { mutate: mutateDelete } = useMutation({
-    mutationFn: moduleService.delete,
+    mutationFn: unitService.delete,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: moduleKey.lists() })
       toast.success('Delete Section successfully')
@@ -63,17 +63,17 @@ export const ActionsModule = ({ module }: ActionsModuleProps) => {
   })
 
   const handleUpdateSecion = (data: SectionModalProps) => {
-    mutateUpdateModule({ ...data, id: module.id })
+    mutateUpdate({ ...data, id: unit.id })
   }
 
   const handleDelete = () => {
-    mutateDelete(module.id)
+    mutateDelete(unit.id)
   }
 
   const handleAddQuiz = () => {
     mutateCreateQuiz({
       quizTitle: 'Quiz 1',
-      modulesId: module.id,
+      modulesId: unit.id,
       attemptNumber: 0,
       endDate: dayjs().toISOString(),
       quizTimeLimit: 0,
@@ -178,13 +178,13 @@ export const ActionsModule = ({ module }: ActionsModuleProps) => {
         status='update'
         isOpen={isOpenSectionModal}
         onClose={closeSectionModal}
-        defaultValues={module}
+        defaultValues={unit}
         onSubmit={handleUpdateSecion}
       />
 
-      <ResourceActions status='create' isOpen={isOpenResource} onClose={closeResource} moduleId={module.id} />
-      <LectureActions status='create' isOpen={isOpenLecture} onClose={closeLecture} moduleId={module.id} />
-      <AssignmentActions status='create' isOpen={isOpenAssignment} onClose={closeAssignment} moduleId={module.id} />
+      {/* <ResourceActions status='create' isOpen={isOpenResource} onClose={closeResource} />
+      <LectureActions status='create' isOpen={isOpenLecture} onClose={closeLecture} />
+      <AssignmentActions status='create' isOpen={isOpenAssignment} onClose={closeAssignment} /> */}
       {quiz && <QuizActions isOpen onClose={handleCloseQuiz} defaultData={quiz} />}
       <ConfirmPopup
         title='Confirm delete'
