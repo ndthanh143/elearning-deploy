@@ -2,7 +2,6 @@ import actions from '@/assets/images/icons/actions'
 import { ConfirmPopup, Loading, MindMap, NoData } from '@/components'
 import { useAuth, useBoolean } from '@/hooks'
 import { Module } from '@/services/module/module.dto'
-import { moduleKey } from '@/services/module/module.query'
 import {
   ArticleOutlined,
   ChevronLeftOutlined,
@@ -13,10 +12,10 @@ import {
   MoreHorizOutlined,
 } from '@mui/icons-material'
 import { Box, Button, Collapse, Divider, IconButton, Stack, Typography } from '@mui/material'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { ActionsModule } from './ActionsModule'
-import { downloadFileByLink, getResourceType } from '@/utils'
+import { ActionsUnit } from './ActionsUnit'
+import { downloadFileByLink, getResourceType, handleMappedChildrenUnitByParent, handleMappedUnits } from '@/utils'
 import { ContentItem } from './ContentItem'
 import { ModalSection, AssignmentActions, LectureActions, QuizActions, SectionModalProps } from '../modals'
 import { assignmentService } from '@/services/assignment/assignment.service'
@@ -29,22 +28,21 @@ import { Assignment } from '@/services/assignment/assignment.dto'
 import { Resource } from '@/services/resource/resource.dto'
 import { ResourceActions } from '../modals/ResourceActions'
 import { Quiz } from '@/services/quiz/quiz.dto'
-import { moduleService } from '@/services/module/module.service'
 import { lessonPlanKey } from '@/services/lessonPlan/lessonPlan.query'
 import { useNavigate } from 'react-router-dom'
 import { gray } from '@/styles/theme'
 import { unitKey } from '@/services/unit/query'
 import { unitService } from '@/services/unit'
 import { Unit } from '@/services/unit/types'
+import { lessonPlanService } from '@/services/lessonPlan/lessonPlan.service'
 
 export type BasicPlanTeacherProps = {
   lessonPlanId: number
-  onEdit: () => void
-  onDelete: () => void
 }
 
-export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTeacherProps) => {
+export const BasicPlanTeacher = ({ lessonPlanId }: BasicPlanTeacherProps) => {
   const { profile } = useAuth()
+  const queryClient = useQueryClient()
 
   const unitInstance = unitKey.list({ lessonPlanId, unpaged: true })
   const { data: units, refetch: refetchUnits, isLoading: isLoadingUnits } = useQuery({ ...unitInstance })
@@ -91,18 +89,64 @@ export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTe
     },
   })
 
-  const { mutate } = useMutation({
+  const { mutate: mutateCreateSection } = useMutation({
     mutationFn: unitService.create,
     onSuccess: () => {
       closeAddSection()
       refetchUnits()
+      queryClient.invalidateQueries({ queryKey: unitKey.lists() })
       toast.success('Create section successfully!')
     },
   })
 
+  const { mutate: mutateUpdatePlan } = useMutation({
+    mutationFn: unitService.update,
+    onSuccess: () => {
+      closeAddSection()
+      refetchUnits()
+      queryClient.invalidateQueries({ queryKey: lessonPlanKey.lists() })
+      toast.success('Update lesson plan successfully!')
+    },
+  })
+
+  const { mutate: mutateDeletePlan } = useMutation({
+    mutationFn: lessonPlanService.delete,
+    onSuccess: () => {
+      toast.success('Delete lesson plan successfully!')
+    },
+  })
+
   const handleCreateSection = (data: SectionModalProps) => {
-    mutate({ name: data.name, description: data.description, lessonPlanId })
+    const lastUnit = units?.content[units.content.length - 1]
+    mutateCreateSection({ name: data.name, description: data.description, lessonPlanId, parentId: lastUnit?.id })
   }
+
+  const { mutate: mutateUpdateLecture } = useMutation({
+    mutationFn: lectureService.update,
+    onSuccess: () => {
+      toast.success('Update successfully')
+      setSelectedLecture(null)
+      queryClient.invalidateQueries({ queryKey: unitKey.lists() })
+    },
+  })
+
+  const { mutate: mutateUpdateAssignment } = useMutation({
+    mutationFn: assignmentService.update,
+    onSuccess: () => {
+      toast.success('Update successfully')
+      setSelectedAssignment(null)
+      queryClient.invalidateQueries({ queryKey: unitKey.lists() })
+    },
+  })
+
+  const { mutate: mutateUpdateResource } = useMutation({
+    mutationFn: resourceService.update,
+    onSuccess: () => {
+      toast.success('Update successfully')
+      setSelectedResource(null)
+      queryClient.invalidateQueries({ queryKey: unitKey.lists() })
+    },
+  })
 
   const { mutate: deleteResource } = useMutation({
     mutationFn: resourceService.delete,
@@ -129,6 +173,21 @@ export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTe
     }
   }
 
+  const handleEditItem = (item: Unit) => {
+    if (item.lectureInfo) {
+      setSelectedLecture(item.lectureInfo)
+    }
+    if (item.assignmentInfo) {
+      setSelectedAssignment(item.assignmentInfo)
+    }
+    if (item.resourceInfo) {
+      setSelectedResource(item.resourceInfo)
+    }
+    if (item.quizInfo) {
+      setSelectedQuiz(item.quizInfo)
+    }
+  }
+
   const handleDownloadResource = (urlDocument: string) => {
     downloadFileByLink(urlDocument)
     // mutateDownloadFile(urlDocument)
@@ -137,11 +196,6 @@ export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTe
   const isMicroItem = (unit: Unit) => {
     return unit.lectureInfo || unit.resourceInfo || unit.assignmentInfo || unit.quizInfo
   }
-
-  // useEffect(() => {
-
-  //   console.log(mappedUnits)
-  // }, [units])
 
   const isNotEmptyModule = (module: Module) => {
     return (
@@ -156,40 +210,14 @@ export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTe
     navigate('/planning')
   }
 
-  console.log('units', units)
-
   if (isLoadingUnits) {
     return <Loading />
   }
 
-  const mappedUnits = units?.content.reduce(
-    (acc, cur) => {
-      if (isMicroItem(cur)) {
-        return {
-          ...acc,
-          children: [...acc.children, cur],
-        }
-      } else {
-        return {
-          ...acc,
-          group: [...acc.group, cur],
-        }
-      }
-    },
-    { group: [] as Unit[], children: [] as Unit[] },
-  )
+  const mappedUnits = handleMappedUnits(units?.content || [])
 
-  const renderData = mappedUnits?.group.reduce((acc, cur) => {
-    const listChildren = mappedUnits.children.filter((child) => child.parent?.id === cur.id)
-
-    return {
-      ...acc,
-      [cur.id]: {
-        ...cur,
-        children: listChildren,
-      },
-    }
-  }, {})
+  const mappedChildrenUnitByParent: Record<number, Unit & { children: Unit[] }> =
+    handleMappedChildrenUnitByParent(mappedUnits) || {}
 
   return (
     units && (
@@ -225,7 +253,7 @@ export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTe
           </IconButton>
         </Box>
         <Stack direction='row' gap={2} justifyContent='end'>
-          <Button sx={{ display: 'flex', gap: 1 }} variant='outlined' onClick={onEdit}>
+          <Button sx={{ display: 'flex', gap: 1 }} variant='outlined'>
             <EditOutlined fontSize='small' />
             Edit
           </Button>
@@ -257,7 +285,7 @@ export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTe
         <Stack gap={2}>
           {mappedUnits?.group.map((unit) => (
             <Stack border={1} borderRadius={3} padding={2} gap={2} key={unit.id}>
-              <ActionsModule data={unit} />
+              <ActionsUnit data={unit} />
               <Divider />
               <Box
                 display='flex'
@@ -288,104 +316,17 @@ export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTe
               <Collapse in={expandModuleList.includes(unit.id)} timeout='auto' unmountOnExit>
                 <Divider />
                 <Stack gap={1}>
-                  {renderData[unit.id]?.children.map((child) => {
-                    let childType = 'lecture'
-                    if (child.lectureInfo) {
-                      childType = 'lecture'
-                    }
-                    if (child.assignmentInfo) {
-                      childType = 'assignment'
-                    }
-
+                  {mappedChildrenUnitByParent[unit.id]?.children.map((child) => {
                     return (
                       <ContentItem
-                        title={child.name}
-                        iconUrl={actions[childType]}
+                        unit={child}
                         key={child.id}
-                        onEdit={() => setSelectedLecture(child)}
+                        onEdit={() => handleEditItem(child)}
                         onDelete={() => deleteLecture(child.id)}
                       />
                     )
                   })}
                 </Stack>
-                {/* {isNotEmptyModule(unit) ? (
-                  <Stack gap={1} mt={1}>
-                    {unit.lectureInfo.map((lecture) => (
-                      <>
-                        <ContentItem
-                          title={lecture.lectureName}
-                          // onClick={() => navigate(`${pathname}/${lecture.id}`)}
-                          key={lecture.id}
-                          onEdit={() => setSelectedLecture(lecture)}
-                          onDelete={() => deleteLecture(lecture.id)}
-                        />
-                        {selectedLecture && (
-                          <LectureActions
-                            isOpen
-                            onClose={() => setSelectedLecture(null)}
-                            defaultData={selectedLecture}
-                            status='update'
-                            moduleId={unit.id}
-                          />
-                        )}
-                      </>
-                    ))}
-                    {unit.assignmentInfo.map((assignment) => (
-                      <>
-                        <ContentItem
-                          title={assignment.assignmentTitle}
-                          iconUrl={actions.assignment}
-                          key={assignment.id}
-                          onEdit={() => setSelectedAssignment(assignment)}
-                          onDelete={() => deleteAssignment(assignment.id)}
-                        />
-                        {selectedAssignment && (
-                          <AssignmentActions
-                            isOpen
-                            onClose={() => setSelectedAssignment(null)}
-                            defaultData={selectedAssignment}
-                            status='update'
-                            moduleId={unit.id}
-                          />
-                        )}
-                      </>
-                    ))}
-                    {unit.quizInfo.map((quiz) => (
-                      <>
-                        <ContentItem
-                          title={quiz.quizTitle}
-                          iconUrl={actions.quiz}
-                          key={quiz.id}
-                          onDelete={() => deleteQuiz(quiz.id)}
-                          onEdit={() => setSelectedQuiz(quiz)}
-                        />
-                      </>
-                    ))}
-                    {unit.resourceInfo.map((resource) => (
-                      <>
-                        <ContentItem
-                          title={resource.title}
-                          iconUrl={getResourceType(resource.urlDocument)}
-                          onClick={() => handleDownloadResource(resource.urlDocument)}
-                          key={resource.id}
-                          onDelete={() => deleteResource(resource.id)}
-                          onEdit={() => setSelectedResource(resource)}
-                        />
-                        {selectedResource && (
-                          <ResourceActions
-                            isOpen
-                            onClose={() => setSelectedResource(null)}
-                            defaultData={selectedResource}
-                            status='update'
-                            moduleId={unit.id}
-                          />
-                        )}
-                      </>
-                    ))}
-                  </Stack>
-                ) : (
-                  <NoData title='No content in this module' />
-                )} */}
               </Collapse>
             </Stack>
           ))}
@@ -396,21 +337,37 @@ export const BasicPlanTeacher = ({ lessonPlanId, onEdit, onDelete }: BasicPlanTe
           subtitle='Are you sure to delete this lesson plan?, this action will be undo.'
           onClose={closeConfirm}
           onAccept={() => {
-            onDelete()
+            mutateDeletePlan(lessonPlanId)
             closeConfirm()
           }}
           isOpen={isOpenConfirm}
         />
-
-        <ModalSection
-          status='create'
-          isOpen={isOpenAddSection}
-          onClose={closeAddSection}
-          onSubmit={handleCreateSection}
-        />
+        {selectedLecture && (
+          <LectureActions
+            isOpen
+            onClose={() => setSelectedLecture(null)}
+            defaultData={selectedLecture}
+            onUpdate={mutateUpdateLecture}
+          />
+        )}
+        {selectedAssignment && (
+          <AssignmentActions
+            isOpen
+            onClose={() => setSelectedAssignment(null)}
+            defaultData={selectedAssignment}
+            onUpdate={mutateUpdateAssignment}
+          />
+        )}
+        {selectedResource && (
+          <ResourceActions
+            isOpen
+            onClose={() => setSelectedResource(null)}
+            defaultData={selectedResource}
+            onUpdate={mutateUpdateResource}
+          />
+        )}
+        <ModalSection isOpen={isOpenAddSection} onClose={closeAddSection} onSubmit={handleCreateSection} />
       </Stack>
-
-      // <MindMap module={modules.content} lessonPlanId={lessonPlanId} />
     )
   )
 }

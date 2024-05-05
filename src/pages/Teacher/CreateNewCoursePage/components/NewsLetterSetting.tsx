@@ -1,7 +1,7 @@
 import { Flex } from '@/components'
 import Editor from '@/components/Editor'
 import { Button, Divider, Stack, Typography } from '@mui/material'
-import { CreateCourseForm } from '..'
+import { CreateCourseForm } from '.'
 
 interface INewsLetterSettingProps {
   form: CreateCourseForm

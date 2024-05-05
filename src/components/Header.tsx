@@ -208,13 +208,19 @@ export const Header = ({ isCollapseSideBar, onExpand }: IHeaderProps) => {
         <Grid container>
           <Grid item xs={4}>
             <Flex alignItems='center' height='100%'>
-              {isCollapseSideBar && (
-                // <Tooltip title='Open sidebar'>
-                <IconButton onClick={onExpand} sx={{ display: isCollapseSideBar ? 'flex' : 'none' }}>
+              <Tooltip title='Open sidebar'>
+                <IconButton
+                  onClick={onExpand}
+                  sx={{
+                    visibility: isCollapseSideBar ? 'visible' : 'hidden',
+                    opacity: isCollapseSideBar ? 1 : 0,
+                    transition: 'all',
+                    transitionDuration: 4000,
+                  }}
+                >
                   <MenuOutlined fontSize='small' />
                 </IconButton>
-                // </Tooltip>
-              )}
+              </Tooltip>
             </Flex>
           </Grid>
           <Grid item xs={8} display='flex' justifyContent='end' alignItems='center' gap={4}>

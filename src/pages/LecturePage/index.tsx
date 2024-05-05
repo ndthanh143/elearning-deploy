@@ -1,18 +1,18 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { lectureKeys } from '../../services/lecture/lecture.query'
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { Avatar, Box, Button, Container, IconButton, Input, InputBase, Stack, Tooltip, Typography } from '@mui/material'
-import { DangerouseLyRenderLecture, Flex } from '../../components'
-import { ArrowBack, ArrowUpwardOutlined, AttachFileOutlined, CommentOutlined } from '@mui/icons-material'
-import { addIdToH2Tags } from '@/utils'
-import { useAuth, useBoolean, useOnClickOutside } from '@/hooks'
-import { FormEvent, useEffect, useRef, useState } from 'react'
-import { object, string } from 'yup'
-import { useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Avatar, Box, Button, Container, IconButton, Slider, Stack, Tooltip, Typography } from '@mui/material'
+import { DangerouseLyRenderLecture, Flex, NotFound } from '../../components'
+import { ArrowBack, CommentOutlined } from '@mui/icons-material'
+import { useAuth, useBoolean, useIntersectionObserver } from '@/hooks'
+import { useEffect, useRef, useState } from 'react'
 import { lectureService } from '@/services/lecture/lecture.service'
 import { yellow } from '@mui/material/colors'
 import { topicCommentService } from '@/services/topicComment/topicComment.service'
+import { BoxCreateComment } from './components'
+import { RoleEnum } from '@/services/auth/auth.dto'
+import { unitKey } from '@/services/unit/query'
+import { courseKeys } from '@/services/course/course.query'
 
 const BoxComment = () => {
   return (
@@ -48,74 +48,28 @@ const BoxComment = () => {
   )
 }
 
-interface IBoxCreateCommentProps {
-  onClose: () => void
-  onSubmit: (data: { content: string }) => void
-}
-
-const schema = object({ content: string().required() })
-const BoxCreateComment = ({ onClose, onSubmit }: IBoxCreateCommentProps) => {
-  const commentBoxRef = useRef<HTMLDivElement | null>(null)
-  const { setValue, handleSubmit } = useForm({ resolver: yupResolver(schema) })
-
-  useOnClickOutside(commentBoxRef, onClose)
-
-  const handleInput = (event: FormEvent<HTMLDivElement>) => {
-    const value = (event.target as HTMLDivElement).innerText
-    setValue('content', value, { shouldValidate: true })
-  }
-
-  return (
-    <Box
-      component='form'
-      onSubmit={handleSubmit(onSubmit)}
-      ref={commentBoxRef}
-      p={2}
-      my={1}
-      border={1}
-      borderColor='#ededed'
-      borderRadius={2}
-      gap={1}
-      sx={{
-        transition: 'all ease-in 0.05s',
-      }}
-    >
-      <Stack gap={1}>
-        <Box
-          component='div'
-          contentEditable
-          sx={{ outline: 'none', maxWidth: '100%' }}
-          onInput={handleInput}
-          onBlur={handleInput}
-        />
-        <Flex justifyContent='end' gap={1}>
-          <label htmlFor='attach-file'>
-            <Tooltip title='Attach file'>
-              <IconButton size='small'>
-                <AttachFileOutlined fontSize='small' />
-              </IconButton>
-            </Tooltip>
-          </label>
-          <Input type='file' id='attach-file' hidden sx={{ display: 'none' }} />
-          <IconButton color='primary' size='small'>
-            <ArrowUpwardOutlined fontSize='small' />
-          </IconButton>
-        </Flex>
-      </Stack>
-    </Box>
-  )
-}
-
 export const LecturePage = () => {
+  const queryClient = useQueryClient()
   const { profile } = useAuth()
   const navigate = useNavigate()
-  const { lectureId, courseId } = useParams()
+  const { lectureId, courseId, unitId } = useParams()
   const { value: isOpenCreateComment, setTrue: openCreateComment, setFalse: closeCreateComment } = useBoolean()
   const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0, element: null })
   const [showCommentButton, setShowCommentButton] = useState(false)
+  const [scrollProgress, setScrollProgress] = useState(0)
+
+  const { isIntersecting, ref: setTrackingRef } = useIntersectionObserver({
+    threshold: 1.0,
+    root: null,
+    rootMargin: '0px',
+    freezeOnceVisible: true,
+  })
 
   const lectureInstance = lectureKeys.detail(Number(lectureId))
-  const { data: lectureData } = useQuery({ ...lectureInstance, enabled: Boolean(lectureId) })
+  const { data: lectureData, isFetched: isFetchedLecture } = useQuery({
+    ...lectureInstance,
+    enabled: Boolean(lectureId),
+  })
 
   const goBack = () => navigate(`/courses/${courseId}`)
 
@@ -124,6 +78,13 @@ export const LecturePage = () => {
     mutationFn: topicCommentService.create,
     onSuccess: (data) => {
       handleUpdateLecture()
+    },
+  })
+
+  const { mutate: mutateCreateTracking } = useMutation({
+    mutationFn: lectureService.createTracking,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: courseKeys.details() })
     },
   })
 
@@ -177,7 +138,6 @@ export const LecturePage = () => {
   }, [])
 
   const handleClickCreateComment = () => {
-    console.log('buttonPosition.element.target.innerHTML', buttonPosition.element.target.innerHTML)
     openCreateComment()
     const e = buttonPosition.element
     if (e) {
@@ -186,56 +146,83 @@ export const LecturePage = () => {
     }
   }
 
-  if (!lectureData) {
-    return null
+  useEffect(() => {
+    if (isIntersecting && profile?.data.roleInfo.name === RoleEnum.Student) {
+      mutateCreateTracking({
+        courseId: Number(courseId),
+        lectureId: Number(lectureId),
+        unitId: Number(unitId),
+      })
+    }
+  }, [isIntersecting])
+
+  if (!lectureData && isFetchedLecture) {
+    return <NotFound />
   }
 
   return (
-    <Container>
-      <Flex gap={8}>
-        <Box flex={1}>
-          <Stack direction='row' justifyContent='space-between'>
-            <Button sx={{ gap: 1 }} onClick={goBack} color='secondary'>
-              <ArrowBack fontSize='small' />
-              Back
-            </Button>
-            <Typography variant='h5' fontWeight={500} fontStyle='italic' sx={{ textDecoration: 'underline' }}>
-              {lectureData.lectureName}
-            </Typography>
-          </Stack>
-          <DangerouseLyRenderLecture content={lectureData.lectureContent} />
-          {showCommentButton && (
-            <Tooltip title='Comment'>
-              <IconButton
-                sx={{
-                  position: 'absolute',
-                  top: `${buttonPosition.top}px`,
-                  left: `${buttonPosition.left}px`,
-                  zIndex: 10,
-                }}
-                onClick={handleClickCreateComment}
-                size='small'
-              >
-                <CommentOutlined fontSize='small' />
-              </IconButton>
-            </Tooltip>
-          )}
-        </Box>
-        <Box width={300} height='100%'>
-          <BoxComment />
-          <BoxComment />
-          {isOpenCreateComment && (
-            <BoxCreateComment
-              onClose={() => {
-                closeCreateComment()
-                // buttonPosition.element?.target.style.borderBottom = 'none'
-              }}
-              onSubmit={handleCreateComment}
-              content={lectureData.lectureContent}
-            />
-          )}
-        </Box>
-      </Flex>
-    </Container>
+    lectureData && (
+      <>
+        <Container>
+          <Flex gap={8}>
+            <Box flex={1}>
+              <Stack direction='row' justifyContent='space-between'>
+                <Button sx={{ gap: 1 }} onClick={goBack} color='secondary'>
+                  <ArrowBack fontSize='small' />
+                  Back
+                </Button>
+                <Typography variant='h5' fontWeight={500} fontStyle='italic' sx={{ textDecoration: 'underline' }}>
+                  {lectureData.lectureName}
+                </Typography>
+              </Stack>
+              <DangerouseLyRenderLecture content={lectureData.lectureContent} />
+              {showCommentButton && (
+                <Tooltip title='Comment'>
+                  <IconButton
+                    sx={{
+                      position: 'absolute',
+                      top: `${buttonPosition.top}px`,
+                      left: `${buttonPosition.left}px`,
+                      zIndex: 10,
+                    }}
+                    onClick={handleClickCreateComment}
+                    size='small'
+                  >
+                    <CommentOutlined fontSize='small' />
+                  </IconButton>
+                </Tooltip>
+              )}
+            </Box>
+            <Box width={300} height='100%'>
+              <BoxComment />
+              <BoxComment />
+              {isOpenCreateComment && (
+                <BoxCreateComment
+                  onClose={() => {
+                    closeCreateComment()
+                    // buttonPosition.element?.target.style.borderBottom = 'none'
+                  }}
+                  onSubmit={handleCreateComment}
+                />
+              )}
+            </Box>
+          </Flex>
+          <Box ref={setTrackingRef} sx={{ visibility: 'hidden' }} />
+        </Container>
+        <Slider
+          value={scrollProgress}
+          sx={{
+            '.MuiSlider-thumb': {
+              display: 'none',
+            },
+            py: 0,
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+          }}
+        />
+      </>
+    )
   )
 }

@@ -17,3 +17,9 @@ export type UpdateLecturePayload = {
   lectureName?: string
   lectureContent?: string
 }
+
+export type CreateLectureTrackingPayload = {
+  courseId: number
+  lectureId: number
+  unitId: number
+}

@@ -38,6 +38,7 @@ export type Unit = {
   quizInfo?: Quiz
   resourceInfo?: Resource
   unlock: boolean
+  isDone: boolean
 }
 
 export type GetListUnitQuery = {

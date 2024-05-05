@@ -1,15 +1,11 @@
 import { useAuth } from '@/hooks'
 import { lessonPlanKey } from '@/services/lessonPlan/lessonPlan.query'
-import { Box, Button, Divider, Stack, Typography } from '@mui/material'
+import { Box, Button, Divider, Grid, Stack, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
-import { PlanCard } from '.'
-import Slider, { Settings } from 'react-slick'
-import { useState } from 'react'
-import { LessonPlan } from '@/services/lessonPlan/lessonPlan.dto'
+import { CreateCourseForm, PlanCard } from '.'
 import { Flex } from '@/components'
 import { ArrowRightAltOutlined } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
-import { CreateCourseForm } from '..'
 
 interface ICoursePlanSelectionProps {
   onNext: () => void
@@ -29,15 +25,6 @@ export function CoursePlanSelection({ onNext, form }: ICoursePlanSelectionProps)
     enabled: !!profile?.data.id,
   })
 
-  const sliderSettings: Settings = {
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    infinite: false,
-    arrows: true,
-    dots: true,
-    focusOnSelect: true,
-  }
-
   const handleNavigatePlanningPage = () => {
     navigate('/planning')
   }
@@ -47,9 +34,14 @@ export function CoursePlanSelection({ onNext, form }: ICoursePlanSelectionProps)
       <Typography textAlign='center' variant='h4'>
         Apply plan to your course
       </Typography>
-      <Slider {...sliderSettings}>
+      <Flex justifyContent='end'>
+        <Button variant='outlined' sx={{ width: 'fit-content' }} onClick={handleNavigatePlanningPage}>
+          Create New Plan
+        </Button>
+      </Flex>
+      <Grid container spacing={2}>
         {lessonPlans?.content.map((plan) => (
-          <Box mx={-2} px={2}>
+          <Grid item xs={4}>
             <Box
               onClick={() => setValue('lessonPlanId', plan.id)}
               border='4px solid'
@@ -60,16 +52,13 @@ export function CoursePlanSelection({ onNext, form }: ICoursePlanSelectionProps)
             >
               <PlanCard data={plan} key={plan.id} />
             </Box>
-          </Box>
+          </Grid>
         ))}
-      </Slider>
+      </Grid>
       <Stack gap={2} alignItems='center'>
         <Typography textAlign='center' variant='h5'>
           OR
         </Typography>
-        <Button variant='outlined' sx={{ width: 'fit-content' }} onClick={handleNavigatePlanningPage}>
-          Create New Plan
-        </Button>
       </Stack>
       <Divider />
       <Flex justifyContent='end'>

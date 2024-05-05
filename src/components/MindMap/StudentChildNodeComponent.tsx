@@ -84,11 +84,11 @@ export const StudentChildNodeComponent = (props: NodeProps<Unit>) => {
   const dataTypes = {
     lecture: {
       name: unit.lectureInfo?.lectureName,
-      navigate: () => navigate(`${pathname}/lecture/${unit.lectureInfo?.id}`),
+      navigate: () => navigate(`${pathname}/u/${unit.id}/lecture/${unit.lectureInfo?.id}`),
     },
     assignment: {
       name: unit.assignmentInfo?.assignmentTitle,
-      navigate: () => navigate(`${pathname}/assign/${unit.assignmentInfo?.id}`),
+      navigate: () => navigate(`${pathname}/u/${unit.id}/assign/${unit.assignmentInfo?.id}`),
     },
     quiz: {
       name: unit.quizInfo?.quizTitle,
@@ -185,7 +185,7 @@ export const StudentChildNodeComponent = (props: NodeProps<Unit>) => {
   if (type === 'lecture') {
   }
 
-  if (unit.assignmentInfo?.assignmentSubmissionInfo) {
+  if (unit.isDone) {
     status = 'done'
   }
 

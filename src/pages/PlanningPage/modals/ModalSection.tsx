@@ -10,7 +10,6 @@ export type AddSectionProps = {
   onClose: () => void
   defaultValues?: Unit
   onSubmit: (data: SectionModalProps) => void
-  status: 'create' | 'update'
 }
 
 export type SectionModalProps = {
@@ -23,7 +22,7 @@ const schema = object({
   name: string().required(),
 })
 
-export const ModalSection = ({ isOpen, onClose, defaultValues, onSubmit, status }: AddSectionProps) => {
+export const ModalSection = ({ isOpen, onClose, defaultValues, onSubmit }: AddSectionProps) => {
   const { register, handleSubmit } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -46,7 +45,7 @@ export const ModalSection = ({ isOpen, onClose, defaultValues, onSubmit, status 
           <Stack direction='row' justifyContent='end' gap={2}>
             <Button onClick={onClose}>Cancel</Button>
             <Button variant='contained' type='submit'>
-              {status === 'create' ? 'Create' : 'Update'}
+              {defaultValues ? 'Update' : 'Create'}
             </Button>
           </Stack>
         </Stack>

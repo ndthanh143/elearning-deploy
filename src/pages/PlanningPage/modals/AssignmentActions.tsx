@@ -3,29 +3,24 @@ import Editor from '@/components/Editor'
 import { UrlPopup } from '@/components/UrlPopup'
 import { useBoolean } from '@/hooks'
 import { FileCard, UploadPopup } from '@/pages/AssignmentPage/components'
-import { Assignment, CreateAssignmentPayload } from '@/services/assignment/assignment.dto'
-import { assignmentService } from '@/services/assignment/assignment.service'
+import { Assignment, CreateAssignmentPayload, UpdateAssignmentPayload } from '@/services/assignment/assignment.dto'
 import { UploadFileData } from '@/services/file/file.dto'
-import { moduleKey } from '@/services/module/module.query'
 import { getAbsolutePathFile, parseYoutubeUrlToEmbed } from '@/utils'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { FileUploadOutlined, YouTube } from '@mui/icons-material'
 import { Box, Button, IconButton, Stack, TextField, Tooltip, Typography } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { useForm } from 'react-hook-form'
-import { toast } from 'react-toastify'
 import { number, object, string } from 'yup'
 
-export type AddAssignmentProps = { onClose: () => void; onCreate: (payload: CreateAssignmentPayload) => void } & (
-  | {
-      isOpen: boolean
-      defaultData?: Assignment
-      status: 'create'
-    }
-  | { status: 'update'; defaultData: Assignment; isOpen: boolean }
-)
+export type AddAssignmentProps = {
+  onClose: () => void
+  onCreate?: (payload: CreateAssignmentPayload) => void
+  onUpdate?: (payload: UpdateAssignmentPayload) => void
+  isOpen: boolean
+  defaultData?: Assignment
+}
 
 const schema = object({
   assignmentContent: string().required(),
@@ -35,9 +30,7 @@ const schema = object({
   state: number().required(),
   urlDocument: string(),
 })
-export const AssignmentActions = ({ isOpen, onClose, status, defaultData, onCreate }: AddAssignmentProps) => {
-  const queryClient = useQueryClient()
-
+export const AssignmentActions = ({ isOpen, onClose, defaultData, onCreate, onUpdate }: AddAssignmentProps) => {
   const { value: isOpenUpload, setTrue: openUpload, setFalse: closeUpload } = useBoolean(false)
   const { value: isOpenYoutube, setTrue: openYoutube, setFalse: closeYoutube } = useBoolean(false)
 
@@ -50,15 +43,6 @@ export const AssignmentActions = ({ isOpen, onClose, status, defaultData, onCrea
       assignmentTitle: defaultData?.assignmentTitle,
       startDate: dayjs(defaultData?.startDate).toISOString(),
       endDate: dayjs(defaultData?.endDate).toISOString(),
-    },
-  })
-
-  const { mutate: mutateUpdate } = useMutation({
-    mutationFn: assignmentService.update,
-    onSuccess: () => {
-      toast.success('Update assignment successfully')
-      onClose()
-      queryClient.invalidateQueries({ queryKey: moduleKey.lists() })
     },
   })
 
@@ -87,7 +71,8 @@ export const AssignmentActions = ({ isOpen, onClose, status, defaultData, onCrea
   }
 
   const onSubmitHandler = (data: CreateAssignmentPayload) => {
-    status === 'update' ? mutateUpdate({ id: defaultData.id, ...data }) : onCreate(data)
+    onCreate && onCreate(data)
+    onUpdate && defaultData && onUpdate({ id: defaultData.id, ...data })
   }
 
   return (
@@ -104,9 +89,11 @@ export const AssignmentActions = ({ isOpen, onClose, status, defaultData, onCrea
                   placeholder: 'Start date',
                 },
               }}
+              disablePast
               onChange={(value: any) => setValue('startDate', dayjs(value).toISOString())}
             />
             <DatePicker
+              disablePast
               defaultValue={defaultData?.endDate && dayjs(getValues('endDate'))}
               slotProps={{
                 textField: {

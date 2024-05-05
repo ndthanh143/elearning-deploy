@@ -20,6 +20,10 @@ export const TeacherCourseCard = ({ data, onDelete }: TeacherCourseCardProps) =>
 
   const { value: isOpenConfirmPopup, setTrue: openConfirmPopup, setFalse: closeConfirmPopup } = useBoolean(false)
 
+  const handleClickEdit = () => {
+    navigate(`/courses/${data.id}/manage`)
+  }
+
   return (
     <>
       <Stack
@@ -66,14 +70,19 @@ export const TeacherCourseCard = ({ data, onDelete }: TeacherCourseCardProps) =>
               <Groups />
               <Typography variant='body2'>20 students</Typography>
             </Flex>
-            <IconButton onClick={openMore}>
+            <IconButton
+              onClick={(e) => {
+                e.stopPropagation()
+                openMore(e)
+              }}
+            >
               <MoreHorizOutlined fontSize='small' />
             </IconButton>
           </Flex>
         </Stack>
       </Stack>
       <Menu open={isOpenMore} anchorEl={AnchorElMore} onClose={closeMoreMenu}>
-        <MenuItem>
+        <MenuItem onClick={handleClickEdit}>
           <ListItemIcon>
             <EditOutlined fontSize='small' />
           </ListItemIcon>

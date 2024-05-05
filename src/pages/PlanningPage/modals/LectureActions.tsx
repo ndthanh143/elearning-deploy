@@ -35,7 +35,7 @@ export const LectureActions = ({ isOpen, onClose, defaultData, onCreate, onUpdat
   }
 
   return (
-    <CustomModal isOpen={isOpen} onClose={onClose} title={status === 'update' ? 'Update lecture' : 'Create lecture'}>
+    <CustomModal isOpen={isOpen} onClose={onClose} title={onUpdate ? 'Update lecture' : 'Create lecture'}>
       <Box component='form' onSubmit={handleSubmit(onSubmitHandler)}>
         <TextField
           placeholder='Lecture name'

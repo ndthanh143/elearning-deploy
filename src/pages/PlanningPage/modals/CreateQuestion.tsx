@@ -1,10 +1,21 @@
-import { AnwserCreate, CreateQuestionPayload, QuizQuestion } from '@/services/quizQuestion/quizQuestion.dto'
+import { ConfirmPopup } from '@/components'
+import {
+  Anwser,
+  AnwserCreate,
+  CreateQuestionPayload,
+  QuizQuestion,
+  UpdateQuestionPayload,
+} from '@/services/quizQuestion/quizQuestion.dto'
+import { gray } from '@/styles/theme'
 import { CloseOutlined } from '@mui/icons-material'
 import {
+  Badge,
   Box,
   Button,
   Checkbox,
+  Divider,
   IconButton,
+  InputBase,
   MenuItem,
   Radio,
   RadioGroup,
@@ -12,24 +23,43 @@ import {
   Stack,
   TextField,
   Tooltip,
-  Typography,
 } from '@mui/material'
 import { ChangeEvent, useState } from 'react'
 
 type CreateQuestionProps = {
-  isOpen: boolean
   onClose: () => void
-  onSave: (payload: CreateQuestionPayload) => void
+  onSave?: (payload: CreateQuestionPayload) => void
+  onUpdate?: (payload: UpdateQuestionPayload) => void
+  onDelete?: (id: number) => void
   quizId: number
+  index?: number
+  status: 'edit' | 'view' | 'create'
   defaultQuestion?: QuizQuestion
 }
-export const CreateQuestion = ({ quizId, isOpen, defaultQuestion, onClose, onSave }: CreateQuestionProps) => {
+export const CreateQuestion = ({
+  quizId,
+  defaultQuestion,
+  onClose,
+  onUpdate,
+  onSave,
+  status,
+  onDelete = () => {},
+}: CreateQuestionProps) => {
+  const [selectedDeleteQuestion, setSelectedDeleteQuestion] = useState<number | null>(null)
   const [questionContent, setQuestionContent] = useState(defaultQuestion?.questionContent || '')
   const [questionType, setQuestionType] = useState<number>(defaultQuestion?.questionType || 1)
-  const [answers, setAnwsers] = useState<AnwserCreate[]>(defaultQuestion?.answers || [])
+  const [statuss, setStatus] = useState<'edit' | 'view' | 'create'>(status)
+  const [answers, setAnwsers] = useState<Anwser[]>(
+    defaultQuestion?.answers || [
+      { id: 0, answerContent: '', isCorrect: false },
+      { id: 0, answerContent: '', isCorrect: false },
+      { id: 0, answerContent: '', isCorrect: false },
+      { id: 0, answerContent: '', isCorrect: false },
+    ],
+  )
 
   const addAnwser = () => {
-    const newAnwsers: AnwserCreate = { answerContent: 'anwser', isCorrect: false }
+    const newAnwsers: Anwser = { answerContent: '', isCorrect: false, id: 0 }
 
     setAnwsers((prev) => [...prev, newAnwsers])
   }
@@ -53,10 +83,12 @@ export const CreateQuestion = ({ quizId, isOpen, defaultQuestion, onClose, onSav
   }
 
   const handleSubmit = () => {
-    onSave({ quizId, answers, questionContent, questionType })
+    onSave && onSave({ quizId, answers, questionContent, questionType })
+    onUpdate && defaultQuestion && onUpdate({ id: defaultQuestion.id, answers, questionContent, questionType })
     setQuestionContent('')
     setQuestionType(1)
     setAnwsers([])
+    setStatus('view')
   }
 
   const handleChangeAnswer = (index: number, value: string) => {
@@ -64,15 +96,22 @@ export const CreateQuestion = ({ quizId, isOpen, defaultQuestion, onClose, onSav
   }
 
   return (
-    isOpen && (
-      <Stack border={1} p={2} borderRadius={3}>
+    <Badge
+      badgeContent={1}
+      color='primary'
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'left',
+      }}
+    >
+      <Stack border={1} p={2} borderRadius={3} sx={{ width: '100%' }} borderColor={gray[200]}>
         <Stack>
-          <Typography>Question {1}</Typography>
           <Stack direction='row' gap={2}>
             <TextField
               placeholder='Type question...'
               size='small'
               fullWidth
+              value={questionContent}
               onChange={(e) => setQuestionContent(e.target.value)}
             />
             <Select
@@ -99,10 +138,10 @@ export const CreateQuestion = ({ quizId, isOpen, defaultQuestion, onClose, onSav
                     <Checkbox onChange={() => handleCheckBoxAnwser(index)} />
                   )}
                 </Tooltip>
-                <TextField
+
+                <InputBase
                   size='small'
-                  variant='standard'
-                  placeholder='anwser'
+                  placeholder='anwser...'
                   fullWidth
                   defaultValue={item.answerContent}
                   onChange={(e) => handleChangeAnswer(index, e.target.value)}
@@ -117,13 +156,46 @@ export const CreateQuestion = ({ quizId, isOpen, defaultQuestion, onClose, onSav
         <Button variant='outlined' sx={{ width: 'fit-content', mt: 2 }} onClick={addAnwser}>
           Add Anwser
         </Button>
-        <Stack direction='row' gap={1} justifyContent='end'>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button variant='contained' onClick={handleSubmit} disabled={answers.length <= 2 || !questionContent}>
-            Save
-          </Button>
+        <Divider sx={{ my: 2 }} />
+        <Stack direction='row' gap={1} justifyContent='center'>
+          {statuss === 'edit' ? (
+            <>
+              <Button onClick={() => (status === 'edit' ? onClose() : setStatus('view'))} variant='outlined' fullWidth>
+                Cancel
+              </Button>
+              <Button
+                variant='contained'
+                onClick={handleSubmit}
+                disabled={answers.length <= 2 || !questionContent}
+                fullWidth
+              >
+                Save
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                onClick={() => defaultQuestion && setSelectedDeleteQuestion(defaultQuestion.id)}
+                variant='outlined'
+                fullWidth
+                color='error'
+              >
+                Delete
+              </Button>
+              <Button onClick={() => setStatus('edit')} variant='contained' fullWidth>
+                Edit
+              </Button>
+            </>
+          )}
         </Stack>
       </Stack>
-    )
+      <ConfirmPopup
+        isOpen={Boolean(selectedDeleteQuestion)}
+        onClose={() => setSelectedDeleteQuestion(null)}
+        onAccept={() => selectedDeleteQuestion && onDelete(selectedDeleteQuestion)}
+        title='Are you sure to delete this question'
+        subtitle='This action can not be undo'
+      />
+    </Badge>
   )
 }

@@ -12,6 +12,7 @@ import {
   CourseDetailPage,
   CoursesPage,
   CreateNewCoursePage,
+  EditCoursePage,
   ForumPage,
   HomePage,
   LecturePage,
@@ -53,21 +54,21 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <CourseDetailPage /> },
       {
-        path: 'assign',
+        path: 'u/:unitId',
         children: [
           {
-            path: ':assignmentId',
+            path: 'assign/:assignmentId',
             element: <AssignmentPage />,
+          },
+          {
+            path: 'lecture/:lectureId',
+            element: <LecturePage />,
           },
         ],
       },
       {
         path: 'quiz/:quizId',
         element: <QuizPage />,
-      },
-      {
-        path: 'lecture/:lectureId',
-        element: <LecturePage />,
       },
     ],
   },
@@ -86,6 +87,7 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <CoursesPage /> },
           { path: 'create', element: <CreateNewCoursePage /> },
+          { path: ':courseId/manage', element: <EditCoursePage /> },
         ],
       },
       {
@@ -149,6 +151,7 @@ const router = createBrowserRouter([
 
   { path: '*', element: <NotFound /> },
 ])
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

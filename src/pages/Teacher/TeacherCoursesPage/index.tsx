@@ -1,6 +1,6 @@
 import { BoxContent, Loading, NoData, PageContentHeading } from '@/components'
 import { useAuth } from '@/hooks'
-import { Box, Button, Grid, Stack, Typography } from '@mui/material'
+import { Box, Button, Container, Grid, Stack, Typography } from '@mui/material'
 import { TeacherCourseCard } from './components'
 import { courseKeys } from '@/services/course/course.query'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -9,7 +9,7 @@ import { courseService } from '@/services/course/course.service'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 
-const DEFAULT_LIMIT = 5
+const DEFAULT_LIMIT = 10
 export const TeacherCoursesPage = () => {
   const { profile } = useAuth()
 
@@ -41,7 +41,7 @@ export const TeacherCoursesPage = () => {
 
   return (
     profile && (
-      <Box>
+      <Container>
         <PageContentHeading
           title={`Brainstone: Professional Development Courses for Teaching Excellence`}
           subTitle='Unlocking the Potential of Educators through Comprehensive and Specialized Training Programs'
@@ -86,7 +86,7 @@ export const TeacherCoursesPage = () => {
             </BoxContent>
           </Grid>
         </Grid>
-      </Box>
+      </Container>
     )
   )
 }

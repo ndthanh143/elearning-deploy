@@ -1,27 +1,15 @@
-import { ConfirmPopup, CustomModal, ErrorField, Loading } from '@/components'
+import { ConfirmPopup, ErrorField, Loading } from '@/components'
 import { Quiz, UpdateQuizPayload } from '@/services/quiz/quiz.dto'
 import { quizQuestionKey } from '@/services/quizQuestion/quizQuestion.query'
 import { quizQuestionService } from '@/services/quizQuestion/quizQuestion.service'
 import { yupResolver } from '@hookform/resolvers/yup'
-import {
-  Box,
-  Button,
-  Divider,
-  InputAdornment,
-  MenuItem,
-  Radio,
-  Select,
-  Stack,
-  TextField,
-  Tooltip,
-  Typography,
-} from '@mui/material'
+import { Box, Button, Container, Divider, InputAdornment, Stack, TextField, Typography } from '@mui/material'
 import { DateTimePicker } from '@mui/x-date-pickers'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { useForm } from 'react-hook-form'
 import { number, object, string } from 'yup'
-import { CreateQuestion, UpdateQuestion } from '.'
+import { CreateQuestion } from '.'
 import { useBoolean } from '@/hooks'
 import { CreateQuestionPayload, QuizQuestion, UpdateQuestionPayload } from '@/services/quizQuestion/quizQuestion.dto'
 import { quizService } from '@/services/quiz/quiz.service'
@@ -33,7 +21,7 @@ import { moduleKey } from '@/services/module/module.query'
 export type AddQuizProps = {
   isOpen?: boolean
   onClose: () => void
-  defaultData: Quiz
+  defaultData?: Quiz
 }
 
 const schema = object({
@@ -46,7 +34,7 @@ const schema = object({
   attemptNumber: number().required(),
 })
 
-export const QuizActions = ({ isOpen = false, onClose, defaultData }: AddQuizProps) => {
+export const QuizActions = ({ isOpen = true, onClose, defaultData }: AddQuizProps) => {
   const queryClient = useQueryClient()
 
   const { value: isOpenAddQuestion, setFalse: closeAddQuestion, setTrue: openAddQuestion } = useBoolean(false)
@@ -55,6 +43,17 @@ export const QuizActions = ({ isOpen = false, onClose, defaultData }: AddQuizPro
   const [selectedDeleteQuestion, setSelectedDeleteQuestion] = useState<number | null>(null)
 
   const { id, quizTitle, description, attemptNumber, endDate, startDate, quizTimeLimit } = defaultData
+    ? defaultData
+    : {
+        id: 0,
+        quizTitle: '',
+        description: '',
+        attemptNumber: 0,
+        endDate: null,
+        startDate: null,
+        quizTimeLimit: 0,
+      }
+
   const {
     register,
     getValues,
@@ -68,8 +67,8 @@ export const QuizActions = ({ isOpen = false, onClose, defaultData }: AddQuizPro
       quizTitle,
       description,
       attemptNumber,
-      endDate: dayjs(endDate).toISOString(),
-      startDate: dayjs(startDate).toISOString(),
+      endDate: endDate ? dayjs(endDate).toISOString() : undefined,
+      startDate: startDate ? dayjs(startDate).toISOString() : undefined,
       quizTimeLimit,
     },
   })
@@ -164,135 +163,155 @@ export const QuizActions = ({ isOpen = false, onClose, defaultData }: AddQuizPro
   }
 
   return (
-    <CustomModal isOpen={isOpen} onClose={onClose} title='Quiz'>
-      <Box component='form' onSubmit={handleSubmit(onSubmitHandler)}>
-        <Stack gap={2} py={2} maxHeight='80vh' sx={{ overflowY: 'scroll' }}>
-          <Stack>
-            <Typography fontWeight={500}>Title</Typography>
-            <TextField size='small' fullWidth {...register('quizTitle')} />
-            <ErrorField isShow={Boolean(errors.quizTitle)} message={errors.quizTitle?.message} />
-          </Stack>
-          <Stack>
-            <Typography fontWeight={500}>Description</Typography>
-            <TextField size='small' fullWidth placeholder='Description' {...register('description')} />
-            <ErrorField isShow={Boolean(errors.description)} message={errors.description?.message} />
-          </Stack>
+    <Box
+      sx={{
+        height: '100vh',
+        width: isOpen ? '80%' : 0,
+        position: 'absolute',
+        overflowY: 'scroll',
+        zIndex: 10,
+        bgcolor: 'white',
+        borderColor: '#ccc',
+        boxShadow: 1,
+        right: 0,
+        bottom: 0,
+        top: 0,
+        transition: 'all 0.2s ease-in-out',
+      }}
+      // ref={notiRef}
+    >
+      <Container maxWidth='md' fixed>
+        <Box component='form' onSubmit={handleSubmit(onSubmitHandler)}>
+          <Stack gap={4} py={2}>
+            <Stack>
+              <Typography fontWeight={500}>Title</Typography>
+              <TextField size='small' fullWidth {...register('quizTitle')} />
+              <ErrorField isShow={Boolean(errors.quizTitle)} message={errors.quizTitle?.message} />
+            </Stack>
+            <Stack>
+              <Typography fontWeight={500}>Description</Typography>
+              <TextField size='small' fullWidth placeholder='Description' {...register('description')} />
+              <ErrorField isShow={Boolean(errors.description)} message={errors.description?.message} />
+            </Stack>
 
-          <Stack direction='row' gap={2}>
-            <Stack>
-              <Typography fontWeight={500}>Start time</Typography>
-              <DateTimePicker
-                defaultValue={dayjs(getValues('startDate'))}
-                slotProps={{ textField: { size: 'small' } }}
-                onChange={(value) => {
-                  setValue('startDate', dayjs(value).toISOString())
-                }}
-              />
-            </Stack>
-            <Stack>
-              <Typography fontWeight={500}>End time</Typography>
-              <DateTimePicker
-                defaultValue={dayjs(getValues('endDate'))}
-                slotProps={{ textField: { size: 'small' } }}
-                onChange={(value) => {
-                  setValue('endDate', dayjs(value).toISOString())
-                }}
-              />
-            </Stack>
-          </Stack>
-          <Stack direction='row' gap={2}>
-            <Stack>
-              <Typography fontWeight={500}>Number attempt</Typography>
-              <TextField
-                size='small'
-                type='number'
-                placeholder='Description'
-                {...register('attemptNumber')}
-                InputProps={{ inputProps: { min: 0 } }}
-              />
-            </Stack>
-            <Stack>
-              <Typography fontWeight={500}>Time limit</Typography>
-              <TextField
-                size='small'
-                type='number'
-                placeholder='Description'
-                {...register('quizTimeLimit')}
-                InputProps={{
-                  inputProps: { min: 0 },
-                  endAdornment: <InputAdornment position='end'>Mins</InputAdornment>,
-                }}
-              />
-            </Stack>
-          </Stack>
-
-          <Divider />
-          {isLoadingQuestions && <Loading />}
-          {questions &&
-            questions?.map((question, index) =>
-              selectedQuestion === question ? (
-                <UpdateQuestion
-                  isOpen={selectedQuestion === question}
-                  defaultQuestion={selectedQuestion}
-                  onClose={() => setSelectedQuestion(null)}
-                  onSave={handleUpdateQuestion}
+            <Stack direction='row' gap={2}>
+              <Stack>
+                <Typography fontWeight={500}>Start time</Typography>
+                <DateTimePicker
+                  defaultValue={getValues('startDate') && dayjs(getValues('startDate'))}
+                  slotProps={{ textField: { size: 'small' } }}
+                  onChange={(value) => {
+                    setValue('startDate', dayjs(value).toISOString())
+                  }}
                 />
-              ) : (
-                <Stack key={question.id}>
-                  <Stack direction='row' gap={2} justifyContent='center'>
-                    <Button onClick={() => setSelectedQuestion(question)}>Edit</Button>
-                    <Button onClick={() => setSelectedDeleteQuestion(question.id)} variant='outlined' color='error'>
-                      Delete
-                    </Button>
-                  </Stack>
+              </Stack>
+              <Stack>
+                <Typography fontWeight={500}>End time</Typography>
+                <DateTimePicker
+                  defaultValue={getValues('endDate') && dayjs(getValues('endDate'))}
+                  slotProps={{ textField: { size: 'small' } }}
+                  onChange={(value) => {
+                    setValue('endDate', dayjs(value).toISOString())
+                  }}
+                />
+              </Stack>
+            </Stack>
+            <Stack direction='row' gap={2}>
+              <Stack>
+                <Typography fontWeight={500}>Number attempt</Typography>
+                <TextField
+                  size='small'
+                  type='number'
+                  placeholder='Description'
+                  {...register('attemptNumber')}
+                  InputProps={{ inputProps: { min: 0 }, sx: { width: 'fit-content' } }}
+                />
+              </Stack>
+              <Stack>
+                <Typography fontWeight={500}>Time limit</Typography>
+                <TextField
+                  size='small'
+                  type='number'
+                  placeholder='Description'
+                  {...register('quizTimeLimit')}
+                  InputProps={{
+                    inputProps: { min: 0 },
+                    endAdornment: <InputAdornment position='end'>Mins</InputAdornment>,
+                  }}
+                />
+              </Stack>
+            </Stack>
 
-                  <Stack>
-                    <Typography>Question {index + 1}</Typography>
-                    <Stack direction='row' gap={2}>
-                      <TextField size='small' fullWidth value={question.questionContent} />
-                      <Select size='small' value={question.questionType === 1 ? 'single' : 'multiple'}>
-                        <MenuItem value='multiple'>Multiple choice</MenuItem>
-                        <MenuItem value='single'>Single choice</MenuItem>
-                      </Select>
-                    </Stack>
-                  </Stack>
-                  <Stack gap={2} my={2}>
-                    {question.answers.map((anwser) => (
-                      <Stack direction='row' gap={2} alignItems='center'>
-                        <Tooltip title='Is correct'>
-                          <Radio checked={anwser.isCorrect} />
-                        </Tooltip>
-                        <TextField size='small' value={anwser.answerContent} fullWidth />
-                      </Stack>
-                    ))}
-                  </Stack>
-                </Stack>
-              ),
+            <Divider />
+            {isLoadingQuestions && <Loading />}
+            {questions &&
+              questions?.map(
+                (question) => (
+                  <CreateQuestion
+                    quizId={id}
+                    defaultQuestion={question}
+                    onClose={() => setSelectedQuestion(null)}
+                    onUpdate={handleUpdateQuestion}
+                    onDelete={mutateDeleteQuestion}
+                    key={question.id}
+                    status='view'
+                  />
+                ),
+                // selectedQuestion === question ? (
+                //   <CreateQuestion
+                //     quizId={id}
+                //     isOpen={selectedQuestion === question}
+                //     defaultQuestion={selectedQuestion}
+                //     onClose={() => setSelectedQuestion(null)}
+                //     onUpdate={handleUpdateQuestion}
+                //     key={question.id}
+                //     status={selectedQuestion === question ? 'edit' : 'view'}
+                //   />
+                // ) : (
+                //   <Box border={1} borderRadius={3} p={2} borderColor={gray[300]}>
+                //     <Stack key={question.id} sx={{ widht: '100%' }}>
+                //       <Stack>
+                //         <Stack direction='row' gap={2}>
+                //           <TextField size='small' fullWidth value={question.questionContent} />
+                //           <Select size='small' value={question.questionType === 1 ? 'single' : 'multiple'}>
+                //             <MenuItem value='multiple'>Multiple choice</MenuItem>
+                //             <MenuItem value='single'>Single choice</MenuItem>
+                //           </Select>
+                //         </Stack>
+                //       </Stack>
+                //       <Stack gap={2} my={2}>
+                //         {question.answers.map((anwser) => (
+                //           <Stack direction='row' gap={2} alignItems='center'>
+                //             <Tooltip title='Is correct'>
+                //               <Radio checked={anwser.isCorrect} />
+                //             </Tooltip>
+                //             <TextField size='small' value={anwser.answerContent} fullWidth />
+                //           </Stack>
+                //         ))}
+                //       </Stack>
+                //     </Stack>
+                //     <Stack direction='row' gap={2} justifyContent='end'>
+                //       <Button onClick={() => setSelectedQuestion(question)}>Edit</Button>
+                //       <Button onClick={() => setSelectedDeleteQuestion(question.id)} variant='outlined' color='error'>
+                //         Delete
+                //       </Button>
+                //     </Stack>
+                //   </Box>
+                // ),
+              )}
+            {isOpenAddQuestion && (
+              <CreateQuestion status='edit' quizId={id} onClose={closeAddQuestion} onSave={handleSaveQuestion} />
             )}
-          <CreateQuestion
-            quizId={id}
-            isOpen={isOpenAddQuestion}
-            onClose={closeAddQuestion}
-            onSave={handleSaveQuestion}
-          />
-          <Button variant='outlined' onClick={openAddQuestion}>
-            Add Question
+            <Button variant='outlined' onClick={openAddQuestion}>
+              Add Question
+            </Button>
+          </Stack>
+          <Divider />
+          <Button variant='contained' type='submit' sx={{ my: 2 }} fullWidth>
+            Save
           </Button>
-        </Stack>
-        <Divider />
-        <Button variant='contained' type='submit' sx={{ my: 2 }} fullWidth>
-          Save
-        </Button>
-      </Box>
-      {selectedDeleteQuestion && (
-        <ConfirmPopup
-          isOpen={Boolean(selectedDeleteQuestion)}
-          onClose={() => setSelectedDeleteQuestion(null)}
-          onAccept={() => mutateDeleteQuestion(selectedDeleteQuestion)}
-          title='Are you sure to delete this question'
-          subtitle='This action can not be undo'
-        />
-      )}
-    </CustomModal>
+        </Box>
+      </Container>
+    </Box>
   )
 }

@@ -1,4 +1,4 @@
 // export * from './LessonPlanCard'
-export * from './ModuleTeacher'
+export * from './BasicPlanTeacher'
 export * from './ContentItem'
 export * from './AddPlanSection'

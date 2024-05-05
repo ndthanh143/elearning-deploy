@@ -20,11 +20,16 @@ import { moduleKey } from '@/services/module/module.query'
 import { toast } from 'react-toastify'
 import { Unit } from '@/services/unit/types'
 import { unitService } from '@/services/unit'
-type ActionsModuleProps = {
+import { unitKey } from '@/services/unit/query'
+import { CreateLecturePayload } from '@/services/lecture/lecture.dto'
+import { lectureService } from '@/services/lecture/lecture.service'
+import { resourceService } from '@/services/resource/resource.service'
+import { assignmentService } from '@/services/assignment/assignment.service'
+type ActionsUnitProps = {
   data: Unit
 }
 
-export const ActionsModule = ({ data: unit }: ActionsModuleProps) => {
+export const ActionsUnit = ({ data: unit }: ActionsUnitProps) => {
   const queryClient = useQueryClient()
 
   const { value: isOpenLecture, setTrue: openLecture, setFalse: closeLecture } = useBoolean()
@@ -42,12 +47,77 @@ export const ActionsModule = ({ data: unit }: ActionsModuleProps) => {
     },
   })
 
+  const { mutate: mutateCreateUnit } = useMutation({
+    mutationFn: unitService.create,
+    onSuccess: (payload) => {
+      let toastMessage = 'Create unit successfully!'
+
+      if (payload.lectureInfo) {
+        toastMessage = 'Create lecture successfully!'
+        closeLecture()
+      }
+      if (payload.assignmentInfo) {
+        toastMessage = 'Create assignment successfully!'
+        closeAssignment()
+      }
+      if (payload.resourceInfo) {
+        toastMessage = 'Create resource successfully!'
+        closeResource()
+      }
+      if (payload.quizInfo) {
+        toastMessage = 'Create quiz successfully!'
+      }
+
+      queryClient.invalidateQueries({ queryKey: unitKey.lists() })
+      toast.success(toastMessage)
+    },
+  })
+
+  const { mutate: mutateCreateLecture } = useMutation({
+    mutationFn: lectureService.create,
+    onSuccess: (data) => {
+      mutateCreateUnit({
+        lessonPlanId: unit.lessonPlanInfo.id,
+        description: data.lectureName,
+        parentId: unit.id,
+        name: data.lectureName,
+        lectureId: data.id,
+      })
+    },
+  })
+
+  const { mutate: mutateCreateResource } = useMutation({
+    mutationFn: resourceService.create,
+    onSuccess: (data) => {
+      mutateCreateUnit({
+        lessonPlanId: unit.lessonPlanInfo.id,
+        description: data.title,
+        parentId: unit.id,
+        name: data.title,
+        resourceId: data.id,
+      })
+    },
+  })
+
+  const { mutate: mutateCreateAssignment } = useMutation({
+    mutationFn: assignmentService.create,
+    onSuccess: (data) => {
+      mutateCreateUnit({
+        lessonPlanId: unit.lessonPlanInfo.id,
+        description: data.assignmentContent,
+        parentId: unit.id,
+        name: data.assignmentTitle,
+        assignmentId: data.id,
+      })
+    },
+  })
+
   const handleCloseQuiz = () => setQuiz(null)
 
   const { mutate: mutateUpdate } = useMutation({
     mutationFn: unitService.update,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: moduleKey.lists() })
+      queryClient.invalidateQueries({ queryKey: unitKey.lists() })
       toast.success('Update Section successfully')
       closeSectionModal()
     },
@@ -56,11 +126,13 @@ export const ActionsModule = ({ data: unit }: ActionsModuleProps) => {
   const { mutate: mutateDelete } = useMutation({
     mutationFn: unitService.delete,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: moduleKey.lists() })
+      queryClient.invalidateQueries({ queryKey: unitKey.lists() })
       toast.success('Delete Section successfully')
       closeSectionModal()
     },
   })
+
+  const handleCreateLecture = (data: CreateLecturePayload) => {}
 
   const handleUpdateSecion = (data: SectionModalProps) => {
     mutateUpdate({ ...data, id: unit.id })
@@ -175,7 +247,6 @@ export const ActionsModule = ({ data: unit }: ActionsModuleProps) => {
       </Stack>
 
       <ModalSection
-        status='update'
         isOpen={isOpenSectionModal}
         onClose={closeSectionModal}
         defaultValues={unit}
@@ -185,6 +256,10 @@ export const ActionsModule = ({ data: unit }: ActionsModuleProps) => {
       {/* <ResourceActions status='create' isOpen={isOpenResource} onClose={closeResource} />
       <LectureActions status='create' isOpen={isOpenLecture} onClose={closeLecture} />
       <AssignmentActions status='create' isOpen={isOpenAssignment} onClose={closeAssignment} /> */}
+      <LectureActions isOpen={isOpenLecture} onClose={closeLecture} onCreate={mutateCreateLecture} />
+      <ResourceActions isOpen={isOpenResource} onClose={closeResource} onCreate={mutateCreateResource} />
+      <AssignmentActions isOpen={isOpenAssignment} onClose={closeAssignment} onCreate={mutateCreateAssignment} />
+
       {quiz && <QuizActions isOpen onClose={handleCloseQuiz} defaultData={quiz} />}
       <ConfirmPopup
         title='Confirm delete'

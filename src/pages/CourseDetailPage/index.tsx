@@ -1,9 +1,9 @@
-import { Fab } from '@mui/material'
+import { Box, Container, Divider, Fab, Stack } from '@mui/material'
 import { ModalLoading } from '../../components'
 import { useParams } from 'react-router-dom'
 import { courseKeys } from '../../services/course/course.query'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { TopicList, CourseContent } from './containers'
+import { BasicPlanStudent, CourseIntro } from './containers'
 import { ModalActionsTopic } from './components'
 import { useAuth, useBoolean } from '@/hooks'
 import { topicService } from '@/services/topic/topic.service'
@@ -11,6 +11,7 @@ import { topicKeys } from '@/services/topic/topic.query'
 import { toast } from 'react-toastify'
 import { TopicOutlined } from '@mui/icons-material'
 import { MindMapStudent } from '@/components/MindMap/MindMapStudent'
+import { CourseFooter } from './containers/CourseFooter'
 
 export const CourseDetailPage = () => {
   const queryClient = useQueryClient()
@@ -44,15 +45,25 @@ export const CourseDetailPage = () => {
 
   return (
     course && (
-      <>
-        {/* <Box>
+      <Container>
+        <Box>
           <Stack direction='column' gap={3}>
-            <CourseIntro data={course} />
-            <CourseContent data={course} />
-            <CourseFooter data={course} />
+            {course.lessonPlanInfo && (
+              <>
+                {course.lessonPlanInfo.type === 'basic' ? (
+                  <MindMapStudent lessonPlan={course.lessonPlanInfo} />
+                ) : (
+                  <>
+                    <CourseIntro data={course} />
+                    <Divider />
+                    <BasicPlanStudent lessonPlan={course.lessonPlanInfo} />
+                    <CourseFooter data={course} />
+                  </>
+                )}
+              </>
+            )}
           </Stack>
-        </Box> */}
-        <CourseContent data={course} />
+        </Box>
 
         <ModalActionsTopic
           isOpen={isOpenCreateTopic}
@@ -65,7 +76,7 @@ export const CourseDetailPage = () => {
           <TopicOutlined />
         </Fab>
         {/* <TopicList forumId={course.forumInfo?.id} isOpen={isOpenTopics} onClose={closeTopics} /> */}
-      </>
+      </Container>
     )
   )
 }

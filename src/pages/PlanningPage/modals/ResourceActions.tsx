@@ -2,33 +2,25 @@ import { CustomModal, ErrorField } from '@/components'
 import { useBoolean } from '@/hooks'
 import { FileCard, UploadPopup } from '@/pages/AssignmentPage/components'
 import { UploadFileData } from '@/services/file/file.dto'
-import { moduleKey } from '@/services/module/module.query'
-import { CreateResourcePayload, Resource } from '@/services/resource/resource.dto'
-import { resourceService } from '@/services/resource/resource.service'
+import { CreateResourcePayload, Resource, UpdateResourcePayload } from '@/services/resource/resource.dto'
 import { getAbsolutePathFile } from '@/utils'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Box, Button, Divider, Stack, TextField } from '@mui/material'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
-import { toast } from 'react-toastify'
-import { number, object, string } from 'yup'
+import { object, string } from 'yup'
 
-export type AddResourceProps = { onClose: () => void; onCreate: (payload: CreateResourcePayload) => void } & (
-  | {
-      isOpen: boolean
-      defaultData?: Resource
-      status: 'create'
-    }
-  | { status: 'update'; defaultData: Resource; isOpen: boolean }
-)
-
+export type AddResourceProps = {
+  onClose: () => void
+  onCreate?: (payload: CreateResourcePayload) => void
+  onUpdate?: (payload: UpdateResourcePayload) => void
+  isOpen: boolean
+  defaultData?: Resource
+}
 const schema = object({
   urlDocument: string().required(),
   title: string().required('Please fill resource name'),
 })
-export const ResourceActions = ({ isOpen, onClose, status, defaultData, onCreate }: AddResourceProps) => {
-  const queryClient = useQueryClient()
-
+export const ResourceActions = ({ isOpen, onClose, defaultData, onCreate, onUpdate }: AddResourceProps) => {
   const { value: isOpenUpload, setTrue: openUpload, setFalse: closeUpload } = useBoolean()
 
   const {
@@ -36,23 +28,12 @@ export const ResourceActions = ({ isOpen, onClose, status, defaultData, onCreate
     formState: { errors },
     handleSubmit,
     setValue,
-    reset,
     getValues,
-  } = useForm<CreateResourcePayload>({
+  } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      title: defaultData?.title,
-      urlDocument: defaultData?.urlDocument,
-    },
-  })
-
-  const { mutate: mutateUpdateResource } = useMutation({
-    mutationFn: resourceService.update,
-    onSuccess: () => {
-      toast.success('Update resource successfully')
-      onClose()
-      reset()
-      queryClient.invalidateQueries({ queryKey: moduleKey.lists() })
+      title: defaultData?.title || '',
+      urlDocument: defaultData?.urlDocument || '',
     },
   })
 
@@ -62,14 +43,15 @@ export const ResourceActions = ({ isOpen, onClose, status, defaultData, onCreate
   }
 
   const onSubmitHandler = (data: CreateResourcePayload) => {
-    status === 'update' ? mutateUpdateResource({ id: defaultData.id, ...data }) : onCreate(data)
+    onCreate && onCreate(data)
+    onUpdate && defaultData && onUpdate({ id: defaultData.id, ...data })
   }
 
   return (
     <CustomModal
       isOpen={isOpen}
       onClose={onClose}
-      title={status === 'update' ? 'Update resource' : 'Add Resource'}
+      title={onUpdate ? 'Update resource' : 'Add Resource'}
       sx={{ maxWidth: 500 }}
     >
       <Box component='form' onSubmit={handleSubmit(onSubmitHandler)}>
@@ -99,7 +81,7 @@ export const ResourceActions = ({ isOpen, onClose, status, defaultData, onCreate
             Cancel
           </Button>
           <Button variant='contained' type='submit' fullWidth>
-            {status === 'update' ? 'Update' : 'Create'}
+            {onUpdate ? 'Update' : 'Create'}
           </Button>
         </Stack>
       </Box>

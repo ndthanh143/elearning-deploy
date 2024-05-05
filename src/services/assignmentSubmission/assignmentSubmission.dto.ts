@@ -16,6 +16,7 @@ export type CreateSubmissionPayload = {
   fileSubmissionUrl?: string
   textSubmission?: string
   linkSubmission?: string
+  unitId: number
 }
 
 export type Submission = {

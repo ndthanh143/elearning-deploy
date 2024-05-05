@@ -2,14 +2,7 @@ import { ConfirmPopup, Flex } from '@/components'
 import { useAuth, useBoolean, useMenu } from '@/hooks'
 import { lessonPlanKey } from '@/services/lessonPlan/lessonPlan.query'
 import { lessonPlanService } from '@/services/lessonPlan/lessonPlan.service'
-import { gray } from '@/styles/theme'
-import {
-  ArrowRightAltOutlined,
-  ChevronLeftOutlined,
-  CloseOutlined,
-  EditOutlined,
-  MoreHorizOutlined,
-} from '@mui/icons-material'
+import { ChevronLeftOutlined, CloseOutlined, EditOutlined, MoreHorizOutlined } from '@mui/icons-material'
 import {
   Box,
   Button,
@@ -21,7 +14,6 @@ import {
   MenuItem,
   MenuList,
   Stack,
-  TextField,
   Typography,
 } from '@mui/material'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'

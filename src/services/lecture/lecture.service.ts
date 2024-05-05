@@ -1,5 +1,10 @@
 import axiosInstance from '../../axios'
-import { CreateLecturePayload, LectureResponse, UpdateLecturePayload } from './lecture.dto'
+import {
+  CreateLecturePayload,
+  CreateLectureTrackingPayload,
+  LectureResponse,
+  UpdateLecturePayload,
+} from './lecture.dto'
 
 export const lectureService = {
   getById: async (lectureId: number) => {
@@ -19,5 +24,8 @@ export const lectureService = {
   },
   delete: async (lectureId: number) => {
     await axiosInstance.delete(`/lecture/delete/${lectureId}`)
+  },
+  createTracking: async (payload: CreateLectureTrackingPayload) => {
+    await axiosInstance.post('/lecture-tracking/create', payload)
   },
 }

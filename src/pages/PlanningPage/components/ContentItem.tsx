@@ -1,17 +1,18 @@
+import actions from '@/assets/images/icons/actions'
 import { ConfirmPopup } from '@/components'
 import { useBoolean, useMenu } from '@/hooks'
-import { ArticleOutlined, Settings } from '@mui/icons-material'
+import { Unit } from '@/services/unit/types'
+import { Settings } from '@mui/icons-material'
 import { Box, IconButton, Menu, MenuItem, Stack, Typography } from '@mui/material'
 
 export type ContentItemProps = {
-  iconUrl?: string
-  title: string
+  unit: Unit
   onClick?: () => void
   onEdit: () => void
   onDelete: () => void
 }
 
-export const ContentItem = ({ iconUrl, title, onClick, onDelete, onEdit }: ContentItemProps) => {
+export const ContentItem = ({ unit, onClick, onDelete, onEdit }: ContentItemProps) => {
   const { value: isOpenConfirm, setTrue: openConfirm, setFalse: closeConfirm } = useBoolean()
 
   const { anchorEl, isOpen, onClose, onOpen } = useMenu()
@@ -19,6 +20,32 @@ export const ContentItem = ({ iconUrl, title, onClick, onDelete, onEdit }: Conte
   const handleEdit = () => {
     onEdit()
     onClose()
+  }
+
+  let childType: 'lecture' | 'assignment' | 'resource' = 'lecture'
+  if (unit.lectureInfo) {
+    childType = 'lecture'
+  }
+  if (unit.assignmentInfo) {
+    childType = 'assignment'
+  }
+  if (unit.resourceInfo) {
+    childType = 'resource'
+  }
+
+  const dataProps = {
+    lecture: {
+      title: unit.lectureInfo?.lectureName,
+      iconUrl: actions.lecture,
+    },
+    assignment: {
+      title: unit.assignmentInfo?.assignmentTitle,
+      iconUrl: actions.assignment,
+    },
+    resource: {
+      title: unit.resourceInfo?.title,
+      iconUrl: actions.resource,
+    },
   }
 
   return (
@@ -35,8 +62,9 @@ export const ContentItem = ({ iconUrl, title, onClick, onDelete, onEdit }: Conte
         }}
       >
         <Stack direction='row' gap={2} onClick={onClick} py={2}>
-          {iconUrl ? <Box component='img' src={iconUrl} alt={title} width={25} /> : <ArticleOutlined color='primary' />}
-          <Typography>{title}</Typography>
+          <Box component='img' src={dataProps[childType].iconUrl} alt={dataProps[childType].title} width={25} />
+
+          <Typography>{dataProps[childType].title}</Typography>
         </Stack>
         <IconButton onClick={onOpen}>
           <Settings />

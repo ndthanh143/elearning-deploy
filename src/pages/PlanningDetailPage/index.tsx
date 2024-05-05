@@ -6,13 +6,12 @@ import { lessonPlanKey } from '@/services/lessonPlan/lessonPlan.query'
 
 export function PlanningDetailPage() {
   const { lessonPlanId } = useParams()
-  const type = 'mindmap'
 
   const lessonPlanInstance = lessonPlanKey.detail(Number(lessonPlanId))
   const { data: lessonPlan } = useQuery({ ...lessonPlanInstance, enabled: !!lessonPlanId })
 
   return lessonPlan ? (
-    lessonPlan.type === 'basic' ? (
+    lessonPlan.type === 'mindmap' ? (
       <MindMap lessonPlanId={Number(lessonPlanId)} />
     ) : (
       <Layout>

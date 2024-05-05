@@ -11,7 +11,7 @@ import { DatePicker } from '@mui/x-date-pickers'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { useState } from 'react'
-import { CreateCourseForm } from '..'
+import { CreateCourseForm } from '.'
 
 interface IBasicInformationProps {
   onNext: () => void
@@ -46,7 +46,7 @@ export function BasicInformation({ onNext, form }: IBasicInformationProps) {
   return (
     <>
       <Box component='form'>
-        <Stack my={4} gap={2}>
+        <Stack gap={2}>
           <Stack>
             <Typography variant='body1' fontWeight={700} color='secondary.main' mb={1}>
               Course Name
@@ -71,10 +71,12 @@ export function BasicInformation({ onNext, form }: IBasicInformationProps) {
             </Typography>
             <Flex gap={4}>
               <DatePicker
+                disablePast
                 slotProps={{
                   textField: { size: 'small', label: 'Start Date' },
                 }}
-                onChange={(value: any) => setValue('startDate', dayjs(value).toISOString())}
+                defaultValue={getValues('startDate') ? dayjs(getValues('startDate')) : null}
+                onChange={(value: dayjs.Dayjs | null) => setValue('startDate', dayjs(value).toISOString())}
               />
 
               <Autocomplete
@@ -238,7 +240,7 @@ export function BasicInformation({ onNext, form }: IBasicInformationProps) {
             </Grid>
           </Stack>
         </Stack>
-        <Divider />
+        <Divider sx={{ py: 2 }} />
         <Flex justifyContent='end' pt={1}>
           <Button variant='text' sx={{ display: 'flex', gap: 1 }} onClick={onNext}>
             Next step

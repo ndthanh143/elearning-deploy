@@ -1,7 +1,7 @@
 import { Flex } from '@/components'
 import { ArrowRightAltOutlined } from '@mui/icons-material'
-import { Box, Button, Divider, MenuItem, Select, Stack, Typography } from '@mui/material'
-import { CreateCourseForm } from '..'
+import { Button, Divider, MenuItem, Select, Stack, Typography } from '@mui/material'
+import { CreateCourseForm } from '.'
 
 const listCurrentCyAndMounts: Record<string, { label: string; value: number }[]> = {
   USD: [
@@ -107,7 +107,7 @@ export function PriceConfig({ onNext, form }: IPriceConfigProps) {
   const { setValue, watch } = form
 
   return (
-    <Stack gap={4} paddingY={4}>
+    <Stack gap={4}>
       <Stack gap={1}>
         <Typography variant='h5' fontWeight={700}>
           Price configuration
@@ -129,7 +129,7 @@ export function PriceConfig({ onNext, form }: IPriceConfigProps) {
         <Stack gap={1}>
           <Typography fontWeight={700}>Amount</Typography>
           <Select
-            defaultValue={watch('currency')}
+            defaultValue={watch('price')}
             sx={{ minWidth: 200 }}
             placeholder='Select'
             onChange={(e) => setValue('price', Number(e.target.value))}

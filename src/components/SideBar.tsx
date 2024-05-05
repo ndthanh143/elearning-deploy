@@ -1,5 +1,5 @@
 import { images } from '@/assets/images'
-import { useAuth, useBoolean, useMenu } from '@/hooks'
+import { useAuth, useOnClickOutside } from '@/hooks'
 import { RoleEnum } from '@/services/auth/auth.dto'
 import { blue } from '@/styles/theme'
 import {
@@ -12,19 +12,9 @@ import {
   PeopleOutline,
   TimelineOutlined,
 } from '@mui/icons-material'
-import {
-  Box,
-  IconButton,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Popover,
-  Tooltip,
-  Typography,
-} from '@mui/material'
+import { Box, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Tooltip, Typography } from '@mui/material'
 import { startsWith } from 'lodash'
-import { ReactNode, useEffect, useRef, useState } from 'react'
+import { ReactNode, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 type MenuItemProps = {
@@ -40,6 +30,10 @@ interface ISideBarProps {
 
 export const SideBar = ({ isCollapse, onCollapse }: ISideBarProps) => {
   const { profile } = useAuth()
+
+  const sideBarRef = useRef<HTMLDivElement>(null)
+
+  useOnClickOutside(sideBarRef, onCollapse)
 
   const { pathname } = useLocation()
 
@@ -114,6 +108,7 @@ export const SideBar = ({ isCollapse, onCollapse }: ISideBarProps) => {
         maxWidth={250}
         borderRight={1}
         borderColor={'#ededed'}
+        ref={sideBarRef}
       >
         <Box display='flex' justifyContent='space-between' py={1} px={2} alignItems='center'>
           <Box display='flex' alignItems='center' gap={2}>

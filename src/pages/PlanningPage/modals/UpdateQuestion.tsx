@@ -1,4 +1,5 @@
 import { Anwser, AnwserCreate, QuizQuestion, UpdateQuestionPayload } from '@/services/quizQuestion/quizQuestion.dto'
+import { gray } from '@/styles/theme'
 import { CloseOutlined } from '@mui/icons-material'
 import {
   Box,
@@ -64,9 +65,8 @@ export const UpdateQuestion = ({ isOpen, defaultQuestion, onClose, onSave }: Cre
 
   return (
     isOpen && (
-      <Stack border={1} p={2} borderRadius={3}>
+      <Stack border={1} p={2} borderRadius={3} borderColor={gray[300]}>
         <Stack>
-          <Typography>Question {1}</Typography>
           <Stack direction='row' gap={2}>
             <TextField
               placeholder='Type question...'

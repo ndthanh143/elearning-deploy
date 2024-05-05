@@ -1,9 +1,8 @@
-import { useAuth, useBoolean } from '@/hooks'
+import { useAuth } from '@/hooks'
 import { Course } from '@/services/course/course.dto'
-import { ArrowBack, Check, EditOutlined, FiberManualRecord } from '@mui/icons-material'
+import { ArrowBack, Check, FiberManualRecord } from '@mui/icons-material'
 import { Avatar, Box, Button, Grid, Stack, Typography } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
-import { ModalUpdateIntro } from '../components'
 import { NoData } from '@/components'
 
 export type CourseIntroProps = {
@@ -11,31 +10,19 @@ export type CourseIntroProps = {
 }
 
 export const CourseIntro = ({ data }: CourseIntroProps) => {
-  const { profile } = useAuth()
-
   const navigate = useNavigate()
-
-  const { value: isOpenUpdate, setTrue: openUpdate, setFalse: closeUpdate } = useBoolean()
 
   const handleBackToCourses = () => {
     navigate('/courses')
   }
 
-  const isTeacher = profile?.data.roleInfo.name === 'Teacher'
-
   return (
-    <Box bgcolor='#fff' padding={2} borderRadius={3}>
+    <Box bgcolor='#fff' py={2} borderRadius={3}>
       <Stack direction='row' justifyContent='space-between'>
         <Button sx={{ gap: 1, mb: 1 }} color='secondary' onClick={handleBackToCourses}>
           <ArrowBack fontSize='small' />
           Courses
         </Button>
-        {isTeacher && (
-          <Button variant='outlined' sx={{ my: 1, display: 'flex', gap: 1 }} onClick={openUpdate}>
-            <EditOutlined fontSize='small' />
-            Update intro
-          </Button>
-        )}
       </Stack>
       <Stack gap={3}>
         <Typography variant='h6' fontWeight={500}>
@@ -78,7 +65,6 @@ export const CourseIntro = ({ data }: CourseIntroProps) => {
           <Typography>{data.description}</Typography>
         </Stack>
       </Stack>
-      {isTeacher && <ModalUpdateIntro data={data} isOpen={isOpenUpdate} onClose={closeUpdate} />}
     </Box>
   )
 }

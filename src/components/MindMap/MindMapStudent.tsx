@@ -93,7 +93,7 @@ export function MindMapStudent({ lessonPlan }: IMindMapProps) {
           // fitView
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
-          panOnScroll={false}
+          panOnScroll={true}
           onlyRenderVisibleElements={false}
           zoomOnDoubleClick={false}
           zoomOnScroll={false}

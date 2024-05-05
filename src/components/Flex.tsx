@@ -1,5 +1,5 @@
 import { Box, BoxProps } from '@mui/material'
 
 export function Flex(props: BoxProps) {
-  return <Box display='flex' {...props} alignItems='center' />
+  return <Box display='flex' alignItems='center' {...props} />
 }

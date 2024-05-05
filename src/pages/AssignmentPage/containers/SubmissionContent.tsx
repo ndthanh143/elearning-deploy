@@ -23,6 +23,7 @@ import { courseKeys } from '@/services/course/course.query'
 export type SubmissionContentProps = {
   assignment: Assignment
   courseId: number
+  unitId: number
 }
 
 export enum StatusSubmissionEnum {
@@ -34,7 +35,7 @@ export enum StatusSubmissionEnum {
 
 const currentDate = dayjs()
 
-export const SubmissionContent = ({ assignment, courseId }: SubmissionContentProps) => {
+export const SubmissionContent = ({ assignment, courseId, unitId }: SubmissionContentProps) => {
   const { profile } = useAuth()
 
   const queryClient = useQueryClient()
@@ -86,15 +87,15 @@ export const SubmissionContent = ({ assignment, courseId }: SubmissionContentPro
   })
 
   const handleSubmit = (values: UploadFileData) => {
-    mutateSubmit({ assignmentId: assignment.id, fileSubmissionUrl: values.filePath, courseId })
+    mutateSubmit({ assignmentId: assignment.id, fileSubmissionUrl: values.filePath, courseId, unitId })
   }
 
   const handleSubmitText = (values: string) => {
-    mutateSubmit({ assignmentId: assignment.id, textSubmission: values, courseId })
+    mutateSubmit({ assignmentId: assignment.id, textSubmission: values, courseId, unitId })
   }
 
   const handleSubmitLink = (link: string) => {
-    mutateSubmit({ assignmentId: assignment.id, linkSubmission: link, courseId })
+    mutateSubmit({ assignmentId: assignment.id, linkSubmission: link, courseId, unitId })
   }
 
   const checkStatusSubmission =

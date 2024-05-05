@@ -3,7 +3,18 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { AutoFixNormal, DeleteOutline, MoreHorizOutlined } from '@mui/icons-material'
-import { Box, Chip, Divider, Grid, IconButton, ListItemIcon, Menu, MenuItem, Typography } from '@mui/material'
+import {
+  Box,
+  Chip,
+  Container,
+  Divider,
+  Grid,
+  IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Typography,
+} from '@mui/material'
 
 import { formatDate } from '@/utils'
 import { gray } from '@/styles/theme'
@@ -84,7 +95,7 @@ export const PlanningPage = () => {
   }, [data])
 
   return (
-    <Box paddingX={4}>
+    <Container>
       <AddPlanSection />
       <Grid container mt={1} spacing={4}>
         {data?.content.map((plan) => (
@@ -166,6 +177,6 @@ export const PlanningPage = () => {
         isLoading={isLoadingDelete}
         subtitle='Are you sure to delete this plan, this action can not be revert.'
       />
-    </Box>
+    </Container>
   )
 }
