@@ -1,5 +1,5 @@
 import { ConfirmPopup, Drawer, Flex } from '@/components'
-import { useBoolean, useOnClickOutside } from '@/hooks'
+import { useBoolean } from '@/hooks'
 import { unitKey } from '@/services/unit/query'
 import { Unit, UpdateUnitPayload } from '@/services/unit/types'
 import { yupResolver } from '@hookform/resolvers/yup'

@@ -1,4 +1,3 @@
-import { useAuth } from '@/hooks'
 import { Course } from '@/services/course/course.dto'
 import { ArrowBack, Check, FiberManualRecord } from '@mui/icons-material'
 import { Avatar, Box, Button, Grid, Stack, Typography } from '@mui/material'

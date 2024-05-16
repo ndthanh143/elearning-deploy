@@ -1,6 +1,7 @@
 import { NoData } from '@/components'
 import { ScheduleList } from '@/pages/SchedulePage/containers'
 import { userKeys } from '@/services/user/user.query'
+import { Box } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { sortBy } from 'lodash'
 

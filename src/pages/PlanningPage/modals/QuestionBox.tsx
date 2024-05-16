@@ -6,6 +6,8 @@ import {
   QuizQuestion,
   UpdateQuestionPayload,
 } from '@/services/quizQuestion/quizQuestion.dto'
+import { quizQuestionKey } from '@/services/quizQuestion/quizQuestion.query'
+import { quizQuestionService } from '@/services/quizQuestion/quizQuestion.service'
 import { gray } from '@/styles/theme'
 import { CloseOutlined } from '@mui/icons-material'
 import {
@@ -24,9 +26,11 @@ import {
   TextField,
   Tooltip,
 } from '@mui/material'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ChangeEvent, useState } from 'react'
+import { toast } from 'react-toastify'
 
-type CreateQuestionProps = {
+type QuestionBoxProps = {
   onClose: () => void
   onSave?: (payload: CreateQuestionPayload) => void
   onUpdate?: (payload: UpdateQuestionPayload) => void
@@ -36,19 +40,35 @@ type CreateQuestionProps = {
   status: 'edit' | 'view' | 'create'
   defaultQuestion?: QuizQuestion
 }
-export const CreateQuestion = ({
+export const QuestionBox = ({
   quizId,
   defaultQuestion,
   onClose,
   onUpdate,
   onSave,
-  status,
+  status: defaultStatus,
   onDelete = () => {},
-}: CreateQuestionProps) => {
+}: QuestionBoxProps) => {
+  const queryClient = useQueryClient()
   const [selectedDeleteQuestion, setSelectedDeleteQuestion] = useState<number | null>(null)
   const [questionContent, setQuestionContent] = useState(defaultQuestion?.questionContent || '')
   const [questionType, setQuestionType] = useState<number>(defaultQuestion?.questionType || 1)
-  const [statuss, setStatus] = useState<'edit' | 'view' | 'create'>(status)
+  const [status, setStatus] = useState<'edit' | 'view' | 'create'>(defaultStatus)
+
+  const { mutate: mutateDeleteQuestion } = useMutation({
+    mutationFn: quizQuestionService.delete,
+    onSuccess: () => {
+      // const newData = questions?.filter((question) => question.id !== selectedDeleteQuestion) || []
+      // queryClient.setQueryData(quizQuestionsInstance.queryKey, newData)
+
+      queryClient.invalidateQueries({ queryKey: quizQuestionKey.lists() })
+    },
+    onError: () => {
+      toast.error('Can not delete this question, this quiz had submission before')
+    },
+  })
+
+  console.log('status', status)
   const [answers, setAnwsers] = useState<Anwser[]>(
     defaultQuestion?.answers || [
       { id: 0, answerContent: '', isCorrect: false },
@@ -83,12 +103,14 @@ export const CreateQuestion = ({
   }
 
   const handleSubmit = () => {
-    onSave && onSave({ quizId, answers, questionContent, questionType })
-    onUpdate && defaultQuestion && onUpdate({ id: defaultQuestion.id, answers, questionContent, questionType })
-    setQuestionContent('')
-    setQuestionType(1)
-    setAnwsers([])
-    setStatus('view')
+    if (status === 'edit' && onUpdate && defaultQuestion) {
+      onUpdate({ id: defaultQuestion.id, answers, questionContent, questionType })
+      setStatus('view')
+    }
+
+    if (status === 'create' && onSave) {
+      onSave({ quizId, answers, questionContent, questionType })
+    }
   }
 
   const handleChangeAnswer = (index: number, value: string) => {
@@ -103,6 +125,7 @@ export const CreateQuestion = ({
         vertical: 'top',
         horizontal: 'left',
       }}
+      sx={{ width: '100%' }}
     >
       <Stack border={1} p={2} borderRadius={3} sx={{ width: '100%' }} borderColor={gray[200]}>
         <Stack>
@@ -111,11 +134,16 @@ export const CreateQuestion = ({
               placeholder='Type question...'
               size='small'
               fullWidth
+              multiline
+              maxRows={3}
+              disabled={status === 'view'}
               value={questionContent}
               onChange={(e) => setQuestionContent(e.target.value)}
             />
             <Select
+              sx={{ borderRadius: 2 }}
               size='small'
+              disabled={status === 'view'}
               defaultValue={questionType}
               onChange={(e) => setQuestionType(e.target.value as number)}
             >
@@ -143,24 +171,39 @@ export const CreateQuestion = ({
                   size='small'
                   placeholder='anwser...'
                   fullWidth
+                  disabled={status === 'view'}
                   defaultValue={item.answerContent}
                   onChange={(e) => handleChangeAnswer(index, e.target.value)}
                 />
-                <IconButton onClick={() => handleRemoveAnwser(item)}>
-                  <CloseOutlined />
-                </IconButton>
+                {['create', 'edit'].includes(status) && (
+                  <IconButton onClick={() => handleRemoveAnwser(item)}>
+                    <CloseOutlined />
+                  </IconButton>
+                )}
               </Stack>
             ))}
           </Box>
         </Stack>
-        <Button variant='outlined' sx={{ width: 'fit-content', mt: 2 }} onClick={addAnwser}>
-          Add Anwser
-        </Button>
+        {['create', 'edit'].includes(status) && (
+          <Button variant='outlined' sx={{ width: 'fit-content', mt: 2 }} onClick={addAnwser}>
+            Add Anwser
+          </Button>
+        )}
         <Divider sx={{ my: 2 }} />
         <Stack direction='row' gap={1} justifyContent='center'>
-          {statuss === 'edit' ? (
+          {['create', 'edit'].includes(status) ? (
             <>
-              <Button onClick={() => (status === 'edit' ? onClose() : setStatus('view'))} variant='outlined' fullWidth>
+              <Button
+                onClick={() => {
+                  if (status === 'edit') {
+                    setStatus('view')
+                  } else {
+                    onClose()
+                  }
+                }}
+                variant='outlined'
+                fullWidth
+              >
                 Cancel
               </Button>
               <Button
@@ -192,7 +235,7 @@ export const CreateQuestion = ({
       <ConfirmPopup
         isOpen={Boolean(selectedDeleteQuestion)}
         onClose={() => setSelectedDeleteQuestion(null)}
-        onAccept={() => selectedDeleteQuestion && onDelete(selectedDeleteQuestion)}
+        onAccept={() => selectedDeleteQuestion && mutateDeleteQuestion(selectedDeleteQuestion)}
         title='Are you sure to delete this question'
         subtitle='This action can not be undo'
       />

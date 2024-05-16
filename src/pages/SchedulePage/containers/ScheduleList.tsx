@@ -1,5 +1,5 @@
-import { BoxContent, NoData, Show } from '@/components'
-import { MenuItem, Select, SelectChangeEvent, Stack, Typography } from '@mui/material'
+import { NoData, Show } from '@/components'
+import { Card, CardContent, MenuItem, Select, SelectChangeEvent, Stack, Typography } from '@mui/material'
 import { AssignmentItem, QuizItem } from '../components'
 import { AssignmentsInfo, QuizzesInfo } from '@/services/user/user.dto'
 import { useEffect, useState } from 'react'
@@ -34,45 +34,40 @@ export const ScheduleList = ({ assignments, quizzes }: ScheduleListProps) => {
   }, [selectedQuiz])
 
   return (
-    <BoxContent>
-      <Stack direction='row' justifyContent='space-between' alignItems='center' mb={4}>
-        <Typography variant='h5' fontWeight={500}>
-          Your schedule
+    <Card>
+      <CardContent>
+        <Typography variant='h5' fontWeight={500} mb={2}>
+          Your tasks
         </Typography>
-        <Select
-          defaultValue={type}
-          size='small'
-          sx={{ borderRadius: 3, paddingRight: 4, minWidth: 100 }}
-          onChange={handleChangeType}
-        >
+        <Select defaultValue={type} size='small' fullWidth sx={{ borderRadius: 3 }} onChange={handleChangeType}>
           <MenuItem value='quiz'>Quiz</MenuItem>
           <MenuItem value='assignment'>Assignment</MenuItem>
         </Select>
-      </Stack>
-      <Stack gap={4} sx={{ overflowY: 'scroll', height: '65vh' }}>
-        <Show when={type === 'quiz'}>
-          {quizzes.map((quiz) => (
-            <QuizItem
-              isActive={selectedQuiz === quiz}
-              quizData={quiz}
-              key={`${quiz.quizInfo.id}-${quiz.courseInfo.id}`}
-              onClick={() => setSelectedQuiz(quiz)}
-            />
-          ))}
-          {!quizzes.length && <NoData title='You have no quizzes schedule!' />}
-        </Show>
-        <Show when={type === 'assignment'}>
-          {assignments.map((assignment) => (
-            <AssignmentItem
-              isActive={assignment === selectedAssignment}
-              assignmentData={assignment}
-              key={`${assignment.assignmentInfo.id}-${assignment.courseInfo.id}`}
-              onClick={() => setSelectedAssignment(assignment)}
-            />
-          ))}
-          {!assignments.length && <NoData title='You have no assignments schedule!' />}
-        </Show>
-      </Stack>
-    </BoxContent>
+        <Stack gap={4} sx={{ overflowY: 'scroll', height: '65vh' }} mt={2}>
+          <Show when={type === 'quiz'}>
+            {quizzes.map((quiz) => (
+              <QuizItem
+                isActive={selectedQuiz === quiz}
+                quizData={quiz}
+                key={`${quiz.quizInfo.id}-${quiz.courseInfo.id}`}
+                onClick={() => setSelectedQuiz(quiz)}
+              />
+            ))}
+            {!quizzes.length && <NoData title='You have no quizzes schedule!' />}
+          </Show>
+          <Show when={type === 'assignment'}>
+            {assignments.map((assignment) => (
+              <AssignmentItem
+                isActive={assignment === selectedAssignment}
+                assignmentData={assignment}
+                key={`${assignment.assignmentInfo.id}-${assignment.courseInfo.id}`}
+                onClick={() => setSelectedAssignment(assignment)}
+              />
+            ))}
+            {!assignments.length && <NoData title='You have no assignments schedule!' />}
+          </Show>
+        </Stack>
+      </CardContent>
+    </Card>
   )
 }

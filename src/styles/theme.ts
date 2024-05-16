@@ -1,5 +1,4 @@
 import { createTheme } from '@mui/material'
-import { green } from '@mui/material/colors'
 
 declare module '@mui/material/styles' {
   interface PaletteOptions {}
@@ -85,6 +84,13 @@ export const theme = createTheme({
           borderRadius: 8,
           fontStyle: 'normal',
           textTransform: 'unset',
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12, // Set border radius to 3
         },
       },
     },

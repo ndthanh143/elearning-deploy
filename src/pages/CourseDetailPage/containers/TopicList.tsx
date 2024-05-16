@@ -1,15 +1,13 @@
-import { BoxContent, Flex, Loading, NoData } from '@/components'
-import { Box, Divider, Fab, IconButton, ListItemIcon, Menu, MenuItem, Stack, Tooltip, Typography } from '@mui/material'
+import { Flex } from '@/components'
+import { Box, Divider, IconButton, ListItemIcon, Menu, MenuItem, Stack, Tooltip, Typography } from '@mui/material'
 import { ForumTopic } from '../components'
 import { topicKeys } from '@/services/topic/topic.query'
 import { useQuery } from '@tanstack/react-query'
 import {
   AddOutlined,
   FilterListOutlined,
-  KeyboardDoubleArrowLeftOutlined,
   KeyboardDoubleArrowRightOutlined,
   MoreHorizOutlined,
-  TopicOutlined,
 } from '@mui/icons-material'
 import { useMenu, useOnClickOutside } from '@/hooks'
 import { useRef } from 'react'

@@ -30,7 +30,6 @@ export const BoxCreateComment = ({ onClose, onSubmit }: IBoxCreateCommentProps) 
       onSubmit={handleSubmit(onSubmit)}
       ref={commentBoxRef}
       p={2}
-      my={1}
       border={1}
       borderColor='#ededed'
       borderRadius={2}
@@ -56,7 +55,7 @@ export const BoxCreateComment = ({ onClose, onSubmit }: IBoxCreateCommentProps) 
             </Tooltip>
           </label>
           <Input type='file' id='attach-file' hidden sx={{ display: 'none' }} />
-          <IconButton color='primary' size='small'>
+          <IconButton color='primary' size='small' type='submit'>
             <ArrowUpwardOutlined fontSize='small' />
           </IconButton>
         </Flex>

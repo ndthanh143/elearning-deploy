@@ -1,7 +1,6 @@
 import { images } from '@/assets/images'
 import { useAuth, useOnClickOutside } from '@/hooks'
 import { RoleEnum } from '@/services/auth/auth.dto'
-import { blue } from '@/styles/theme'
 import {
   AssignmentIndOutlined,
   EditCalendarOutlined,
@@ -9,10 +8,13 @@ import {
   ForumOutlined,
   KeyboardDoubleArrowLeftOutlined,
   LibraryBooksOutlined,
+  LogoutOutlined,
   PeopleOutline,
+  Settings,
   TimelineOutlined,
 } from '@mui/icons-material'
 import { Box, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Tooltip, Typography } from '@mui/material'
+import { blue } from '@mui/material/colors'
 import { startsWith } from 'lodash'
 import { ReactNode, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -30,10 +32,6 @@ interface ISideBarProps {
 
 export const SideBar = ({ isCollapse, onCollapse }: ISideBarProps) => {
   const { profile } = useAuth()
-
-  const sideBarRef = useRef<HTMLDivElement>(null)
-
-  useOnClickOutside(sideBarRef, onCollapse)
 
   const { pathname } = useLocation()
 
@@ -99,6 +97,19 @@ export const SideBar = ({ isCollapse, onCollapse }: ISideBarProps) => {
     Admin: [],
   }
 
+  const bottomMenu: MenuItemProps[] = [
+    {
+      title: 'Settings',
+      icon: <Settings fontSize='small' />,
+      href: '/settings',
+    },
+    {
+      title: 'Logout',
+      icon: <LogoutOutlined fontSize='small' color='error' />,
+      href: '/logout',
+    },
+  ]
+
   return (
     profile && (
       <Box
@@ -108,7 +119,7 @@ export const SideBar = ({ isCollapse, onCollapse }: ISideBarProps) => {
         maxWidth={250}
         borderRight={1}
         borderColor={'#ededed'}
-        ref={sideBarRef}
+        boxShadow={2}
       >
         <Box display='flex' justifyContent='space-between' py={1} px={2} alignItems='center'>
           <Box display='flex' alignItems='center' gap={2}>
@@ -153,9 +164,30 @@ export const SideBar = ({ isCollapse, onCollapse }: ISideBarProps) => {
                   <Typography
                     variant='body2'
                     sx={{
-                      fontWeight: item.href === pathname ? 500 : 400,
+                      fontWeight: item.href === pathname ? 700 : 400,
                       color: item.href === pathname ? 'primary.main' : '#000',
                     }}
+                  >
+                    {item.title}
+                  </Typography>
+                }
+              />
+            </ListItemButton>
+          ))}
+        </List>
+
+        <List>
+          {bottomMenu.map((item) => (
+            <ListItemButton key={item.title}>
+              <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
+              <ListItemText
+                primary={
+                  <Typography
+                    variant='body2'
+                    // sx={{
+                    //   fontWeight: item.href === pathname ? 700 : 400,
+                    //   color: item.href === pathname ? 'primary.main' : '#000',
+                    // }}
                   >
                     {item.title}
                   </Typography>

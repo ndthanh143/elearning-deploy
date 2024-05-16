@@ -1,25 +1,11 @@
-import { BoxContent, Flex, NoData } from '@/components'
+import { Flex } from '@/components'
 import { useAuth } from '@/hooks'
 import { Assignment } from '@/services/assignment/assignment.dto'
 import { assignmentKeys } from '@/services/assignment/assignment.query'
 import { courseKeys } from '@/services/course/course.query'
 import { Quiz } from '@/services/quiz/quiz.dto'
 import { quizKey } from '@/services/quiz/quiz.query'
-import { AssignmentOutlined } from '@mui/icons-material'
-import {
-  Box,
-  Container,
-  Grid,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  MenuItem,
-  Select,
-  Stack,
-} from '@mui/material'
-import { blue } from '@mui/material/colors'
+import { Container, MenuItem, Select } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { AssignmentSubmission, QuizSubmission } from './components'

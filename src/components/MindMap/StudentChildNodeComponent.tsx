@@ -16,9 +16,6 @@ type StatusNodeType = 'lock' | 'done' | 'current'
 
 import { keyframes } from '@mui/system'
 import { Unit } from '@/services/unit/types'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { unitService } from '@/services/unit'
-import { unitKey } from '@/services/unit/query'
 
 const pingBorder = keyframes`
   0% {
@@ -71,7 +68,7 @@ export const StudentChildNodeComponent = (props: NodeProps<Unit>) => {
   const { pathname } = useLocation()
   const parentRef = useRef<HTMLDivElement | null>(null)
 
-  const { value: isOpen, toggle, setFalse: closeModal } = useBoolean()
+  const { toggle } = useBoolean()
   const { anchorEl: anchorElMenu, isOpen: isOpenMenu, onClose: closeMenu, onOpen: openMenu } = useMenu(parentRef)
   // const { value: isOpenDrawer, setFalse: closeDrawer, setTrue: openDrawer } = useBoolean()
 

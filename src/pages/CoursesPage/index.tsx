@@ -1,17 +1,18 @@
-import { Box, Grid, Pagination, Skeleton, Stack, Typography } from '@mui/material'
+import { Box, Card, CardContent, Container, Grid, Pagination, Skeleton, Stack, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { useAuth } from '@/hooks'
+import { useAuth, useBoolean } from '@/hooks'
 import { coursesRegistrationKeys } from '@/services/coursesRegistration/coursesRegistration.query'
-import { BoxContent, CourseCard, PageContentHeading } from '@/components'
-import { ListSchedule } from './components'
+import { CourseCard } from '@/components'
+import { ModalSchedule } from './components'
 import { TeacherCoursesPage } from '../Teacher/TeacherCoursesPage'
 
-const DEFAULT_PAGE_SIZE = 3
+const DEFAULT_PAGE_SIZE = 10
 export const CoursesPage = () => {
   const { profile } = useAuth()
 
   const [page, setPage] = useState(0)
+  const { value: isOpenModalSchedule, setTrue: openModalSchedule, setFalse: closeModalSchedule } = useBoolean()
 
   const coursesInstance = coursesRegistrationKeys.list({
     studentId: Number(profile?.data.id),
@@ -19,7 +20,7 @@ export const CoursesPage = () => {
     size: DEFAULT_PAGE_SIZE,
   })
 
-  const { data: courses, isFetching } = useQuery({
+  const { data: courses, isLoading: isLoadingCourses } = useQuery({
     ...coursesInstance,
     enabled: Boolean(profile),
   })
@@ -29,45 +30,44 @@ export const CoursesPage = () => {
   }
 
   return (
-    <Box>
-      <PageContentHeading />
-
-      <Grid container spacing={4}>
-        <Grid item xs={8}>
-          <BoxContent height='70vh'>
-            <Box display='flex' justifyContent='space-between' my={1}>
-              <Typography variant='h6'>All courses</Typography>
-            </Box>
-
-            {isFetching && (
-              <Box p={2}>
-                <Skeleton height={250} sx={{ borderRadius: 3 }} />
-              </Box>
-            )}
-            {courses && (
-              <>
-                {courses.content.map((course) => (
-                  <CourseCard key={course.id} data={course.courseInfo} />
-                ))}
-                <Pagination
-                  count={courses.totalPages}
-                  page={page + 1}
-                  onChange={(_, newPage) => setPage(newPage - 1)}
-                  color='primary'
-                  sx={{ display: 'flex', justifyContent: 'center', my: 2 }}
-                />
-              </>
-            )}
-          </BoxContent>
+    <>
+      <Container>
+        <Box display='flex' justifyContent='space-between' mb={2}>
+          <Typography variant='h6'>Your courses</Typography>
+        </Box>
+        <Grid container spacing={4}>
+          {courses &&
+            courses.content.map((course) => (
+              <Grid item xs={4} key={course.id}>
+                <CourseCard key={course.id} data={course.courseInfo} />
+              </Grid>
+            ))}
+          {isLoadingCourses &&
+            Array.from({ length: 3 }).map((_, index) => (
+              <Grid item xs={4} key={index}>
+                <Card variant='outlined'>
+                  <Skeleton variant='rectangular' height={200} width='100%' />
+                  <CardContent>
+                    <Skeleton height={20} width={200} />
+                    <Skeleton variant='text' height={40} width='100%' />
+                    <Skeleton variant='text' height={40} width='100%' />
+                    <Skeleton variant='text' height={40} width='100%' />
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
         </Grid>
-        <Grid item xs={4}>
-          <Stack gap={3}>
-            <BoxContent height='70vh' sx={{ overflow: 'hidden' }}>
-              <ListSchedule />
-            </BoxContent>
-          </Stack>
-        </Grid>
-      </Grid>
-    </Box>
+        {courses && courses.totalPages > 1 && (
+          <Pagination
+            count={courses.totalPages}
+            page={page + 1}
+            onChange={(_, newPage) => setPage(newPage - 1)}
+            color='primary'
+            sx={{ display: 'flex', justifyContent: 'center', my: 2 }}
+          />
+        )}
+      </Container>
+      <ModalSchedule isOpen={isOpenModalSchedule} onClose={closeModalSchedule} />
+    </>
   )
 }

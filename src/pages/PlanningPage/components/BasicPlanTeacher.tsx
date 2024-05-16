@@ -1,5 +1,5 @@
 import actions from '@/assets/images/icons/actions'
-import { ConfirmPopup, Loading, MindMap, NoData } from '@/components'
+import { ConfirmPopup, Loading, NoData } from '@/components'
 import { useAuth, useBoolean } from '@/hooks'
 import { Module } from '@/services/module/module.dto'
 import {
@@ -13,15 +13,15 @@ import {
 } from '@mui/icons-material'
 import { Box, Button, Collapse, Divider, IconButton, Stack, Typography } from '@mui/material'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { ActionsUnit } from './ActionsUnit'
-import { downloadFileByLink, getResourceType, handleMappedChildrenUnitByParent, handleMappedUnits } from '@/utils'
+import { downloadFileByLink, handleMappedChildrenUnitByParent, handleMappedUnits } from '@/utils'
 import { ContentItem } from './ContentItem'
 import { ModalSection, AssignmentActions, LectureActions, QuizActions, SectionModalProps } from '../modals'
 import { assignmentService } from '@/services/assignment/assignment.service'
 import { toast } from 'react-toastify'
 import { lectureService } from '@/services/lecture/lecture.service'
-import { quizService } from '@/services/quiz/quiz.service'
+// import { quizService } from '@/services/quiz/quiz.service'
 import { resourceService } from '@/services/resource/resource.service'
 import { Lecture } from '@/services/lecture/lecture.dto'
 import { Assignment } from '@/services/assignment/assignment.dto'
@@ -62,13 +62,13 @@ export const BasicPlanTeacher = ({ lessonPlanId }: BasicPlanTeacherProps) => {
   const { value: isOpenAddSection, setTrue: openAddSection, setFalse: closeAddSection } = useBoolean()
   const { value: isOpenConfirm, setTrue: openConfirm, setFalse: closeConfirm } = useBoolean()
 
-  const { mutate: deleteAssignment } = useMutation({
-    mutationFn: assignmentService.delete,
-    onSuccess: () => {
-      toast.success('Delete assignment successfully')
-      refetchUnits()
-    },
-  })
+  // const { mutate: deleteAssignment } = useMutation({
+  //   mutationFn: assignmentService.delete,
+  //   onSuccess: () => {
+  //     toast.success('Delete assignment successfully')
+  //     refetchUnits()
+  //   },
+  // })
 
   const { mutate: deleteLecture } = useMutation({
     mutationFn: lectureService.delete,
@@ -78,16 +78,16 @@ export const BasicPlanTeacher = ({ lessonPlanId }: BasicPlanTeacherProps) => {
     },
   })
 
-  const { mutate: deleteQuiz } = useMutation({
-    mutationFn: quizService.delete,
-    onSuccess: () => {
-      toast.success('Delete quiz successfully')
-      refetchUnits()
-    },
-    onError: () => {
-      toast.error('This quiz had submission before, can not delete it')
-    },
-  })
+  // const { mutate: deleteQuiz } = useMutation({
+  //   mutationFn: quizService.delete,
+  //   onSuccess: () => {
+  //     toast.success('Delete quiz successfully')
+  //     refetchUnits()
+  //   },
+  //   onError: () => {
+  //     toast.error('This quiz had submission before, can not delete it')
+  //   },
+  // })
 
   const { mutate: mutateCreateSection } = useMutation({
     mutationFn: unitService.create,
@@ -99,15 +99,15 @@ export const BasicPlanTeacher = ({ lessonPlanId }: BasicPlanTeacherProps) => {
     },
   })
 
-  const { mutate: mutateUpdatePlan } = useMutation({
-    mutationFn: unitService.update,
-    onSuccess: () => {
-      closeAddSection()
-      refetchUnits()
-      queryClient.invalidateQueries({ queryKey: lessonPlanKey.lists() })
-      toast.success('Update lesson plan successfully!')
-    },
-  })
+  // const { mutate: mutateUpdatePlan } = useMutation({
+  //   mutationFn: unitService.update,
+  //   onSuccess: () => {
+  //     closeAddSection()
+  //     refetchUnits()
+  //     queryClient.invalidateQueries({ queryKey: lessonPlanKey.lists() })
+  //     toast.success('Update lesson plan successfully!')
+  //   },
+  // })
 
   const { mutate: mutateDeletePlan } = useMutation({
     mutationFn: lessonPlanService.delete,

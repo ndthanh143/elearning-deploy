@@ -1,8 +1,7 @@
-import { BoxContent } from '@/components'
-import Editor from '@/components/Editor'
-import { CloseOutlined } from '@mui/icons-material'
-import { Box, Button, Divider, IconButton, Modal, Stack, Typography } from '@mui/material'
-import { useState } from 'react'
+import { ContentEditable, Flex } from '@/components'
+import { useAuth } from '@/hooks'
+import { Avatar, Box, Button, Modal, Stack, Typography } from '@mui/material'
+import { useState, useEffect, useRef } from 'react'
 
 export type ModalActionsTopicProps = {
   isOpen: boolean
@@ -11,7 +10,13 @@ export type ModalActionsTopicProps = {
 } & ({ status: 'update'; defaultValue: string } | { status: 'create'; defaultValue?: string })
 
 export const ModalActionsTopic = ({ isOpen, onClose, onSubmit, status, defaultValue = '' }: ModalActionsTopicProps) => {
-  const [value, setValue] = useState(defaultValue)
+  const { profile } = useAuth()
+  const [value, setValue] = useState<string>(defaultValue)
+
+  // Update internal state when defaultValue changes (for update scenario)
+  useEffect(() => {
+    setValue(defaultValue)
+  }, [defaultValue])
 
   const handleCancel = () => {
     setValue('')
@@ -20,29 +25,37 @@ export const ModalActionsTopic = ({ isOpen, onClose, onSubmit, status, defaultVa
 
   const handleSubmit = () => {
     onSubmit(value)
-    status === 'create' && setValue('')
+    if (status === 'create') {
+      setValue('')
+    }
   }
 
   return (
-    <Modal open={isOpen} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <BoxContent minWidth={600}>
-        <Stack direction='row' justifyContent='space-between'>
-          <Typography variant='h5'>{status === 'create' ? 'Create' : 'Update'} topic</Typography>
-          <IconButton onClick={onClose}>
-            <CloseOutlined />
-          </IconButton>
-        </Stack>
-        <Divider sx={{ mb: 2 }} />
-        <Box height={400}>
-          <Editor value={value} onChange={setValue} />
-        </Box>
+    <Modal
+      open={isOpen}
+      sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      onClose={handleCancel}
+    >
+      <Stack bgcolor='white' borderRadius={3} p={3} gap={2}>
+        <Flex alignItems='center' gap={1}>
+          <Avatar src={profile?.data.avatarPath}>{profile?.data.fullName.charAt(0)}</Avatar>
+          <Typography fontWeight={500}>{profile?.data.fullName}</Typography>
+        </Flex>
+        <ContentEditable
+          value={value}
+          onChange={(value) => setValue(value)}
+          placeholder='What’s on your mind?'
+          sx={{
+            border: '1px dashed grey',
+          }}
+        />
+
         <Stack direction='row' gap={2} justifyContent='end' mt={2}>
-          <Button onClick={handleCancel}>Cancel</Button>
-          <Button variant='contained' onClick={handleSubmit}>
+          <Button variant='contained' onClick={handleSubmit} fullWidth>
             {status === 'create' ? 'Create' : 'Update'}
           </Button>
         </Stack>
-      </BoxContent>
+      </Stack>
     </Modal>
   )
 }

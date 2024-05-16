@@ -16,7 +16,6 @@ import dayjs from 'dayjs'
 import { useState } from 'react'
 import { Quiz } from '@/services/quiz/quiz.dto'
 import { ConfirmPopup, ModalLoading } from '@/components'
-import { moduleKey } from '@/services/module/module.query'
 import { toast } from 'react-toastify'
 import { Unit } from '@/services/unit/types'
 import { unitService } from '@/services/unit'
@@ -42,8 +41,17 @@ export const ActionsUnit = ({ data: unit }: ActionsUnitProps) => {
 
   const { mutate: mutateCreateQuiz, isPending: isPendingCreateQuiz } = useMutation({
     mutationFn: quizService.create,
-    onSuccess: (quiz) => {
-      setQuiz(quiz.data)
+    onSuccess: (data) => {
+      if (data) {
+        mutateCreateUnit({
+          lessonPlanId: unit.lessonPlanInfo.id,
+          description: data.quizTitle,
+          parentId: unit.id,
+          name: data.quizTitle,
+          quizId: data.id,
+        })
+        setQuiz(data)
+      }
     },
   })
 
@@ -150,6 +158,7 @@ export const ActionsUnit = ({ data: unit }: ActionsUnitProps) => {
       endDate: dayjs().toISOString(),
       quizTimeLimit: 0,
       startDate: dayjs().toISOString(),
+      isPublicAnswer: true,
     })
   }
 

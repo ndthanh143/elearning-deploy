@@ -1,5 +1,5 @@
 import { Course } from '@/services/course/course.dto'
-import { Box, Stack } from '@mui/material'
+import { Box } from '@mui/material'
 import { MindMapStudent } from '@/components/MindMap/MindMapStudent'
 import { BasicPlanStudent } from '.'
 

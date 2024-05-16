@@ -35,7 +35,7 @@ export const quizService = {
   create: async (payload: CreateQuizPayload) => {
     const { data } = await axiosInstance.post<QuizResponse>('/quiz/create', payload)
 
-    return data
+    return data.data
   },
   update: async (payload: UpdateQuizPayload) => {
     const { data } = await axiosInstance.put<QuizResponse>('/quiz/update', payload)

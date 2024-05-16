@@ -1,6 +1,6 @@
 import { useBoolean, useMenu } from '@/hooks'
 import { Box, Button, ListItemIcon, ListItemText, Menu, MenuItem, MenuList, Stack, Typography } from '@mui/material'
-import { AddOutlined, ListOutlined, PlusOneOutlined, TipsAndUpdatesOutlined } from '@mui/icons-material'
+import { AddOutlined, ListOutlined, TipsAndUpdatesOutlined } from '@mui/icons-material'
 
 import mindMapIcon from '@/assets/images/planingPage/mindmap.png'
 import { AddPlanModal } from '../modals'

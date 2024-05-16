@@ -7,9 +7,9 @@ export type NoDataProps = {
 
 export const NoData = ({ title = 'No results found' }: NoDataProps) => {
   return (
-    <Box display='flex' justifyContent='center' width='100%'>
+    <Box display='flex' justifyContent='center' width='100%' m='auto'>
       <Stack gap={0} alignItems='center'>
-        <Box component='img' src={common.search} borderRadius='50%' width={100} height={100} />
+        <Box component='img' src={common.search} borderRadius='50%' width={150} height={150} />
         <Typography textAlign='center'>{title}</Typography>
       </Stack>
     </Box>

@@ -1,6 +1,5 @@
-import { BoxProps, Divider, IconButton, Modal, Stack, Typography } from '@mui/material'
+import { BoxProps, Modal, Stack, Typography } from '@mui/material'
 import { BoxContent } from './BoxContent'
-import { CloseOutlined } from '@mui/icons-material'
 import { PropsWithChildren } from 'react'
 
 export type CustomModalProps = {

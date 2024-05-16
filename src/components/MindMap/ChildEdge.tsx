@@ -34,7 +34,7 @@
 
 import { Box } from '@mui/material'
 import { useCallback } from 'react'
-import { useStore, getStraightPath, EdgeProps, BaseEdge, getBezierPath } from 'reactflow'
+import { useStore, getStraightPath, EdgeProps, BaseEdge } from 'reactflow'
 
 import { Position, MarkerType, Node } from 'reactflow'
 

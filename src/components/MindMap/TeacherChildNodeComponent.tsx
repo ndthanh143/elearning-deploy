@@ -35,8 +35,6 @@ import {
 } from '@mui/icons-material'
 import { PropsWithChildren, useEffect, useRef, useState } from 'react'
 
-const isTeacher = false
-
 type NodeDataType = 'lecture' | 'assignment' | 'quiz' | 'resource'
 
 type StatusNodeType = 'lock' | 'done' | 'current'
@@ -111,7 +109,7 @@ export const TeacherChildNodeComponent = (props: NodeProps<Unit>) => {
   const { anchorEl: anchorElMenu, isOpen: isOpenMenu, onClose: closeMenu, onOpen: openMenu } = useMenu(parentRef)
   const { value: isOpenDrawer, setFalse: closeDrawer, setTrue: openDrawer } = useBoolean()
   const { value: isOpenLecture, setFalse: closeLecture, setTrue: openLecture } = useBoolean()
-  const { value: isOpenAssignment, setFalse: closeAssignment, setTrue: openAssignment } = useBoolean()
+  // const { value: isOpenAssignment, setFalse: closeAssignment, setTrue: openAssignment } = useBoolean()
   // const { value: isOpenDrawer, setFalse: closeDrawer, setTrue: openDrawer } = useBoolean()
 
   const { mutate: mutateUpdateUnit } = useMutation({

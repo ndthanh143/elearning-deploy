@@ -47,7 +47,7 @@ export const PlanningPage = () => {
 
   const [selectedLessonPlan, setSelectedLessonPlan] = useState<LessonPlan | null>(null)
 
-  const { value: isOpenEdit, setFalse: closeEdit, setTrue: openEdit } = useBoolean(false)
+  const { value: isOpenEdit, setFalse: closeEdit } = useBoolean(false)
   const { value: isOpenConfirmPopup, setFalse: closeConfirmPopup, setTrue: openConfirmPopup } = useBoolean(false)
 
   const lessonPlanInstance = lessonPlanKey.list({ teacherId: profile?.data.id as number })

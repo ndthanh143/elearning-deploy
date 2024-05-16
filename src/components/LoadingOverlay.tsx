@@ -1,4 +1,4 @@
-import { Backdrop, Box, CircularProgress, Stack, Typography } from '@mui/material'
+import { Backdrop, CircularProgress, Stack, Typography } from '@mui/material'
 
 interface ILoadingOverlayProps {
   isOpen: boolean

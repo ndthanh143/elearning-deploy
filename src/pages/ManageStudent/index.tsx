@@ -1,4 +1,4 @@
-import { ConfirmPopup, Flex, Loading, LoadingOverlay, NoData } from '@/components'
+import { ConfirmPopup, Flex, Loading, NoData } from '@/components'
 import { ModalAddStudentToCourse } from '@/components/ModalAddStudentToCourse'
 import { useAuth, useBoolean } from '@/hooks'
 import { courseKeys } from '@/services/course/course.query'
@@ -10,9 +10,7 @@ import {
   Button,
   Container,
   FormControl,
-  Grid,
   IconButton,
-  InputLabel,
   MenuItem,
   Pagination,
   Paper,

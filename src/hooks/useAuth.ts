@@ -5,8 +5,10 @@ import { toast } from 'react-toastify'
 import authService from '../services/auth/auth.service'
 import { userKeys } from '../services/user/user.query'
 import { useState } from 'react'
+import { useAlert } from '.'
 
 export const useAuth = () => {
+  const { triggerAlert } = useAlert()
   const queryClient = useQueryClient()
 
   const [accessToken, _] = useState(Cookies.get('access_token'))
@@ -17,7 +19,7 @@ export const useAuth = () => {
   const { mutate: mutateLoginGoogle } = useMutation({
     mutationFn: authService.loginGoogle,
     onSuccess: () => {
-      toast.success('Login successfully!')
+      triggerAlert('Login successfully!')
       refetch()
     },
   })

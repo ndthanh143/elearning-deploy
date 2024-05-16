@@ -179,24 +179,9 @@ export function RightAction({ lessonPlanId }: IRightActionProps) {
         ))}
       </Stack>
 
-      <ModalSection
-        status='create'
-        isOpen={isOpenAddSection}
-        onClose={closeAddSection}
-        onSubmit={handleCreateSection}
-      />
-      <ResourceActions
-        status='create'
-        isOpen={isOpenResource}
-        onClose={closeResource}
-        onCreate={mutateCreateResource}
-      />
-      <AssignmentActions
-        status='create'
-        isOpen={isOpenAssignment}
-        onClose={closeAssignment}
-        onCreate={mutateCreateAssignment}
-      />
+      <ModalSection isOpen={isOpenAddSection} onClose={closeAddSection} onSubmit={handleCreateSection} />
+      <ResourceActions isOpen={isOpenResource} onClose={closeResource} onCreate={mutateCreateResource} />
+      <AssignmentActions isOpen={isOpenAssignment} onClose={closeAssignment} onCreate={mutateCreateAssignment} />
       <LectureActions isOpen={isOpenLecture} onClose={closeLecture} onCreate={mutateCreateLecture} />
     </>
   )

@@ -6,13 +6,14 @@ import NProgress from 'nprogress'
 import ReactGA from 'react-ga'
 
 import { theme } from './styles/theme'
-import { Layout, NotFound } from './components'
+import { AlertComponent, Layout, NotFound } from './components'
 import {
   AssignmentPage,
   CourseDetailPage,
   CoursesPage,
   CreateNewCoursePage,
   EditCoursePage,
+  ForumDetailPage,
   ForumPage,
   HomePage,
   LecturePage,
@@ -22,9 +23,11 @@ import {
   ProfilePage,
   QuizPage,
   SchedulePage,
+  SignUpPage,
   SubmissionManagementPage,
 } from './pages'
 
+import 'react-big-calendar/lib/css/react-big-calendar.css'
 import 'nprogress/nprogress.css'
 import 'react-toastify/dist/ReactToastify.css'
 import '@fontsource/roboto/300.css'
@@ -92,7 +95,10 @@ const router = createBrowserRouter([
       },
       {
         path: 'forum',
-        element: <ForumPage />,
+        children: [
+          { index: true, element: <ForumPage /> },
+          { path: ':id', element: <ForumDetailPage /> },
+        ],
       },
       {
         path: 'planning',
@@ -124,6 +130,10 @@ const router = createBrowserRouter([
   {
     path: 'login',
     element: <LoginPage />,
+  },
+  {
+    path: 'signup',
+    element: <SignUpPage />,
   },
   {
     path: 'admin',
@@ -176,6 +186,7 @@ function App() {
       <ReactFlowProvider>
         <QueryClientProvider client={queryClient}>
           <ToastContainer position='bottom-right' />
+          <AlertComponent />
           <ThemeProvider theme={theme}>
             <CssBaseline />
             <LocalizationProvider dateAdapter={AdapterDayjs}>

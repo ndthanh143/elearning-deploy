@@ -1,49 +1,148 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { lectureKeys } from '../../services/lecture/lecture.query'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Avatar, Box, Button, Container, IconButton, Slider, Stack, Tooltip, Typography } from '@mui/material'
+import { Avatar, Box, Button, Container, IconButton, Stack, Tooltip, Typography } from '@mui/material'
 import { DangerouseLyRenderLecture, Flex, NotFound } from '../../components'
 import { ArrowBack, CommentOutlined } from '@mui/icons-material'
-import { useAuth, useBoolean, useIntersectionObserver } from '@/hooks'
+import { useAuth, useBoolean, useIntersectionObserver, useOnClickOutside } from '@/hooks'
 import { useEffect, useRef, useState } from 'react'
 import { lectureService } from '@/services/lecture/lecture.service'
 import { yellow } from '@mui/material/colors'
-import { topicCommentService } from '@/services/topicComment/topicComment.service'
 import { BoxCreateComment } from './components'
 import { RoleEnum } from '@/services/auth/auth.dto'
-import { unitKey } from '@/services/unit/query'
 import { courseKeys } from '@/services/course/course.query'
+import { commentService } from '@/services'
+import { groupCommentKeys } from '@/services/groupComment/query'
+import { GroupComment } from '@/services/groupComment/types'
+import { gray } from '@/styles/theme'
 
-const BoxComment = () => {
+interface IBoxCommentProps {
+  data: GroupComment
+}
+
+const BoxComment = ({ data }: IBoxCommentProps) => {
+  const { profile } = useAuth()
+  const queryClient = useQueryClient()
+  const commentRef = useRef<HTMLDivElement>(null)
+  const { value: isOpenCreateAnswer, setTrue: openCreateAnswer, setFalse: closeCreateAnswer } = useBoolean()
+  useOnClickOutside(commentRef, closeCreateAnswer)
+
+  const { mutate: mutateCreateComment } = useMutation({
+    mutationFn: commentService.create,
+    onSuccess: () => {
+      closeCreateAnswer()
+      queryClient.invalidateQueries({ queryKey: groupCommentKeys.lists() })
+    },
+  })
+
+  const handleCreateComment = (payload: { content: string }) => {
+    mutateCreateComment({
+      ...(data.lectureInfo && {
+        lectureId: data.lectureInfo.id,
+      }),
+      content: payload.content,
+      unitId: data.unitInfo.id,
+      courseId: data.courseInfo.id,
+      groupCommentId: data.id,
+    })
+  }
+
+  useEffect(() => {
+    const element = document.getElementById(data.blockId)
+    if (element) {
+      element.style.backgroundColor = isOpenCreateAnswer ? yellow[400] : 'transparent'
+
+      if (isOpenCreateAnswer) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+    }
+  }, [isOpenCreateAnswer])
+
+  useEffect(() => {
+    const element = document.getElementById(data.blockId)
+
+    if (element && commentRef.current) {
+      const mouseOverHandler = () => {
+        element.style.backgroundColor = yellow[400]
+      }
+
+      const mouseOutHandler = () => {
+        element.style.backgroundColor = 'transparent'
+      }
+
+      commentRef.current.addEventListener('mouseover', mouseOverHandler)
+      commentRef.current.addEventListener('mouseout', mouseOutHandler)
+
+      return () => {
+        commentRef.current?.removeEventListener('mouseover', mouseOverHandler)
+        commentRef.current?.removeEventListener('mouseout', mouseOutHandler)
+      }
+    }
+  }, [commentRef])
+
   return (
     <Stack
-      p={2}
-      my={1}
-      border={1}
-      borderColor='#ededed'
-      borderRadius={2}
-      gap={1}
+      gap={2}
+      ref={commentRef}
       sx={{
         ':hover': {
           ml: -2,
         },
         transition: 'all ease-in 0.05s',
       }}
+      p={2}
+      my={1}
+      border={1}
+      borderColor='#ededed'
+      borderRadius={2}
+      onClick={openCreateAnswer}
     >
-      <Flex gap={1}>
-        <Avatar sx={{ width: 20, height: 20 }}>A</Avatar>
-        <Typography variant='body2' fontWeight={500}>
-          Nguyen Duy Thanh
-        </Typography>
-        <Typography variant='caption' color='#ccc'>
-          1m
-        </Typography>
-      </Flex>
-      <Box ml={4}>
-        <Typography variant='body2' color='#000'>
-          Content goes here...
-        </Typography>
-      </Box>
+      {data.commentInfo.map((comment, index) => (
+        <>
+          <Stack gap={1}>
+            <Flex gap={1}>
+              <Box position='relative'>
+                {index > 0 && (
+                  <Box
+                    position='absolute'
+                    height={30}
+                    width={2}
+                    bgcolor={gray[100]}
+                    top='-100%'
+                    left='50%'
+                    sx={{ transform: 'translate(-50%, -16px)' }}
+                  />
+                )}
+
+                <Avatar sx={{ width: 20, height: 20 }} src={comment.accountInfo.avatarPath}>
+                  {comment.accountInfo.fullName.charAt(0)}
+                </Avatar>
+              </Box>
+              <Typography variant='body2' fontWeight={500}>
+                {comment.accountInfo.fullName}
+              </Typography>
+              <Typography variant='caption' color='#ccc'>
+                1m
+              </Typography>
+            </Flex>
+            <Box ml={4}>
+              <Typography variant='body2' color='#000'>
+                {comment.content}
+              </Typography>
+            </Box>
+          </Stack>
+        </>
+      ))}
+      {isOpenCreateAnswer && (
+        <Flex width='100%' gap={1} alignItems='start'>
+          <Avatar sx={{ width: 20, height: 20 }} src={profile?.data.avatarPath}>
+            {profile?.data.fullName.charAt(0)}
+          </Avatar>
+          <Box flex={1}>
+            <BoxCreateComment onClose={closeCreateAnswer} onSubmit={handleCreateComment} />
+          </Box>
+        </Flex>
+      )}
     </Stack>
   )
 }
@@ -52,11 +151,19 @@ export const LecturePage = () => {
   const queryClient = useQueryClient()
   const { profile } = useAuth()
   const navigate = useNavigate()
-  const { lectureId, courseId, unitId } = useParams()
   const { value: isOpenCreateComment, setTrue: openCreateComment, setFalse: closeCreateComment } = useBoolean()
-  const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0, element: null })
+  const { lectureId, courseId, unitId } = useParams()
+  const [buttonPosition, setButtonPosition] = useState<{ top: number; left: number; element: HTMLElement | null }>({
+    top: 0,
+    left: 0,
+    element: null,
+  })
   const [showCommentButton, setShowCommentButton] = useState(false)
-  const [scrollProgress, setScrollProgress] = useState(0)
+
+  const boxCreateCommentRef = useRef<HTMLDivElement>(null)
+
+  const groupCommentInstance = groupCommentKeys.list({ courseId: Number(courseId), unitId: Number(unitId) })
+  const { data: groupComments, refetch: refetchGroupComments } = useQuery({ ...groupCommentInstance })
 
   const { isIntersecting, ref: setTrackingRef } = useIntersectionObserver({
     threshold: 1.0,
@@ -66,18 +173,29 @@ export const LecturePage = () => {
   })
 
   const lectureInstance = lectureKeys.detail(Number(lectureId))
-  const { data: lectureData, isFetched: isFetchedLecture } = useQuery({
+  const {
+    data: lectureData,
+    isFetched: isFetchedLecture,
+    refetch: refetchLecture,
+  } = useQuery({
     ...lectureInstance,
     enabled: Boolean(lectureId),
   })
 
   const goBack = () => navigate(`/courses/${courseId}`)
 
-  const { mutate: mutateUpdateLecture } = useMutation({ mutationFn: lectureService.update })
+  const { mutate: mutateUpdateLecture } = useMutation({
+    mutationFn: lectureService.update,
+    onSuccess: () => {
+      refetchLecture()
+    },
+  })
   const { mutate: mutateCreateComment } = useMutation({
-    mutationFn: topicCommentService.create,
+    mutationFn: commentService.create,
     onSuccess: (data) => {
-      handleUpdateLecture()
+      closeCreateComment()
+      refetchGroupComments()
+      handleUpdateLecture(data.data.groupCommentInfo.blockId)
     },
   })
 
@@ -88,9 +206,9 @@ export const LecturePage = () => {
     },
   })
 
-  const handleUpdateLecture = () => {
+  const handleUpdateLecture = (blockId: string) => {
     const originalHTML = (buttonPosition.element as any).target.innerHTML
-    const newHTML = `<span id="abc">${originalHTML}</span>`
+    const newHTML = `<span id="${blockId}">${originalHTML}</span>`
     const updateContent = lectureData?.lectureContent.replace(originalHTML, newHTML)
     if (updateContent) {
       mutateUpdateLecture({
@@ -103,9 +221,10 @@ export const LecturePage = () => {
   const handleCreateComment = (data: { content: string }) => {
     if (profile) {
       mutateCreateComment({
-        topicId: Number(lectureId),
+        lectureId: Number(lectureId),
         content: data.content,
-        accountId: profile.data.id,
+        unitId: Number(unitId),
+        courseId: Number(courseId),
       })
     }
   }
@@ -115,8 +234,10 @@ export const LecturePage = () => {
     const elements = targetComponent?.childNodes || []
 
     const mouseOverHandler = (e: any) => {
-      const rect = e.target.getBoundingClientRect()
-      setButtonPosition({ top: rect.top + 4, left: rect.left - 30, element: e }) // Position button to the left of the element
+      const target = e.target as HTMLElement
+
+      const rect = target?.getBoundingClientRect()
+      setButtonPosition({ top: rect.top + 4, left: rect.left - 30, element: target }) // Position button to the left of the element
       setShowCommentButton(true)
     }
 
@@ -139,10 +260,14 @@ export const LecturePage = () => {
 
   const handleClickCreateComment = () => {
     openCreateComment()
+    if (boxCreateCommentRef.current) {
+      boxCreateCommentRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+
     const e = buttonPosition.element
     if (e) {
-      e.target.style.borderBottom = '2px solid'
-      e.target.style.borderColor = yellow[600]
+      e.style.borderBottom = '2px solid'
+      e.style.borderColor = yellow[600]
     }
   }
 
@@ -164,7 +289,7 @@ export const LecturePage = () => {
     lectureData && (
       <>
         <Container>
-          <Flex gap={8}>
+          <Flex gap={8} alignItems='start'>
             <Box flex={1}>
               <Stack direction='row' justifyContent='space-between'>
                 <Button sx={{ gap: 1 }} onClick={goBack} color='secondary'>
@@ -194,22 +319,23 @@ export const LecturePage = () => {
               )}
             </Box>
             <Box width={300} height='100%'>
-              <BoxComment />
-              <BoxComment />
+              {groupComments?.content.map((groupComment) => <BoxComment data={groupComment} key={groupComment.id} />)}
               {isOpenCreateComment && (
-                <BoxCreateComment
-                  onClose={() => {
-                    closeCreateComment()
-                    // buttonPosition.element?.target.style.borderBottom = 'none'
-                  }}
-                  onSubmit={handleCreateComment}
-                />
+                <Box ref={boxCreateCommentRef}>
+                  <BoxCreateComment
+                    onClose={() => {
+                      closeCreateComment()
+                      // buttonPosition.element?.target.style.borderBottom = 'none'
+                    }}
+                    onSubmit={handleCreateComment}
+                  />
+                </Box>
               )}
             </Box>
           </Flex>
           <Box ref={setTrackingRef} sx={{ visibility: 'hidden' }} />
         </Container>
-        <Slider
+        {/* <Slider
           value={scrollProgress}
           sx={{
             '.MuiSlider-thumb': {
@@ -221,7 +347,7 @@ export const LecturePage = () => {
             left: 0,
             right: 0,
           }}
-        />
+        /> */}
       </>
     )
   )

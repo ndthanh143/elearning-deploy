@@ -8,7 +8,7 @@ export type ErrorFieldProps = {
 export const ErrorField = ({ message = '', isShow = false }: ErrorFieldProps) => {
   return (
     isShow && (
-      <Typography variant='caption' color='error' mx={1}>
+      <Typography variant='caption' color='error'>
         {message}
       </Typography>
     )

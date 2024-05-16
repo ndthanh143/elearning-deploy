@@ -20,13 +20,11 @@ export const CourseDetailPage = () => {
 
   const { profile } = useAuth()
 
-  const { value: isOpenCreateTopic, setTrue: openCreateTopic, setFalse: closeCreateTopic } = useBoolean(false)
-  const { value: isOpenTopics, setTrue: openTopics, setFalse: closeTopics } = useBoolean(false)
+  const { value: isOpenCreateTopic, setFalse: closeCreateTopic } = useBoolean(false)
+  const { setTrue: openTopics } = useBoolean(false)
 
   const courseInstance = courseKeys.detail(Number(courseId))
   const { data: course } = useQuery(courseInstance)
-
-  console.log('course', course)
 
   const { mutate: mutateCreateTopic, isPending: isPendingCreateTopic } = useMutation({
     mutationFn: topicService.create,
@@ -39,7 +37,7 @@ export const CourseDetailPage = () => {
 
   const handleCreateTopic = (values: string) => {
     if (profile && course) {
-      mutateCreateTopic({ forumId: course.forumInfo?.id, accountId: profile.data.id, topicContent: values })
+      mutateCreateTopic({ forumId: Number(course.forumInfo?.id), accountId: profile.data.id, topicContent: values })
     }
   }
 

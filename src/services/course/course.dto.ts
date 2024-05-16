@@ -24,7 +24,7 @@ export type Course = {
   price?: number
   welcome?: string
   congratulation?: string
-  categoryInfo?: Category
+  categoryInfo?: { id: number; categoryName: string }
 } & BaseData
 
 export type CreateCoursePayload = {

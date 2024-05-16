@@ -20,6 +20,7 @@ export type Quiz = {
   quizTimeLimit: number
   modulesInfo: Module
   quizSubmissionInfo: QuizSubmission[]
+  isPublicAnswer: boolean
 } & BaseData
 
 export type UpdateQuizPayload = {
@@ -30,6 +31,7 @@ export type UpdateQuizPayload = {
   startDate: string
   endDate: string
   quizTimeLimit: number
+  isPublicAnswer: boolean
 }
 
 export type QuizStartData = {
@@ -64,6 +66,7 @@ export type CreateQuizPayload = {
   quizTimeLimit: number
   quizTitle: string
   startDate: string
+  isPublicAnswer: boolean
 }
 
 export type GetListQuizQuery = {
