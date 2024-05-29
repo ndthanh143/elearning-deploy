@@ -10,7 +10,7 @@ import 'reactflow/dist/style.css'
 
 export const ChildNodeComponent = (props: NodeProps<Unit>) => {
   const { profile } = useAuth()
-  const isTeacher = profile?.data.roleInfo.name === 'Teacher'
+  const isTeacher = profile?.data.role === 'Teacher'
 
   if (isTeacher) {
     return <TeacherChildNodeComponent {...props} />

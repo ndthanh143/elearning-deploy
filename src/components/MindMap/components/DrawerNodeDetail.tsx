@@ -41,8 +41,6 @@ const schema = object({
 export function DrawerNodeDetail({ isOpen, onClose, unit }: IDrawerNodeDetailProps) {
   const [mode, setMode] = useState<'view' | 'edit' | 'more'>('view')
 
-  console.log('unit', unit)
-
   const queryClient = useQueryClient()
 
   const unitInstance = unitKey.list({ lessonPlanId: unit.lessonPlanInfo.id })
@@ -89,7 +87,6 @@ export function DrawerNodeDetail({ isOpen, onClose, unit }: IDrawerNodeDetailPro
   }
 
   const onSubmitHandler = (payload: UpdateUnitPayload) => {
-    console.log('payload', payload)
     mutateUpdateUnit(payload)
   }
 
@@ -227,6 +224,7 @@ export function DrawerNodeDetail({ isOpen, onClose, unit }: IDrawerNodeDetailPro
         onAccept={handleDeleteUnit}
         onClose={closeConfirmPopup}
         isOpen={isOpenConfirmPopup}
+        type='delete'
       />
     </>
   )

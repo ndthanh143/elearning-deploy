@@ -9,7 +9,7 @@ import { StudentCustomNodeComponent } from './StudentCustomNodeComponent'
 
 export const CustomNodeComponent = (props: NodeProps<Unit & { parentRef: MutableRefObject<HTMLDivElement> }>) => {
   const { profile } = useAuth()
-  const isTeacher = profile?.data.roleInfo.name === 'Teacher'
+  const isTeacher = profile?.data.role === 'Teacher'
 
   if (isTeacher) {
     return <TeacherCustomNodeComponent {...props} />

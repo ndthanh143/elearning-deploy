@@ -42,7 +42,7 @@ type StatusNodeType = 'lock' | 'done' | 'current'
 import { keyframes } from '@mui/system'
 import { Unit } from '@/services/unit/types'
 import { DrawerChildNodeDetail } from './components'
-import { LectureActions } from '@/pages/PlanningPage/modals'
+import { LectureActions } from '@/pages/Teacher/PlanningPage/modals'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { lectureService } from '@/services/lecture/lecture.service'
 import { toast } from 'react-toastify'
@@ -93,7 +93,7 @@ const icons: Record<'assignment' | 'lecture' | 'quiz' | 'resource', string> = {
 
 export const TeacherChildNodeComponent = (props: NodeProps<Unit>) => {
   const { profile } = useAuth()
-  const isTeacher = profile?.data.roleInfo.name === 'Teacher'
+  const isTeacher = profile?.data.role === 'Teacher'
 
   const { data: unit, xPos, selected } = props
   const { parent } = unit
@@ -104,7 +104,7 @@ export const TeacherChildNodeComponent = (props: NodeProps<Unit>) => {
   const parentRef = useRef<HTMLDivElement | null>(null)
 
   const [modePopup, setModePopup] = useState<'actions' | 'more'>('actions')
-  const { value: isOpen, toggle, setFalse: closeModal } = useBoolean()
+  const { toggle } = useBoolean()
   const { fitView } = useReactFlow()
   const { anchorEl: anchorElMenu, isOpen: isOpenMenu, onClose: closeMenu, onOpen: openMenu } = useMenu(parentRef)
   const { value: isOpenDrawer, setFalse: closeDrawer, setTrue: openDrawer } = useBoolean()
@@ -277,7 +277,7 @@ export const TeacherChildNodeComponent = (props: NodeProps<Unit>) => {
       return (
         <Stack py={2} px={2} gap={2} minWidth={200}>
           <Stack gap={1}>
-            <Typography variant='body2' fontWeight={700}>
+            <Typography variant='body2' fontWeight={700} color='primary.contrastText'>
               {unit.name}
             </Typography>
             {(status === 'current' || status === 'lock') && (

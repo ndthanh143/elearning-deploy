@@ -1,6 +1,6 @@
 import { useBoolean } from '@/hooks'
-import { AssignmentActions, LectureActions, ModalSection, SectionModalProps } from '@/pages/PlanningPage/modals'
-import { ResourceActions } from '@/pages/PlanningPage/modals/ResourceActions'
+import { AssignmentActions, LectureActions, ModalSection, SectionModalProps } from '@/pages/Teacher/PlanningPage/modals'
+import { ResourceActions } from '@/pages/Teacher/PlanningPage/modals/ResourceActions'
 import { assignmentService } from '@/services/assignment/assignment.service'
 import { lectureService } from '@/services/lecture/lecture.service'
 import { resourceService } from '@/services/resource/resource.service'
@@ -172,7 +172,7 @@ export function RightAction({ lessonPlanId }: IRightActionProps) {
         sx={{ transform: 'translateY(-50%)' }}
         zIndex={10}
       >
-        {Object.entries(listButtonsProps).map(([key, value], index) => (
+        {Object.entries(listButtonsProps).map(([key, value]) => (
           <Tooltip title={value.title} key={key}>
             <IconButton onClick={value.onClick}>{value.icon}</IconButton>
           </Tooltip>

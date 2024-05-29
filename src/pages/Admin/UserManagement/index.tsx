@@ -64,7 +64,7 @@ export const UserManagement = () => {
               <TableCell>{item.email}</TableCell>
               <TableCell>{item.fullName}</TableCell>
               <TableCell>{item.nationInfo?.nationName}</TableCell>
-              <TableCell>{item.roleInfo.name}</TableCell>
+              <TableCell>{item.role}</TableCell>
               <TableCell>
                 <Stack direction='row'>
                   <IconButton onClick={() => setSelectedUser(item)}>

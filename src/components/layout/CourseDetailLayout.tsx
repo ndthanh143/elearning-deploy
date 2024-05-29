@@ -37,7 +37,7 @@ export const CourseDetailLayout = ({ children = null }: PropsWithChildren) => {
     }
   }, [profile])
 
-  if (profile && profile.data.roleInfo.name === RoleEnum.Admin) {
+  if (profile && profile.data.role === RoleEnum.Admin) {
     navigate('/admin')
   }
 
@@ -60,7 +60,7 @@ export const CourseDetailLayout = ({ children = null }: PropsWithChildren) => {
 
   return (
     profile && (
-      <Box bgcolor='white' height='100vh' display='flex' overflow='hidden'>
+      <Box bgcolor='#F8F4FE' height='100vh' display='flex' overflow='hidden'>
         <SideBar isCollapse={isCollapse} onCollapse={handleCollapse} />
         <Stack flex={1}>
           <Header isCollapseSideBar={isCollapse} onExpand={handleExpand} />

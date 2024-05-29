@@ -3,7 +3,6 @@ import { Forum } from '../forum/forum.dto'
 import { LessonPlan } from '../lessonPlan/lessonPlan.dto'
 import { Account } from '../user/user.dto'
 import { Unit } from '../unit/types'
-import { Category } from '../category/category.dto'
 
 export type CourseResponse = BaseResponse<Course>
 export type CoursesResponse = BasePaginationResponse<Course[]>

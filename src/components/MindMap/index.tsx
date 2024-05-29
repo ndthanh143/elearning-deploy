@@ -48,7 +48,7 @@ interface IMindMapProps {
 
 export function MindMap({ lessonPlanId }: IMindMapProps) {
   const { profile } = useAuth()
-  const isTeacher = profile?.data.roleInfo.name === 'Teacher'
+  const isTeacher = profile?.data.role === 'Teacher'
 
   const [nodes, setNodes] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])

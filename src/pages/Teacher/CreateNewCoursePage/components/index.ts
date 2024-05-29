@@ -1,6 +1,5 @@
 export * from './BasicInformation'
 export * from './CoursePlanSelection'
-export * from './PlanCard'
 export * from './PriceConfig'
 export * from './NewsLetterSetting'
 export * from './TableStep'

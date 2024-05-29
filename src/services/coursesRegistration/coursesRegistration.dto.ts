@@ -10,8 +10,8 @@ export type CourseRegistration = {
   studentInfo: Account
 } & BaseData
 
-export type getListStudentCourseQuery = {
-  studentId: number
+export type GetListStudentCourseQuery = {
+  courseId: number
 } & PaginationQuery
 
 export type EnrollPayload = {

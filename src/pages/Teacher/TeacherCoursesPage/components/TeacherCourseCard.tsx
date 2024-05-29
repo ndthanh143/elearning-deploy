@@ -4,7 +4,19 @@ import { useBoolean, useMenu } from '@/hooks'
 import { Course } from '@/services/course/course.dto'
 import { getAbsolutePathFile } from '@/utils'
 import { CategoryOutlined, DeleteOutline, EditOutlined, Groups, MoreHorizOutlined } from '@mui/icons-material'
-import { Box, IconButton, ListItemIcon, Menu, MenuItem, Stack, Typography } from '@mui/material'
+import {
+  Box,
+  Card,
+  CardContent,
+  CardMedia,
+  Chip,
+  IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Stack,
+  Typography,
+} from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 
 export type TeacherCourseCardProps = {
@@ -26,61 +38,62 @@ export const TeacherCourseCard = ({ data, onDelete }: TeacherCourseCardProps) =>
 
   return (
     <>
-      <Stack
-        gap={2}
-        alignItems='center'
-        p={2}
-        m={-1}
-        borderRadius={3}
-        overflow='hidden'
+      <Card
+        onClick={handleClick}
+        className='card'
         sx={{
           cursor: 'pointer',
         }}
-        border={1}
-        borderColor='#ededed'
-        onClick={handleClick}
       >
-        <Box
-          component='img'
-          src={getAbsolutePathFile(data.thumbnail) || common.course}
-          width='100%'
-          height={200}
-          borderRadius={3}
-          sx={{ objectFit: 'cover', border: '1px solid #ededed' }}
+        <CardMedia
+          className='card-media'
+          image={getAbsolutePathFile(data.thumbnail) || common.course}
+          sx={{
+            height: 200,
+            objectFit: 'cover',
+          }}
         />
-        <Stack gap={1} width='100%'>
-          <Flex gap={1} sx={{ opacity: 0.7 }}>
-            <CategoryOutlined fontSize='small' />
-            <Typography variant='body2'>Design</Typography>
-          </Flex>
-          <Typography fontWeight={700} fontSize={22}>
-            {data.courseName}
-          </Typography>
-          <Typography
-            textOverflow='ellipsis'
-            whiteSpace='nowrap'
-            overflow='hidden'
-            sx={{ lineClamp: 3 }}
-            variant='body2'
-          >
-            {data.description}
-          </Typography>
-          <Flex justifyContent='space-between'>
-            <Flex gap={1}>
-              <Groups />
-              <Typography variant='body2'>20 students</Typography>
-            </Flex>
-            <IconButton
-              onClick={(e) => {
-                e.stopPropagation()
-                openMore(e)
-              }}
+        <CardContent>
+          <Stack gap={1} width='100%'>
+            <Chip
+              label={
+                <Flex gap={1} sx={{ opacity: 0.7 }}>
+                  <CategoryOutlined fontSize='small' />
+                  <Typography variant='body2'>Design</Typography>
+                </Flex>
+              }
+              sx={{ width: 'fit-content' }}
+              size='small'
+            />
+            <Typography fontWeight={700} fontSize={22}>
+              {data.courseName}
+            </Typography>
+            <Typography
+              textOverflow='ellipsis'
+              whiteSpace='nowrap'
+              overflow='hidden'
+              sx={{ lineClamp: 3 }}
+              variant='body2'
             >
-              <MoreHorizOutlined fontSize='small' />
-            </IconButton>
-          </Flex>
-        </Stack>
-      </Stack>
+              {data.description}
+            </Typography>
+            <Flex justifyContent='space-between'>
+              <Flex gap={1}>
+                <Groups />
+                <Typography variant='body2'>20 students</Typography>
+              </Flex>
+              <IconButton
+                onClick={(e) => {
+                  e.stopPropagation()
+                  openMore(e)
+                }}
+              >
+                <MoreHorizOutlined fontSize='small' />
+              </IconButton>
+            </Flex>
+          </Stack>
+        </CardContent>
+      </Card>
       <Menu open={isOpenMore} anchorEl={AnchorElMore} onClose={closeMoreMenu}>
         <MenuItem onClick={handleClickEdit}>
           <ListItemIcon>
@@ -105,6 +118,7 @@ export const TeacherCourseCard = ({ data, onDelete }: TeacherCourseCardProps) =>
         }}
         title='Confirm Delete'
         subtitle='Are you sure to delete this course, this action will delete course forever'
+        type='delete'
       />
     </>
   )

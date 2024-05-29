@@ -1,6 +1,6 @@
 import { BaseData, BasePaginationResponse, BaseResponse } from '../common/base.dto'
-import { Module } from '../module/module.dto'
 import { QuizSubmission } from '../quizSubmission/dto'
+import { Unit } from '../unit/types'
 
 export type QuizResponse = BaseResponse<Quiz>
 export type QuizStartResponse = BaseResponse<QuizStartData>
@@ -18,7 +18,7 @@ export type Quiz = {
   startDate: Date
   endDate: Date
   quizTimeLimit: number
-  modulesInfo: Module
+  unitInfo: Unit
   quizSubmissionInfo: QuizSubmission[]
   isPublicAnswer: boolean
 } & BaseData

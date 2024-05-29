@@ -1,14 +1,6 @@
-import { useAuth, useBoolean, useMenu } from '@/hooks'
-import {
-  AssignmentActions,
-  LectureActions,
-  ModalSection,
-  QuizActions,
-  SectionModalProps,
-} from '@/pages/PlanningPage/modals'
-import { ResourceActions } from '@/pages/PlanningPage/modals/ResourceActions'
-import { moduleKey } from '@/services/module/module.query'
-import { moduleService } from '@/services/module/module.service'
+import { useAuth, useBoolean } from '@/hooks'
+import { AssignmentActions, LectureActions, ModalSection, SectionModalProps } from '@/pages/Teacher/PlanningPage/modals'
+import { ResourceActions } from '@/pages/Teacher/PlanningPage/modals/ResourceActions'
 import { unitService } from '@/services/unit'
 import { unitKey } from '@/services/unit/query'
 import { CreateUnitPayload, Unit } from '@/services/unit/types'
@@ -21,24 +13,22 @@ import {
   QuizOutlined,
 } from '@mui/icons-material'
 import { Box, IconButton, Stack, Tooltip, Typography } from '@mui/material'
-import { blue, green } from '@mui/material/colors'
+import { blue } from '@mui/material/colors'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
-import { Handle, NodeProps, Position, useReactFlow } from 'reactflow'
+import { Handle, NodeProps, Position } from 'reactflow'
 import { DrawerNodeDetail } from './components'
 import { MutableRefObject } from 'react'
 import { lectureService } from '@/services/lecture/lecture.service'
 import { assignmentService } from '@/services/assignment/assignment.service'
 import { resourceService } from '@/services/resource/resource.service'
 
-type StatusNodeType = 'lock' | 'done' | 'current'
-
 export const TeacherCustomNodeComponent = (
   props: NodeProps<Unit & { parentRef: MutableRefObject<HTMLDivElement> }>,
 ) => {
   const queryClient = useQueryClient()
   const { profile } = useAuth()
-  const isTeacher = profile?.data.roleInfo.name === 'Teacher'
+  const isTeacher = profile?.data.role === 'Teacher'
 
   const { value: isOpenAddSection, setTrue: openAddSection, setFalse: closeAddSection } = useBoolean()
 
@@ -55,7 +45,7 @@ export const TeacherCustomNodeComponent = (
     selected,
   } = props
 
-  const { value: isOpenDrawer, setFalse: closeDrawer, setTrue: openDrawer } = useBoolean(true)
+  const { value: isOpenDrawer, setFalse: closeDrawer } = useBoolean(true)
 
   const { mutate: mutateCreateUnit } = useMutation({
     mutationFn: unitService.create,
@@ -151,11 +141,6 @@ export const TeacherCustomNodeComponent = (
     }
 
     mutateCreateUnit(payload)
-  }
-
-  let statusNodes: StatusNodeType = 'current'
-  if (unit.unlock) {
-    statusNodes = 'lock'
   }
 
   return (
@@ -305,18 +290,8 @@ export const TeacherCustomNodeComponent = (
         {/* <ResourceActions status='create' isOpen={isOpenResource} onClose={closeResource} moduleId={id} />
    <LectureActions status='create' isOpen={isOpenLecture} onClose={closeLecture} moduleId={id} />
    <AssignmentActions status='create' isOpen={isOpenAssignment} onClose={closeAssignment} moduleId={id} />  */}
-        <ResourceActions
-          status='create'
-          isOpen={isOpenResource}
-          onClose={closeResource}
-          onCreate={mutateCreateResource}
-        />
-        <AssignmentActions
-          status='create'
-          isOpen={isOpenAssignment}
-          onClose={closeAssignment}
-          onCreate={mutateCreateAssignment}
-        />
+        <ResourceActions isOpen={isOpenResource} onClose={closeResource} onCreate={mutateCreateResource} />
+        <AssignmentActions isOpen={isOpenAssignment} onClose={closeAssignment} onCreate={mutateCreateAssignment} />
         <LectureActions isOpen={isOpenLecture} onClose={closeLecture} onCreate={mutateCreateLecture} />
 
         {/* {selected && isTeacher && (
@@ -337,12 +312,7 @@ export const TeacherCustomNodeComponent = (
           </IconButton>
         )} */}
 
-        <ModalSection
-          status='create'
-          isOpen={isOpenAddSection}
-          onClose={closeAddSection}
-          onSubmit={handleCreateSection}
-        />
+        <ModalSection isOpen={isOpenAddSection} onClose={closeAddSection} onSubmit={handleCreateSection} />
       </Box>
       {isTeacher && <DrawerNodeDetail isOpen={isOpenDrawer && selected} onClose={closeDrawer} unit={unit} />}
     </>

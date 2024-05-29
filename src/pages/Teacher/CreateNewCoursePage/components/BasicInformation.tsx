@@ -1,12 +1,11 @@
 import { Flex } from '@/components'
 import { useBoolean } from '@/hooks'
-import { UploadPopup } from '@/pages/AssignmentPage/components'
+import { UploadPopup } from '@/pages/Common/AssignmentPage/components'
 import { categoryKeys } from '@/services/category/category.query'
 import { UploadFileData } from '@/services/file/file.dto'
 import { gray } from '@/styles/theme'
 import { getAbsolutePathFile } from '@/utils'
-import { ArrowRightAltOutlined } from '@mui/icons-material'
-import { Autocomplete, Box, Button, Chip, Divider, Grid, Stack, TextField, Typography } from '@mui/material'
+import { Autocomplete, Box, Button, Card, CardContent, Chip, Grid, Stack, TextField, Typography } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
@@ -14,10 +13,10 @@ import { useState } from 'react'
 import { CreateCourseForm } from '.'
 
 interface IBasicInformationProps {
-  onNext: () => void
+  onNext?: () => void
   form: CreateCourseForm
 }
-export function BasicInformation({ onNext, form }: IBasicInformationProps) {
+export function BasicInformation({ form }: IBasicInformationProps) {
   const { register, setValue, watch, getValues } = form
 
   const { value: isOpenUpload, setTrue: openUpload, setFalse: closeUpload } = useBoolean(false)
@@ -71,7 +70,6 @@ export function BasicInformation({ onNext, form }: IBasicInformationProps) {
             </Typography>
             <Flex gap={4}>
               <DatePicker
-                disablePast
                 slotProps={{
                   textField: { size: 'small', label: 'Start Date' },
                 }}
@@ -130,26 +128,30 @@ export function BasicInformation({ onNext, form }: IBasicInformationProps) {
             </Typography>
             <Grid container spacing={4}>
               <Grid item xs={6}>
-                <Box
-                  borderRadius={4}
-                  border={1}
-                  borderColor='secondary.light'
-                  minHeight={200}
-                  p={2}
-                  display='flex'
-                  gap={1}
-                  flexWrap='wrap'
+                <Card
+                  variant='outlined'
+                  sx={{
+                    minHeight: 180,
+                    bgcolor: 'transparent',
+                    ...(!watch('requirements')?.length
+                      ? { display: 'flex', justifyContent: 'center', alignItems: 'center' }
+                      : {}),
+                  }}
                 >
-                  {watch('requirements')?.length ? (
-                    watch('requirements')?.map((item, index) => (
-                      <Chip onDelete={() => handleDeleteRequirement(item || '')} label={item} key={index} />
-                    ))
-                  ) : (
-                    <Typography m='auto' color='secondary.light'>
-                      Your requirements added will show here...
-                    </Typography>
-                  )}
-                </Box>
+                  <CardContent sx={{}}>
+                    <Flex height='100%' borderRadius={4} alignItems={'start'} gap={1} flexWrap='wrap'>
+                      {watch('requirements')?.length ? (
+                        watch('requirements')?.map((item, index) => (
+                          <Chip onDelete={() => handleDeleteRequirement(item || '')} label={item} key={index} />
+                        ))
+                      ) : (
+                        <Typography m='auto' color='secondary.light'>
+                          Your requirements added will show here...
+                        </Typography>
+                      )}
+                    </Flex>
+                  </CardContent>
+                </Card>
               </Grid>
               <Grid item xs={6}>
                 <Stack justifyContent='center' alignItems='center' gap={2}>
@@ -188,26 +190,30 @@ export function BasicInformation({ onNext, form }: IBasicInformationProps) {
             </Typography>
             <Grid container spacing={4}>
               <Grid item xs={6}>
-                <Box
-                  borderRadius={4}
-                  border={1}
-                  borderColor='secondary.light'
-                  minHeight={200}
-                  p={2}
-                  display='flex'
-                  gap={1}
-                  flexWrap='wrap'
+                <Card
+                  variant='outlined'
+                  sx={{
+                    minHeight: 180,
+                    bgcolor: 'transparent',
+                    ...(!watch('objectives')?.length
+                      ? { display: 'flex', justifyContent: 'center', alignItems: 'center' }
+                      : {}),
+                  }}
                 >
-                  {watch('objectives')?.length ? (
-                    watch('objectives')?.map((item, index) => (
-                      <Chip onDelete={() => handleDeleteObjective(item || '')} label={item} key={index} />
-                    ))
-                  ) : (
-                    <Typography m='auto' color='secondary.light'>
-                      Your objectives added will show here...
-                    </Typography>
-                  )}
-                </Box>
+                  <CardContent sx={{}}>
+                    <Flex height='100%' borderRadius={4} alignItems={'start'} gap={1} flexWrap='wrap'>
+                      {watch('objectives')?.length ? (
+                        watch('objectives')?.map((item, index) => (
+                          <Chip onDelete={() => handleDeleteObjective(item || '')} label={item} key={index} />
+                        ))
+                      ) : (
+                        <Typography m='auto' color='secondary.light'>
+                          Your objectives added will show here...
+                        </Typography>
+                      )}
+                    </Flex>
+                  </CardContent>
+                </Card>
               </Grid>
               <Grid item xs={6}>
                 <Stack justifyContent='center' alignItems='center' gap={2}>
@@ -240,13 +246,6 @@ export function BasicInformation({ onNext, form }: IBasicInformationProps) {
             </Grid>
           </Stack>
         </Stack>
-        <Divider sx={{ py: 2 }} />
-        <Flex justifyContent='end' pt={1}>
-          <Button variant='text' sx={{ display: 'flex', gap: 1 }} onClick={onNext}>
-            Next step
-            <ArrowRightAltOutlined />
-          </Button>
-        </Flex>
       </Box>
       <UploadPopup isOpen={isOpenUpload} onSubmit={handleUploadThumbnail} onClose={closeUpload} />
     </>

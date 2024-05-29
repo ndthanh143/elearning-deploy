@@ -1,5 +1,5 @@
 import { useAuth } from '@/hooks'
-import { Divider, Grid } from '@mui/material'
+import { Button, Divider, Grid, Stack } from '@mui/material'
 import { useState } from 'react'
 import { type UseFormReturn, useForm } from 'react-hook-form'
 import { array, number, object, string } from 'yup'
@@ -7,6 +7,8 @@ import { BasicInformation, CoursePlanSelection, NewsLetterSetting, PriceConfig, 
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Flex } from '@/components'
 import { Course, CreateCoursePayload } from '@/services/course/course.dto'
+import { DoNotDisturbAltOutlined, SaveOutlined } from '@mui/icons-material'
+import { useNavigate } from 'react-router-dom'
 
 interface IFormCourseHandleProps {
   defaultValues?: Course
@@ -54,6 +56,7 @@ export type CreateCourseForm = UseFormReturn<
 export function FormCourseHandle({ handleSubmit, defaultValues }: IFormCourseHandleProps) {
   const { profile } = useAuth()
   const [step, setStep] = useState(0)
+  const navigate = useNavigate()
 
   const form = useForm({
     resolver: yupResolver(schema),
@@ -87,33 +90,50 @@ export function FormCourseHandle({ handleSubmit, defaultValues }: IFormCourseHan
     },
   })
 
-  const handleNextStep = () => {
-    setStep((prev) => prev + 1)
-  }
-
   const onSubmitHandler = () => {
     const data = form.getValues()
     handleSubmit(data)
   }
 
   const steps = [
-    <BasicInformation onNext={handleNextStep} form={form} />,
-    <CoursePlanSelection onNext={handleNextStep} form={form} />,
-    <PriceConfig onNext={handleNextStep} form={form} />,
-    <NewsLetterSetting form={form} onSubmit={onSubmitHandler} />,
+    <BasicInformation form={form} />,
+    <CoursePlanSelection form={form} />,
+    <PriceConfig form={form} />,
+    <NewsLetterSetting form={form} />,
   ]
 
   return (
-    <Grid spacing={2} alignItems='start' py={4} container>
-      <Grid item xs={2}>
-        <TableStep step={step} onChange={setStep} />
+    <Stack py={2}>
+      <Flex justifyContent='end' gap={2} mb={2}>
+        <Button
+          variant='outlined'
+          onClick={() => navigate('/courses')}
+          startIcon={<DoNotDisturbAltOutlined fontSize='small' />}
+          size='large'
+          color='secondary'
+        >
+          Cancel
+        </Button>
+        <Button
+          variant='contained'
+          onClick={onSubmitHandler}
+          startIcon={<SaveOutlined fontSize='small' />}
+          size='large'
+        >
+          Save
+        </Button>
+      </Flex>
+      <Grid spacing={2} alignItems='start' container>
+        <Grid item xs={2}>
+          <TableStep step={step} onChange={setStep} />
+        </Grid>
+        <Grid item xs={10}>
+          <Flex gap={4}>
+            <Divider orientation='vertical' variant='middle' flexItem />
+            {steps[step]}
+          </Flex>
+        </Grid>
       </Grid>
-      <Grid item xs={10}>
-        <Flex gap={4}>
-          <Divider orientation='vertical' variant='middle' flexItem />
-          {steps[step]}
-        </Flex>
-      </Grid>
-    </Grid>
+    </Stack>
   )
 }

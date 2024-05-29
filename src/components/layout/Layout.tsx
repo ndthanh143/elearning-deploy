@@ -1,4 +1,4 @@
-import { Header, SideBar } from '..'
+import { Flex, Header, SideBar } from '..'
 import { Box, Stack } from '@mui/material'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks'
@@ -20,10 +20,6 @@ export const Layout = ({ children = null }: PropsWithChildren) => {
     setIsCollapse(true)
   }
 
-  const handleExpand = () => {
-    setIsCollapse(false)
-  }
-
   const { init, close } = useWebSocket()
   useEffect(() => {
     if (profile) {
@@ -36,10 +32,6 @@ export const Layout = ({ children = null }: PropsWithChildren) => {
       close()
     }
   }, [profile])
-
-  if (profile && profile.data.roleInfo.name === RoleEnum.Admin) {
-    navigate('/admin')
-  }
 
   useEffect(() => {
     if (!accessToken) {
@@ -60,14 +52,18 @@ export const Layout = ({ children = null }: PropsWithChildren) => {
 
   return (
     profile && (
-      <Box bgcolor='white' height='100vh' display='flex' overflow='hidden'>
-        <SideBar isCollapse={isCollapse} onCollapse={handleCollapse} />
-        <Stack flex={1}>
-          <Header isCollapseSideBar={isCollapse} onExpand={handleExpand} />
-          <Box padding={2} maxHeight='100vh' sx={{ overflowY: 'scroll' }}>
+      <Box bgcolor='#F8F4FE'>
+        <Box position='fixed' sx={{ left: 0, right: 0, top: 0, zIndex: 10 }}>
+          <Header />
+        </Box>
+        <Flex gap={1} justifyContent='start' alignItems='start'>
+          <Box pt={6}>
+            <SideBar isCollapse={isCollapse} onCollapse={handleCollapse} />
+          </Box>
+          <Box py={10} sx={{ overflowY: 'scroll' }} flex={1} height='100vh'>
             {children || <Outlet />}
           </Box>
-        </Stack>
+        </Flex>
       </Box>
     )
   )

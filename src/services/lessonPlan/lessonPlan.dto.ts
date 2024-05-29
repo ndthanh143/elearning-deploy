@@ -6,7 +6,6 @@ export type LessonPlanResponse = BaseResponse<LessonPlan>
 
 export type LessonPlan = {
   name: string
-  description: string
   type?: 'mindmap' | 'basic'
   units: Unit[]
 } & BaseData
@@ -17,14 +16,12 @@ export type GetLessonPlanQuery = {
 
 export type CreateLessonPlanPayload = {
   name: string
-  description: string
   teacherId: number
   type: string
 }
 
 export type UpdateLessonPlanPayload = {
-  name: string
-  description: string
+  name?: string
   id: number
-  status: number
+  status?: number
 }

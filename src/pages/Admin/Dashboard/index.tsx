@@ -68,8 +68,8 @@ export function Dashboard() {
   const userInstance = userKeys.fullList({})
   const { data: users } = useQuery(userInstance)
 
-  const teacherCount = users?.content.filter((user) => user.roleInfo.name === RoleEnum.Teacher).length
-  const studentCount = users?.content.filter((user) => user.roleInfo.name === RoleEnum.Student).length
+  const teacherCount = users?.content.filter((user) => user.role === RoleEnum.Teacher).length
+  const studentCount = users?.content.filter((user) => user.role === RoleEnum.Student).length
 
   return (
     <Grid container spacing={4}>

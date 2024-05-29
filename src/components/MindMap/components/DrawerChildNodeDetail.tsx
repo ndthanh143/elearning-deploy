@@ -46,7 +46,7 @@ const schema = object({
   prerequisites: array().of(object({ prerequisiteId: number().required() })),
 })
 
-export function DrawerChildNodeDetail({ isOpen, onClose, unit, type, onEdit }: IDrawerChildNodeDetailProps) {
+export function DrawerChildNodeDetail({ isOpen, onClose, unit, onEdit }: IDrawerChildNodeDetailProps) {
   const queryClient = useQueryClient()
 
   const [mode, setMode] = useState<'view' | 'edit' | 'more'>('view')
@@ -73,8 +73,6 @@ export function DrawerChildNodeDetail({ isOpen, onClose, unit, type, onEdit }: I
     },
   })
 
-  // useOnClickOutside(ref, onClose)
-
   const { mutate: mutateDeleteUnit } = useMutation({
     mutationFn: unitService.delete,
     onSuccess: () => {
@@ -100,20 +98,12 @@ export function DrawerChildNodeDetail({ isOpen, onClose, unit, type, onEdit }: I
   }
 
   const onSubmitHandler = (payload: UpdateUnitPayload) => {
-    console.log('payload', payload)
     mutateUpdateUnit(payload)
   }
 
   const handleClose = () => {
     onClose()
     setMode('view')
-  }
-
-  const convertValue = {
-    assignment: 'Assignment',
-    lecture: 'Lecture',
-    quiz: 'Quiz',
-    resource: 'Resource',
   }
 
   const renderContent = {
@@ -254,6 +244,7 @@ export function DrawerChildNodeDetail({ isOpen, onClose, unit, type, onEdit }: I
         onAccept={handleDeleteUnit}
         onClose={closeConfirmPopup}
         isOpen={isOpenConfirmPopup}
+        type='delete'
       />
     </>
   )

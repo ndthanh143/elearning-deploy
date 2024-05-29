@@ -30,14 +30,27 @@ export const gray = {
   900: '#43546a',
 }
 
+export const primary = {
+  50: '#FAF5FF',
+  100: '#E9D8FD',
+  200: '#D6BCFA',
+  300: '#B794F4',
+  400: '#9F7AEA',
+  500: '#805AD5',
+  600: '#6B46C1',
+  700: '#553C9A',
+  800: '#44337A',
+  900: '#322659',
+}
+
 export const theme = createTheme({
   palette: {
-    // primary: {
-    //   light: green[200],
-    //   main: green[500],
-    //   dark: green,
-    //   contrastText: '#fff',
-    // },
+    primary: {
+      light: primary[300],
+      main: primary[500],
+      dark: primary[700],
+      contrastText: '#fff',
+    },
     secondary: {
       light: '#A3A5AB',
       main: '#3A3D44',
@@ -67,6 +80,7 @@ export const theme = createTheme({
         '&::-webkit-scrollbar-track': {
           backgroundColor: 'transparent',
         },
+        borderColor: '#E6E6E6',
       },
     },
     MuiTextField: {
@@ -74,6 +88,7 @@ export const theme = createTheme({
         root: {
           '& fieldset': {
             borderRadius: 8,
+            borderColor: '#E6E6E6',
           },
         },
       },
@@ -81,7 +96,7 @@ export const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
+          borderRadius: 12,
           fontStyle: 'normal',
           textTransform: 'unset',
         },
@@ -92,6 +107,11 @@ export const theme = createTheme({
         root: {
           borderRadius: 12, // Set border radius to 3
         },
+      },
+    },
+    MuiContainer: {
+      defaultProps: {
+        maxWidth: 'xl',
       },
     },
   },
@@ -108,5 +128,23 @@ export const theme = createTheme({
       '"Segoe UI Emoji"',
       '"Segoe UI Symbol"',
     ].join(','),
+    h1: {
+      fontSize: '2.25rem', // Example size for h1
+      lineHeight: 2,
+      color: 'text.primary',
+    },
+    h2: {
+      fontSize: '1.8rem', // Example size for h2
+      lineHeight: 1.8,
+      color: 'text.primary',
+    },
+    h3: {
+      fontSize: '1.5rem', // Example size for h3
+      lineHeight: 1.6,
+      color: 'text.primary',
+    },
+    body1: {
+      color: 'text.primary',
+    },
   },
 })

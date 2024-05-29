@@ -1,8 +1,15 @@
 import { ConfirmPopup, Flex } from '@/components'
-import { useAuth, useBoolean, useMenu } from '@/hooks'
+import { useAlert, useAuth, useBoolean, useMenu } from '@/hooks'
 import { lessonPlanKey } from '@/services/lessonPlan/lessonPlan.query'
 import { lessonPlanService } from '@/services/lessonPlan/lessonPlan.service'
-import { ChevronLeftOutlined, CloseOutlined, EditOutlined, MoreHorizOutlined } from '@mui/icons-material'
+import {
+  ChevronLeftOutlined,
+  CloseOutlined,
+  DoNotDisturbAltRounded,
+  EditOutlined,
+  MoreHorizOutlined,
+  SaveRounded,
+} from '@mui/icons-material'
 import {
   Box,
   Button,
@@ -14,15 +21,24 @@ import {
   MenuItem,
   MenuList,
   Stack,
+  TextField,
   Typography,
 } from '@mui/material'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { motion } from 'framer-motion'
+import { object, string } from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useForm } from 'react-hook-form'
+
+const schema = object({
+  lessonPlanName: string().required('Please fill in the lesson plan name'),
+})
 
 export function ActionSetting() {
   const navigate = useNavigate()
+  const { triggerAlert } = useAlert()
   const queryClient = useQueryClient()
   const { profile } = useAuth()
   const { lessonPlanId } = useParams()
@@ -30,6 +46,12 @@ export function ActionSetting() {
   const { anchorEl: anchorElMore, isOpen, onClose, onOpen } = useMenu()
   const { value: isOpenConfirmPopup, setFalse: closeConfirmPopup, setTrue: openConfirmPopup } = useBoolean()
   const { value: isOpenSelectPlans, setFalse: closeSelectPlans, setTrue: openSelectPlans } = useBoolean()
+  const { value: isEditLessonPlan, setTrue: setEditLessonPlan, setFalse: closeEditLessonPlan } = useBoolean()
+  const {
+    register,
+    handleSubmit,
+    formState: { isValid, isDirty },
+  } = useForm({ resolver: yupResolver(schema) })
 
   const lessonPlanInstance = lessonPlanKey.list({ teacherId: profile?.data.id as number })
   const { data: lessonPlans } = useQuery({ ...lessonPlanInstance })
@@ -44,12 +66,25 @@ export function ActionSetting() {
     },
   })
 
+  const { mutate: mutateUpdateLessonPlan } = useMutation({
+    mutationFn: lessonPlanService.update,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: lessonPlanKey.lists() })
+      triggerAlert('Update lesson plan successfully', 'success')
+      closeEditLessonPlan()
+    },
+  })
+
   const handleDelete = () => {
     mutateDelete(Number(lessonPlanId))
   }
 
   const handleBackPage = () => {
     navigate('/planning')
+  }
+
+  const handleEditPlan = (data: { lessonPlanName: string }) => {
+    isDirty && mutateUpdateLessonPlan({ id: Number(lessonPlanId), name: data.lessonPlanName })
   }
 
   return (
@@ -72,15 +107,33 @@ export function ActionSetting() {
         <IconButton onClick={handleBackPage} color='secondary'>
           <ChevronLeftOutlined />
         </IconButton>
-        <Button
-          variant='text'
-          color='secondary'
-          sx={{ display: 'flex', alignItems: 'center', px: 2, fontWeight: 700 }}
-          onClick={openSelectPlans}
-        >
-          {currentLessonPlan?.name}
-          <ChevronLeftOutlined sx={{ rotate: '-90deg' }} fontSize='small' />
-        </Button>
+
+        {isEditLessonPlan ? (
+          <Flex component='form' gap={1} onSubmit={handleSubmit(handleEditPlan)}>
+            <TextField
+              defaultValue={currentLessonPlan?.name}
+              {...register('lessonPlanName')}
+              size='small'
+              variant='standard'
+            />
+            <IconButton color='primary' type='submit' disabled={!isValid || !isDirty}>
+              <SaveRounded fontSize='small' />
+            </IconButton>
+            <IconButton type='button' onClick={closeEditLessonPlan}>
+              <DoNotDisturbAltRounded fontSize='small' />
+            </IconButton>
+          </Flex>
+        ) : (
+          <Button
+            variant='text'
+            color='secondary'
+            sx={{ display: 'flex', alignItems: 'center', px: 2, fontWeight: 700 }}
+            onClick={openSelectPlans}
+          >
+            {currentLessonPlan?.name}
+            <ChevronLeftOutlined sx={{ rotate: '-90deg' }} fontSize='small' />
+          </Button>
+        )}
         <Divider orientation='vertical' flexItem />
         <IconButton color='secondary' onClick={onOpen}>
           <MoreHorizOutlined />
@@ -100,7 +153,12 @@ export function ActionSetting() {
         }}
       >
         <MenuList>
-          <MenuItem>
+          <MenuItem
+            onClick={() => {
+              setEditLessonPlan()
+              onClose()
+            }}
+          >
             <ListItemIcon>
               <EditOutlined fontSize='small' />
             </ListItemIcon>
@@ -128,6 +186,7 @@ export function ActionSetting() {
         isOpen={isOpenConfirmPopup}
         title='Confirm delete plan'
         subtitle='Are you sure to delete this plan, this action can not be revert'
+        type='delete'
       />
       <Box
         component={motion.div}

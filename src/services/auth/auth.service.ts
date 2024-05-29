@@ -1,14 +1,20 @@
 import Cookies from 'js-cookie'
 
-import { AuthLoginResponse, LoginAdminPayload } from './auth.dto'
+import { AuthLoginResponse, LoginAdminPayload, SignUpPayload } from './auth.dto'
 import axiosInstance from '../../axios'
 
 const BASE_AUTH_URL = 'auth'
 const authService = {
-  loginGoogle: async (accessToken: string) => {
-    const { data } = await axiosInstance.post<AuthLoginResponse>(`${BASE_AUTH_URL}/google?accessToken=${accessToken}`)
+  loginGoogle: async ({ type, accessToken }: { type: 'teacher' | 'student'; accessToken: string }) => {
+    const routePath = type === 'student' ? 'student/google/verify-token' : 'teacher/google/verify-token'
 
-    Cookies.set('access_token', data.data.token)
+    const { data } = await axiosInstance.post<AuthLoginResponse>(
+      routePath,
+      {},
+      { headers: { 'X-Access-Token': accessToken } },
+    )
+
+    Cookies.set('access_token', data.data.access_token)
 
     return data
   },
@@ -19,7 +25,21 @@ const authService = {
   loginAdmin: async (payload: LoginAdminPayload) => {
     const { data } = await axiosInstance.post<AuthLoginResponse>(`${BASE_AUTH_URL}/login`, payload)
 
-    Cookies.set('access_token', data.data.token)
+    Cookies.set('access_token', data.data.access_token)
+
+    return data
+  },
+  signUp: async ({ type, payload }: { type: 'teacher' | 'student'; payload: SignUpPayload }) => {
+    const routePath = type === 'teacher' ? 'teacher/signup' : 'student/signup'
+    const { data } = await axiosInstance.post(routePath, payload)
+
+    return data
+  },
+  login: async ({ type, payload }: { type: 'teacher' | 'student'; payload: LoginAdminPayload }) => {
+    const routePath = type === 'teacher' ? 'teacher/login' : 'student/login'
+    const { data } = await axiosInstance.post<AuthLoginResponse>(routePath, payload)
+
+    Cookies.set('access_token', data.data.access_token)
 
     return data
   },

@@ -1,18 +1,19 @@
 import { useAuth } from '@/hooks'
 import { lessonPlanKey } from '@/services/lessonPlan/lessonPlan.query'
-import { Box, Button, Divider, Grid, Stack, Typography } from '@mui/material'
+import { Box, Button, Grid, Stack, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
-import { CreateCourseForm, PlanCard } from '.'
-import { Flex } from '@/components'
-import { ArrowRightAltOutlined } from '@mui/icons-material'
+import { CreateCourseForm } from '.'
+import { NoData } from '@/components'
 import { useNavigate } from 'react-router-dom'
+import { AddOutlined } from '@mui/icons-material'
+import { PlanCard } from '@/pages/Teacher/PlanningPage/components'
 
 interface ICoursePlanSelectionProps {
-  onNext: () => void
+  onNext?: () => void
   form: CreateCourseForm
 }
 
-export function CoursePlanSelection({ onNext, form }: ICoursePlanSelectionProps) {
+export function CoursePlanSelection({ form }: ICoursePlanSelectionProps) {
   const { profile } = useAuth()
 
   const navigate = useNavigate()
@@ -30,15 +31,15 @@ export function CoursePlanSelection({ onNext, form }: ICoursePlanSelectionProps)
   }
 
   return (
-    <Stack gap={4}>
-      <Typography textAlign='center' variant='h4'>
-        Apply plan to your course
-      </Typography>
-      <Flex justifyContent='end'>
-        <Button variant='outlined' sx={{ width: 'fit-content' }} onClick={handleNavigatePlanningPage}>
-          Create New Plan
-        </Button>
-      </Flex>
+    <Stack gap={2} width='100%'>
+      <Box>
+        <Typography textAlign='center' variant='h2' fontWeight={500}>
+          Lesson Plan
+        </Typography>
+        <Typography textAlign='center' variant='body1'>
+          You can apply a lesson plan to your course, this will help you to manage your course better
+        </Typography>
+      </Box>
       <Grid container spacing={2}>
         {lessonPlans?.content.map((plan) => (
           <Grid item xs={4}>
@@ -48,25 +49,21 @@ export function CoursePlanSelection({ onNext, form }: ICoursePlanSelectionProps)
               borderColor={watch('lessonPlanId') === plan.id ? 'primary.main' : 'transparent'}
               borderRadius={6}
               p={1}
-              sx={{ transition: 'all ease-in-out 0.2s' }}
+              sx={{ transition: 'all ease-in-out 0.1s' }}
             >
-              <PlanCard data={plan} key={plan.id} />
+              <PlanCard data={plan} key={plan.id} viewOnly />
             </Box>
           </Grid>
         ))}
       </Grid>
-      <Stack gap={2} alignItems='center'>
-        <Typography textAlign='center' variant='h5'>
-          OR
-        </Typography>
-      </Stack>
-      <Divider />
-      <Flex justifyContent='end'>
-        <Button variant='text' sx={{ width: 'fit-content', display: 'flex', gap: 1 }} onClick={onNext}>
-          Next step
-          <ArrowRightAltOutlined />
-        </Button>
-      </Flex>
+      {lessonPlans?.content.length === 0 && (
+        <Stack width='100%' alignItems='center' justifyContent='center' gap={1}>
+          <NoData title='You dont have any plan yet!' />
+          <Button onClick={handleNavigatePlanningPage} startIcon={<AddOutlined />}>
+            Create new plan
+          </Button>
+        </Stack>
+      )}
     </Stack>
   )
 }

@@ -1,35 +1,25 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import Cookies from 'js-cookie'
-import { toast } from 'react-toastify'
 
 import authService from '../services/auth/auth.service'
 import { userKeys } from '../services/user/user.query'
 import { useState } from 'react'
-import { useAlert } from '.'
+import { useBoolean } from '.'
 
 export const useAuth = () => {
-  const { triggerAlert } = useAlert()
   const queryClient = useQueryClient()
 
   const [accessToken, _] = useState(Cookies.get('access_token'))
+  const { value: isAuthenticated, setTrue: setAuthenticated, setFalse: disableAuthenticated } = useBoolean()
 
   const userInstance = userKeys.profile()
   const { data: profile, isLoading, refetch, isFetched } = useQuery({ ...userInstance, enabled: Boolean(accessToken) })
 
-  const { mutate: mutateLoginGoogle } = useMutation({
-    mutationFn: authService.loginGoogle,
-    onSuccess: () => {
-      triggerAlert('Login successfully!')
-      refetch()
-    },
-  })
-
-  const loginGoogle = async (accessToken: string) => mutateLoginGoogle(accessToken)
-
   const logout = () => {
     authService.logout()
+    disableAuthenticated()
     queryClient.setQueryData(userInstance.queryKey, null)
   }
 
-  return { accessToken, profile, isLoading, refetch, isFetched, loginGoogle, logout }
+  return { accessToken, profile, isLoading, refetch, isAuthenticated, setAuthenticated, isFetched, logout }
 }

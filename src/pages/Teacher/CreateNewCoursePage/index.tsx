@@ -27,7 +27,7 @@ export function CreateNewCoursePage() {
 
   return (
     <>
-      <Container maxWidth='lg'>
+      <Container>
         <FormCourseHandle handleSubmit={handleSubmit} />
       </Container>
       <LoadingOverlay isOpen={isLoadingCreate} title='Creating your class...' />

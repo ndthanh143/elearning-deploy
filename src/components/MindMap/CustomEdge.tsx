@@ -1,10 +1,5 @@
 import { Box } from '@mui/material'
-import { BaseEdge, EdgeProps, getBezierPath, useReactFlow } from 'reactflow'
-
-// const onEdgeClick = (evt, id) => {
-//   evt.stopPropagation()
-//   alert(`remove ${id}`)
-// }
+import { BaseEdge, EdgeProps, getBezierPath } from 'reactflow'
 
 export function CustomEdge({
   sourceX,

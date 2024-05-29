@@ -1,8 +1,8 @@
 import axiosInstance from '../../axios'
-import { CoureseRegistrationResponse, EnrollPayload, getListStudentCourseQuery } from './coursesRegistration.dto'
+import { CoureseRegistrationResponse, EnrollPayload, GetListStudentCourseQuery } from './coursesRegistration.dto'
 
 export const coursesRegistrationService = {
-  getCoursesRegistrationStudent: async (query: getListStudentCourseQuery) => {
+  getCoursesRegistrationStudent: async (query: GetListStudentCourseQuery) => {
     const { data } = await axiosInstance.get<CoureseRegistrationResponse>('/course-registration/list', {
       params: {
         ...query,

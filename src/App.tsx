@@ -10,15 +10,13 @@ import { AlertComponent, Layout, NotFound } from './components'
 import {
   AssignmentPage,
   CourseDetailPage,
-  CoursesPage,
+  StudentCoursesPage,
   CreateNewCoursePage,
   EditCoursePage,
-  ForumDetailPage,
-  ForumPage,
   HomePage,
   LecturePage,
   LoginPage,
-  ManageStudent,
+  StudentManagement,
   PlanningPage,
   ProfilePage,
   QuizPage,
@@ -34,26 +32,25 @@ import '@fontsource/roboto/300.css'
 import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
-import 'react-quill/dist/quill.snow.css'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import './App.css'
 import { Suspense, useEffect } from 'react'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import { configs } from './configs'
-import { QuizReview } from './pages/QuizPage/containers'
+import { QuizReview } from './pages/Common/QuizPage/containers'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { AdminLayout } from './components/layout/AdminLayout'
 import { Dashboard, UserManagement } from './pages/Admin'
 import { ReactFlowProvider } from 'reactflow'
-import { PlanningDetailPage } from './pages/PlanningDetailPage'
-import { CourseDetailLayout } from './components/layout/CourseDetailLayout'
+import { PlanningDetailPage } from './pages/Teacher/PlanningDetailPage'
+import { AuthLayout, CoursesPageLayout } from './components/layout'
 
 const router = createBrowserRouter([
   {
     path: 'courses/:courseId',
-    element: <CourseDetailLayout />,
+    element: <Layout />,
     children: [
       { index: true, element: <CourseDetailPage /> },
       {
@@ -67,11 +64,11 @@ const router = createBrowserRouter([
             path: 'lecture/:lectureId',
             element: <LecturePage />,
           },
+          {
+            path: 'quiz/:quizId',
+            element: <QuizPage />,
+          },
         ],
-      },
-      {
-        path: 'quiz/:quizId',
-        element: <QuizPage />,
       },
     ],
   },
@@ -88,16 +85,9 @@ const router = createBrowserRouter([
       {
         path: 'courses',
         children: [
-          { index: true, element: <CoursesPage /> },
+          { index: true, element: <CoursesPageLayout /> },
           { path: 'create', element: <CreateNewCoursePage /> },
           { path: ':courseId/manage', element: <EditCoursePage /> },
-        ],
-      },
-      {
-        path: 'forum',
-        children: [
-          { index: true, element: <ForumPage /> },
-          { path: ':id', element: <ForumDetailPage /> },
         ],
       },
       {
@@ -106,7 +96,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'student-manage',
-        element: <ManageStudent />,
+        element: <StudentManagement />,
       },
       {
         path: 'submission-management',
@@ -129,11 +119,19 @@ const router = createBrowserRouter([
   },
   {
     path: 'login',
-    element: <LoginPage />,
+    element: (
+      <AuthLayout>
+        <LoginPage />
+      </AuthLayout>
+    ),
   },
   {
     path: 'signup',
-    element: <SignUpPage />,
+    element: (
+      <AuthLayout>
+        <SignUpPage />
+      </AuthLayout>
+    ),
   },
   {
     path: 'admin',

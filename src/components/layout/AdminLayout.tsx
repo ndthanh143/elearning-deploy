@@ -93,7 +93,7 @@ export const AdminLayout = () => {
   ]
 
   useEffect(() => {
-    if (!accessToken || profile?.data.roleInfo.name !== RoleEnum.Admin) {
+    if (!accessToken || profile?.data.role !== RoleEnum.Admin) {
       navigate('/login', {
         state: {
           from: pathname,
@@ -111,7 +111,7 @@ export const AdminLayout = () => {
 
   return (
     profile &&
-    profile.data.roleInfo.name == RoleEnum.Admin && (
+    profile.data.role == RoleEnum.Admin && (
       <Box sx={{ display: 'flex' }}>
         <AppBar position='absolute' open={open}>
           <Toolbar

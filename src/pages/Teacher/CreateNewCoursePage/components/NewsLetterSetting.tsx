@@ -1,13 +1,11 @@
-import { Flex } from '@/components'
-import Editor from '@/components/Editor'
-import { Button, Divider, Stack, Typography } from '@mui/material'
+import Editor from '@/components/ContentEditor/ContentEditor'
+import { Stack, Typography } from '@mui/material'
 import { CreateCourseForm } from '.'
 
 interface INewsLetterSettingProps {
   form: CreateCourseForm
-  onSubmit: () => void
 }
-export function NewsLetterSetting({ form, onSubmit }: INewsLetterSettingProps) {
+export function NewsLetterSetting({ form }: INewsLetterSettingProps) {
   const { setValue, watch } = form
 
   return (
@@ -32,12 +30,6 @@ export function NewsLetterSetting({ form, onSubmit }: INewsLetterSettingProps) {
         <Typography fontWeight={700}>Congratulation message</Typography>
         <Editor onChange={(value) => setValue('congratulation', value)} value={watch('congratulation')} />
       </Stack>
-      <Divider />
-      <Flex justifyContent='end'>
-        <Button variant='contained' onClick={onSubmit}>
-          Submit
-        </Button>
-      </Flex>
     </Stack>
   )
 }

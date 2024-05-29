@@ -21,10 +21,7 @@ export type Account = {
   fullName: string
   avatarPath: string
   email: string
-  isSuperAdmin: boolean
-  kind: number
-  roleInfo: Role
-  nationInfo: any
+  role: 'Student' | 'Teacher'
 } & BaseData
 
 export type Role = {

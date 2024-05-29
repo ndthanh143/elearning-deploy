@@ -8,6 +8,7 @@ import {
   MenuOutlined,
   MoreHorizOutlined,
   NotificationsOutlined,
+  NotificationsRounded,
   PersonOutline,
 } from '@mui/icons-material'
 import {
@@ -25,13 +26,15 @@ import {
   Typography,
 } from '@mui/material'
 
-import { DangerouseLyRender, Flex } from '.'
+import { CustomMenu, DangerouseLyRender, Flex, IconContainer } from '.'
 import { useAuth, useBoolean, useMenu, useOnClickOutside } from '../hooks'
 import { Link, useNavigate } from 'react-router-dom'
 import { notificationKey } from '@/services/notification/notification.query'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { notificationService } from '@/services/notification/notification.service'
 import { useEffect, useRef } from 'react'
+import { blue, gray } from '@/styles/theme'
+import { images } from '@/assets/images'
 
 const parseMessage = (type: string, data: string) => {
   const parseData = JSON.parse(data)
@@ -66,7 +69,7 @@ const Notification = () => {
 
   const { profile } = useAuth()
 
-  const { value: isOpenNoti, setFalse: closeNoti, setTrue: openNoti } = useBoolean(false)
+  const { value: isOpenNoti, setFalse: closeNoti, toggle: toggleNoti } = useBoolean(false)
 
   const {
     anchorEl: anchorElMoreActions,
@@ -118,13 +121,11 @@ const Notification = () => {
 
   return (
     <>
-      <Tooltip title='Toggle notification panel'>
-        <IconButton onClick={openNoti}>
-          <Badge badgeContent={countUnreadNoti} color='primary'>
-            <NotificationsOutlined color='secondary' />
-          </Badge>
-        </IconButton>
-      </Tooltip>
+      <Badge badgeContent={countUnreadNoti} color='primary'>
+        <IconContainer isActive sx={{ cursor: 'pointer' }} onClick={toggleNoti}>
+          <NotificationsRounded color='primary' />
+        </IconContainer>
+      </Badge>
       <Box
         sx={{
           height: '100vh',
@@ -185,12 +186,7 @@ const Notification = () => {
   )
 }
 
-interface IHeaderProps {
-  onExpand: () => void
-  isCollapseSideBar: boolean
-}
-
-export const Header = ({ isCollapseSideBar, onExpand }: IHeaderProps) => {
+export const Header = () => {
   const navigate = useNavigate()
 
   const { profile, logout } = useAuth()
@@ -204,11 +200,11 @@ export const Header = ({ isCollapseSideBar, onExpand }: IHeaderProps) => {
 
   return (
     <>
-      <Box sx={{ px: 2 }} position='relative'>
+      <Box sx={{ px: 4, boxShadow: '0 1px 2px 0 rgba(0,0,0,.05)' }} position='relative' bgcolor={'#FEF8FF'}>
         <Grid container>
           <Grid item xs={4}>
-            <Flex alignItems='center' height='100%'>
-              <Tooltip title='Open sidebar'>
+            <Flex alignItems='center' height='100%' gap={10}>
+              {/* <Tooltip title='Open sidebar'>
                 <IconButton
                   onClick={onExpand}
                   sx={{
@@ -220,28 +216,50 @@ export const Header = ({ isCollapseSideBar, onExpand }: IHeaderProps) => {
                 >
                   <MenuOutlined fontSize='small' />
                 </IconButton>
-              </Tooltip>
+              </Tooltip> */}
+              <Box
+                component='img'
+                src={images.logo}
+                alt='logo'
+                width={30}
+                height={30}
+                style={{
+                  objectFit: 'cover',
+                }}
+              />
+              <Typography variant='body1' fontWeight={700}>
+                Hi, {profile?.data.fullName}
+              </Typography>
             </Flex>
           </Grid>
           <Grid item xs={8} display='flex' justifyContent='end' alignItems='center' gap={4}>
             {/* <LanguageSwitcher /> */}
             <Notification />
-            <Box
-              display='flex'
-              alignItems='center'
-              gap={2}
-              sx={{ bgcolor: '#fff', px: 2, py: 1, borderRadius: 3 }}
-              onClick={openProfile}
-            >
-              <Avatar src={profile?.data.avatarPath} alt={profile?.data.fullName} sx={{ bgcolor: 'primary.main' }}>
-                N
-              </Avatar>
-              <Typography>{profile?.data.fullName}</Typography>
-              <ArrowDropDown />
+            <Box display='flex' alignItems='center' gap={2} sx={{ py: 1, cursor: 'pointer' }} onClick={openProfile}>
+              <Box
+                border={3}
+                borderColor={blue[500]}
+                borderRadius='100%'
+                sx={{
+                  ':hover': {
+                    borderColor: blue[300],
+                    transition: 'all 0.1s ease-in-out',
+                  },
+                  cursor: 'pointer',
+                }}
+              >
+                <Avatar
+                  src={profile?.data.avatarPath}
+                  alt={profile?.data.fullName}
+                  sx={{ bgcolor: 'primary.main', width: 30, height: 30 }}
+                >
+                  N
+                </Avatar>
+              </Box>
             </Box>
           </Grid>
         </Grid>
-        <Menu
+        <CustomMenu
           anchorEl={anchorElProfile}
           open={isOpenProfile}
           onClose={closeProfile}
@@ -250,22 +268,31 @@ export const Header = ({ isCollapseSideBar, onExpand }: IHeaderProps) => {
             horizontal: 'left',
           }}
         >
+          <Stack px={2} mb={2}>
+            <Typography fontWeight={700}>{profile?.data.fullName}</Typography>
+            <Typography fontWeight={600} variant='body2' color={gray[400]}>
+              {profile?.data.email}
+            </Typography>
+          </Stack>
           <MenuItem
             sx={{ display: 'flex', alignItems: 'center', gap: 2, pr: 6 }}
             onClick={() => handleClickMenuItem('/profile')}
           >
-            <PersonOutline />
-            <Typography>Profile</Typography>
+            <PersonOutline color='primary' fontSize='small' />
+            <Typography variant='body2' fontWeight={500}>
+              Profile
+            </Typography>
           </MenuItem>
 
           <Divider />
           <MenuItem sx={{ display: 'flex', alignItems: 'center', gap: 2, pr: 6 }} onClick={logout}>
-            <LogoutOutlined />
-            <Typography>Logout</Typography>
+            <LogoutOutlined color='primary' fontSize='small' />
+            <Typography variant='body2' fontWeight={500}>
+              Logout
+            </Typography>
           </MenuItem>
-        </Menu>
+        </CustomMenu>
       </Box>
-      <Divider />
     </>
   )
 }

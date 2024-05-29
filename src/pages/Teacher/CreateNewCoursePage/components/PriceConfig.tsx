@@ -1,6 +1,5 @@
-import { Flex } from '@/components'
-import { ArrowRightAltOutlined } from '@mui/icons-material'
-import { Button, Divider, MenuItem, Select, Stack, Typography } from '@mui/material'
+import { CustomSelect, Flex } from '@/components'
+import { MenuItem, Select, Stack, Typography } from '@mui/material'
 import { CreateCourseForm } from '.'
 
 const listCurrentCyAndMounts: Record<string, { label: string; value: number }[]> = {
@@ -99,11 +98,11 @@ const listCurrentCyAndMounts: Record<string, { label: string; value: number }[]>
 }
 
 interface IPriceConfigProps {
-  onNext: () => void
+  onNext?: () => void
   form: CreateCourseForm
 }
 
-export function PriceConfig({ onNext, form }: IPriceConfigProps) {
+export function PriceConfig({ form }: IPriceConfigProps) {
   const { setValue, watch } = form
 
   return (
@@ -120,31 +119,22 @@ export function PriceConfig({ onNext, form }: IPriceConfigProps) {
       <Flex gap={4}>
         <Stack gap={1}>
           <Typography fontWeight={700}>Currency</Typography>
-          <Select defaultValue={watch('currency')} onChange={(e) => setValue('currency', e.target.value)}>
-            {Object.keys(listCurrentCyAndMounts).map((cy) => (
-              <MenuItem value={cy}>{cy}</MenuItem>
-            ))}
-          </Select>
+          <CustomSelect
+            defaultValue={watch('currency')}
+            data={Object.keys(listCurrentCyAndMounts).map((item) => ({ label: item, value: item }))}
+            onChange={(e) => setValue('currency', e.target.value as string)}
+          />
         </Stack>
         <Stack gap={1}>
           <Typography fontWeight={700}>Amount</Typography>
-          <Select
+          <CustomSelect
             defaultValue={watch('price')}
-            sx={{ minWidth: 200 }}
+            sx={{ minWidth: 100 }}
             placeholder='Select'
+            data={listCurrentCyAndMounts[watch('currency') as string]}
             onChange={(e) => setValue('price', Number(e.target.value))}
-          >
-            {listCurrentCyAndMounts[watch('currency') as string]?.map((amount) => (
-              <MenuItem value={amount.value}>{amount.label}</MenuItem>
-            ))}
-          </Select>
+          />
         </Stack>
-      </Flex>
-      <Divider />
-      <Flex justifyContent='end'>
-        <Button variant='text' sx={{ display: 'flex', gap: 1, alignItems: 'center' }} onClick={onNext}>
-          Save and next step <ArrowRightAltOutlined />
-        </Button>
       </Flex>
     </Stack>
   )
