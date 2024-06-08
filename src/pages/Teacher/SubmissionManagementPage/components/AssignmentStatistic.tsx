@@ -1,5 +1,5 @@
 import { Submission } from '@/services/assignmentSubmission/assignmentSubmission.dto'
-import { Card, CardContent, Stack, Typography } from '@mui/material'
+import { Card, CardContent, Grid, Stack, Typography } from '@mui/material'
 import { Bar, Doughnut } from 'react-chartjs-2'
 import { Chart as ChartJS } from 'chart.js/auto'
 import { CategoryScale } from 'chart.js'
@@ -116,27 +116,31 @@ export const AssignmentStatistic = ({ data = [] }: IAssignmentStatisticProps) =>
   }
 
   return (
-    <Stack gap={4}>
-      <Card>
-        <CardContent>
-          <Flex mb={1}>
-            <Typography fontWeight={700} variant='body2'>
-              Overview
-            </Typography>
-          </Flex>
-          {data.length > 0 ? <Doughnut data={chartDataDoughnut} /> : <NoData />}
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent>
-          <Flex mb={1}>
-            <Typography fontWeight={700} variant='body2'>
-              Points statistics
-            </Typography>
-          </Flex>
-          <Bar data={chartData} options={options} />
-        </CardContent>
-      </Card>
-    </Stack>
+    <Grid container spacing={4}>
+      <Grid item xs={4}>
+        <Card>
+          <CardContent>
+            <Flex mb={1}>
+              <Typography fontWeight={700} variant='body2'>
+                Overview
+              </Typography>
+            </Flex>
+            {data.length > 0 ? <Doughnut data={chartDataDoughnut} /> : <NoData />}
+          </CardContent>
+        </Card>
+      </Grid>
+      <Grid item xs={8}>
+        <Card>
+          <CardContent>
+            <Flex mb={1}>
+              <Typography fontWeight={700} variant='body2'>
+                Points statistics
+              </Typography>
+            </Flex>
+            <Bar data={chartData} options={options} />
+          </CardContent>
+        </Card>
+      </Grid>
+    </Grid>
   )
 }

@@ -11,7 +11,8 @@ export type GetTopicsQuery = {
 
 export type Topic = {
   topicContent: string
-  accountInfo: Account
+  studentInfo?: Account
+  teacherInfo?: Account
   commentInfo: TopicComment[]
 } & BaseData
 

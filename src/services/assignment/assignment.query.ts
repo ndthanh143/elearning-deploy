@@ -1,5 +1,5 @@
 import { defineQuery } from '../../utils'
-import { GetListAssignmentQuery } from './assignment.dto'
+import { GetListAssignmentQuery, GetScheduleQuery } from './assignment.dto'
 import { assignmentService } from './assignment.service'
 
 export const assignmentKeys = {
@@ -10,4 +10,7 @@ export const assignmentKeys = {
   details: () => [...assignmentKeys.all, 'detail'] as const,
   detail: (assignmentId: number) =>
     defineQuery([...assignmentKeys.details(), assignmentId], () => assignmentService.getDetail(assignmentId)),
+  schedules: () => [...assignmentKeys.all, 'assignment-schedule'] as const,
+  schedule: (query: GetScheduleQuery) =>
+    defineQuery([...assignmentKeys.details(), query], () => assignmentService.getSchedule(query)),
 }

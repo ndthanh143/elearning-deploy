@@ -10,7 +10,6 @@ import { AlertComponent, Layout, NotFound } from './components'
 import {
   AssignmentPage,
   CourseDetailPage,
-  StudentCoursesPage,
   CreateNewCoursePage,
   EditCoursePage,
   HomePage,
@@ -23,6 +22,9 @@ import {
   SchedulePage,
   SignUpPage,
   SubmissionManagementPage,
+  ConfirmInvitationPage,
+  GroupManagementPage,
+  TaskPage,
 } from './pages'
 
 import 'react-big-calendar/lib/css/react-big-calendar.css'
@@ -95,6 +97,10 @@ const router = createBrowserRouter([
         children: [{ index: true, element: <PlanningPage /> }],
       },
       {
+        path: 'group',
+        children: [{ index: true, element: <GroupManagementPage /> }],
+      },
+      {
         path: 'student-manage',
         element: <StudentManagement />,
       },
@@ -107,6 +113,10 @@ const router = createBrowserRouter([
         element: <SchedulePage />,
       },
       {
+        path: 'confirm-invitation',
+        element: <ConfirmInvitationPage />,
+      },
+      {
         path: 'quiz-submission',
         children: [
           {
@@ -114,6 +124,10 @@ const router = createBrowserRouter([
             element: <QuizReview />,
           },
         ],
+      },
+      {
+        path: 'tasks',
+        element: <TaskPage />,
       },
     ],
   },

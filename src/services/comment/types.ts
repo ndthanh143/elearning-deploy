@@ -17,7 +17,8 @@ export type CreateCommentPayload = {
 
 export type Comment = {
   content: string
-  accountInfo: Account
+  teacherInfo?: Account
+  studentInfo?: Account
   groupCommentInfo: GroupComment
 } & BaseData
 

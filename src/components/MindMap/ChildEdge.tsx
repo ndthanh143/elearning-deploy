@@ -176,7 +176,7 @@ export function ChildEdge({ id, source, target, markerEnd }: EdgeProps) {
       id={id}
       path={edgePath}
       markerEnd={markerEnd}
-      style={{ stroke: '#7EB6C0', strokeWidth: 4 }}
+      style={{ stroke: '#7EB6C0', strokeWidth: 3 }}
     />
   )
 }

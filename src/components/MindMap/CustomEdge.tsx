@@ -1,3 +1,4 @@
+import { primary } from '@/styles/theme'
 import { Box } from '@mui/material'
 import { BaseEdge, EdgeProps, getBezierPath } from 'reactflow'
 
@@ -21,7 +22,12 @@ export function CustomEdge({
 
   return (
     <>
-      <Box component={BaseEdge} path={edgePath} markerEnd={markerEnd} style={{ stroke: '#F79B8D', strokeWidth: 4 }} />
+      <Box
+        component={BaseEdge}
+        path={edgePath}
+        markerEnd={markerEnd}
+        style={{ stroke: primary[500], strokeWidth: 4 }}
+      />
     </>
   )
 }

@@ -27,11 +27,12 @@ export const TopicList = ({ forumId, isOpen, onClose }: TopicList) => {
     isLoading: isLoadingTopics,
   } = useQuery({ ...topicInstance, enabled: Boolean(forumId) })
 
-  const { mutate: mutateCreateTopic } = useMutation({
+  const { mutate: mutateCreateTopic, isPending: isPendingCreateTopic } = useMutation({
     mutationFn: topicService.create,
     onSuccess: (data) => {
       queryClient.setQueryData(topicInstance.queryKey, [{ ...data, commentInfo: [] }, ...(topics || [])])
       triggerAlert('Create Topic successfully!')
+      closeCreateTopic()
     },
     onSettled: () => closeCreateTopic(),
   })
@@ -75,46 +76,50 @@ export const TopicList = ({ forumId, isOpen, onClose }: TopicList) => {
           </Flex>
         </Flex>
         <Divider />
-        <Stack gap={3} p={3}>
-          {isLoadingTopics && (
-            <Flex height='80vh' alignItems='center'>
-              <Loading />
-            </Flex>
-          )}
-          {(isFetchedTopics && !topics?.length) || !topics?.length ? (
-            <Flex>
-              <Stack width='100%' gap={2} maxWidth={500} mx='auto'>
-                <NoData title="There isn't any topic yet!" />
-                <Button fullWidth variant='contained'>
-                  Create first topic
-                </Button>
-              </Stack>
-            </Flex>
-          ) : (
-            <>
-              <Card variant='outlined'>
-                <CardContent sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                  <Avatar src={profile?.data.avatarPath}>{profile?.data.fullName.charAt(0)}</Avatar>
-                  <Button variant='outlined' fullWidth color='primary' onClick={openCreateTopic}>
-                    Whats on your mind?
+        <Box height='90%' sx={{ overflowY: 'scroll' }}>
+          <Stack gap={3} p={3}>
+            {isLoadingTopics && (
+              <Flex height='80vh' alignItems='center'>
+                <Loading />
+              </Flex>
+            )}
+            {(isFetchedTopics && !topics?.length) || !topics?.length ? (
+              <Flex>
+                <Stack width='100%' gap={2} maxWidth={500} mx='auto'>
+                  <NoData title="There isn't any topic yet!" />
+                  <Button fullWidth variant='contained' onClick={openCreateTopic}>
+                    Create first topic
                   </Button>
-                </CardContent>
-              </Card>
-              {topics.map((topic) => (
-                <Card key={topic.id} variant='outlined'>
-                  <CardContent>
-                    <ForumTopic data={topic} key={topic.id} />
+                </Stack>
+              </Flex>
+            ) : (
+              <>
+                <Card variant='outlined'>
+                  <CardContent sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                    <Avatar src={profile?.data.avatarPath}>{profile?.data.fullName.charAt(0)}</Avatar>
+                    <Button variant='outlined' fullWidth color='primary' onClick={openCreateTopic}>
+                      Whats on your mind?
+                    </Button>
                   </CardContent>
                 </Card>
-              ))}
-            </>
-          )}
-        </Stack>
+                {topics.map((topic) => (
+                  <Card key={topic.id} variant='outlined' id={topic.id.toString()}>
+                    <CardContent>
+                      <ForumTopic data={topic} key={topic.id} />
+                    </CardContent>
+                  </Card>
+                ))}
+              </>
+            )}
+          </Stack>
+        </Box>
+
         <ModalActionsTopic
           isOpen={isOpenCreateTopic}
           onClose={closeCreateTopic}
           onSubmit={handleCreateTopic}
           status='create'
+          isLoading={isPendingCreateTopic}
         />
       </Box>
     </>

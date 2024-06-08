@@ -3,8 +3,11 @@ import {
   EditCalendarRounded,
   EventNoteRounded,
   GridViewRounded,
+  GroupRounded,
+  GroupsRounded,
   LibraryBooksRounded,
   PeopleRounded,
+  TaskRounded,
 } from '@mui/icons-material'
 import { ReactNode } from 'react'
 import { startsWith } from 'lodash'
@@ -41,6 +44,16 @@ export const SideBar = () => {
         href: '/courses',
       },
       {
+        title: 'Group',
+        icon: (
+          <GroupsRounded
+            color={startsWith(pathname, '/group') ? 'primary' : 'inherit'}
+            sx={{ width: 30, height: 30 }}
+          />
+        ),
+        href: '/group',
+      },
+      {
         title: 'Submission',
         icon: (
           <AssignmentRounded
@@ -75,7 +88,7 @@ export const SideBar = () => {
     ],
     Student: [
       {
-        title: 'Dashboard',
+        title: 'Home Page',
         icon: <GridViewRounded color={pathname === '/' ? 'primary' : 'inherit'} sx={{ width: 30, height: 30 }} />,
         href: '/',
       },
@@ -88,6 +101,13 @@ export const SideBar = () => {
           />
         ),
         href: '/courses',
+      },
+      {
+        title: 'Tasks',
+        icon: (
+          <TaskRounded color={startsWith(pathname, '/tasks') ? 'primary' : 'inherit'} sx={{ width: 30, height: 30 }} />
+        ),
+        href: '/tasks',
       },
       {
         title: 'Schedule',

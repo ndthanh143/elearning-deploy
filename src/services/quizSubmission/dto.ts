@@ -9,6 +9,7 @@ export type QuizSubmissionPayload = {
   quizId: number
   results: resultPayload[]
   totalTime: number
+  unitId: number
 }
 
 export type resultPayload = {

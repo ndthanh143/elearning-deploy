@@ -1,4 +1,4 @@
-import { BoxContent, Show } from '@/components'
+import { BoxContent } from '@/components'
 import { useBoolean, useLocalStorage } from '@/hooks'
 import { quizKey } from '@/services/quiz/quiz.query'
 import { gray } from '@/styles/theme'
@@ -116,9 +116,7 @@ export const QuizInfo = () => {
             </>
           )}
         </BoxContent>
-        <Show when={isOpenAttempts}>
-          <ModalAttempts data={quiz.quizSubmissionInfo} onClose={closeAttempts} />
-        </Show>
+        <ModalAttempts data={quiz.quizSubmissionInfo} onClose={closeAttempts} isOpen={isOpenAttempts} />
       </>
     )
   )

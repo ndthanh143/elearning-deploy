@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useRef } from 'react'
 import { Box, BoxProps, Typography } from '@mui/material'
 import { CloudUploadRounded } from '@mui/icons-material'
+import { icons } from '@/assets/icons'
 
 interface IDropzoneProps extends BoxProps {
   onFileChange: (file: File) => void
@@ -60,7 +61,9 @@ export function Dropzone({ onFileChange, sx, ...props }: IDropzoneProps) {
       onDrop={onDrop}
       {...props}
     >
-      <CloudUploadRounded fontSize='large' color='primary' sx={{ width: 100, height: 100 }} />
+      <Box width={100} height={100} mx='auto' my={2}>
+        {icons['upload']}
+      </Box>
       <Typography variant='body1' gutterBottom>
         Click to select a file or drop a file here
       </Typography>

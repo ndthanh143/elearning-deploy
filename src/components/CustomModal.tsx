@@ -1,6 +1,7 @@
-import { BoxProps, Modal, Stack, Typography } from '@mui/material'
+import { BoxProps, Modal, Typography } from '@mui/material'
 import { BoxContent } from './BoxContent'
 import { PropsWithChildren } from 'react'
+import { Flex } from '.'
 
 export type CustomModalProps = {
   title: string
@@ -12,9 +13,9 @@ export const CustomModal = ({ isOpen, onClose, title, children, ...props }: Prop
   return (
     <Modal open={isOpen} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} onClose={onClose}>
       <BoxContent width='80vw' {...props}>
-        <Stack direction='row' alignItems='center' justifyContent='space-between' mb={2}>
+        <Flex justifyContent='space-between' mb={2}>
           <Typography variant='body1'>{title}</Typography>
-        </Stack>
+        </Flex>
         {children}
       </BoxContent>
     </Modal>

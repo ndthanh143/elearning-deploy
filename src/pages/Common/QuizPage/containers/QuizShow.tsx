@@ -15,7 +15,7 @@ import {
 import { useNavigate, useParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { quizKey } from '@/services/quiz/quiz.query'
-import { useBoolean, useLocalStorage } from '@/hooks'
+import { useAuth, useBoolean, useLocalStorage } from '@/hooks'
 import { useEffect, useState } from 'react'
 import { ConfirmPopup, Flex, Show } from '@/components'
 import { generateAwnserKey } from '@/utils'
@@ -26,16 +26,30 @@ import { QuizFinish } from '.'
 import { xor } from 'lodash'
 import { gray } from '@/styles/theme'
 
-const Timer = ({ quizTimer, limit, onComplete }: { quizTimer: number; limit: number; onComplete: () => void }) => {
+const Timer = ({
+  isTeacher,
+  quizTimer,
+  limit,
+  onComplete,
+}: {
+  isTeacher: boolean
+  quizTimer: number
+  limit: number
+  onComplete: () => void
+}) => {
   return (
     <Chip
       label={
         <Stack direction='row' alignItems='center' gap={1}>
           <AccessAlarm />
-          <Countdown date={quizTimer + limit * 60 * 1000} onComplete={onComplete} />
+          <Countdown
+            date={isTeacher ? 0 : quizTimer + limit * 60 * 1000}
+            onComplete={() => !isTeacher && onComplete()}
+          />
         </Stack>
       }
-      variant='outlined'
+      variant='filled'
+      color='primary'
     />
   )
 }
@@ -43,8 +57,9 @@ const Timer = ({ quizTimer, limit, onComplete }: { quizTimer: number; limit: num
 export const QuizShow = () => {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
+  const { isTeacher } = useAuth()
 
-  const { quizId, courseId } = useParams()
+  const { quizId, courseId, unitId } = useParams()
 
   const { setValue: setStatusQuiz } = useLocalStorage<boolean>('quizStarted', false)
   const { storedValue: quizTimer } = useLocalStorage('quiz-timer', Date.now())
@@ -84,7 +99,7 @@ export const QuizShow = () => {
     const results = quizSubmission.flatMap((item) => item.answer.map((answer) => ({ answerId: answer })))
 
     const totalTime = Date.now() - quizTimer
-    mutateSubmit({ courseId: Number(courseId), quizId: Number(quizId), results, totalTime })
+    mutateSubmit({ courseId: Number(courseId), unitId: Number(unitId), quizId: Number(quizId), results, totalTime })
   }
 
   const handleChooseQuestion = (questionId: number, answer: number) => {
@@ -129,59 +144,68 @@ export const QuizShow = () => {
         </Show>
         <Grid container spacing={8} minHeight={700}>
           <Grid item xs={9}>
-            {data.questions.length > 0 && (
-              <Stack gap={2}>
-                <Flex gap={1}>
-                  <Chip label={currentQuestionIndex + 1} size='small' color='primary' />
-                  <Typography>{data.questions[currentQuestionIndex].questionContent}</Typography>
-                </Flex>
-                <Box>
-                  {data.questions[currentQuestionIndex].questionType === 2 && (
-                    <Typography color={gray[800]} fontStyle='italic' variant='body1'>
-                      Choose multiple answers
-                    </Typography>
-                  )}
-                  <Stack gap={2} mt={1} mb='auto'>
-                    {data.questions[currentQuestionIndex].answers.map((anwser, index) => (
-                      <Answer
-                        title={anwser.answerContent}
-                        key={anwser.id}
-                        label={generateAwnserKey(index)}
-                        isChosen={checkAnswerChose(anwser.id)}
-                        onClick={() =>
-                          data.questions[currentQuestionIndex].questionType === 1
-                            ? handleChooseQuestion(data.questions[currentQuestionIndex].id, anwser.id)
-                            : handleChooseQuestionMultiple(data.questions[currentQuestionIndex].id, anwser.id)
-                        }
-                      />
-                    ))}
-                  </Stack>
-                </Box>
-                <Stack direction='row' gap={2} justifyContent='end' mt={2}>
-                  <Button
-                    variant='outlined'
-                    onClick={handlePrevQuestion}
-                    startIcon={<ArrowBackOutlined fontSize='small' />}
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    variant='contained'
-                    onClick={handleNextQuestion}
-                    endIcon={<ArrowForwardOutlined fontSize='small' />}
-                  >
-                    Next
-                  </Button>
-                  {/* <Button variant='contained' onClick={openConfirmSubmit}>
+            <Card>
+              <CardContent>
+                {data.questions.length > 0 && (
+                  <Stack gap={2}>
+                    <Flex gap={1}>
+                      <Chip label={currentQuestionIndex + 1} size='small' color='primary' />
+                      <Typography>{data.questions[currentQuestionIndex].questionContent}</Typography>
+                    </Flex>
+                    <Box>
+                      {data.questions[currentQuestionIndex].questionType === 2 && (
+                        <Typography color={gray[800]} fontStyle='italic' variant='body1'>
+                          Choose multiple answers
+                        </Typography>
+                      )}
+                      <Stack gap={2} mt={1} mb='auto'>
+                        {data.questions[currentQuestionIndex].answers.map((anwser, index) => (
+                          <Answer
+                            title={anwser.answerContent}
+                            key={anwser.id}
+                            label={generateAwnserKey(index)}
+                            isChosen={checkAnswerChose(anwser.id)}
+                            onClick={() =>
+                              data.questions[currentQuestionIndex].questionType === 1
+                                ? handleChooseQuestion(data.questions[currentQuestionIndex].id, anwser.id)
+                                : handleChooseQuestionMultiple(data.questions[currentQuestionIndex].id, anwser.id)
+                            }
+                          />
+                        ))}
+                      </Stack>
+                    </Box>
+                    <Stack direction='row' gap={2} justifyContent='end' mt={2}>
+                      <Button
+                        variant='outlined'
+                        onClick={handlePrevQuestion}
+                        startIcon={<ArrowBackOutlined fontSize='small' />}
+                      >
+                        Previous
+                      </Button>
+                      <Button
+                        variant='contained'
+                        onClick={handleNextQuestion}
+                        endIcon={<ArrowForwardOutlined fontSize='small' />}
+                      >
+                        Next
+                      </Button>
+                      {/* <Button variant='contained' onClick={openConfirmSubmit}>
                 Submit
               </Button> */}
-                </Stack>
-              </Stack>
-            )}
+                    </Stack>
+                  </Stack>
+                )}
+              </CardContent>
+            </Card>
           </Grid>
           <Grid item xs={3}>
             <Flex justifyContent='end'>
-              <Timer quizTimer={quizTimer} limit={data.quizTimeLimit} onComplete={openConfirmSubmit} />
+              <Timer
+                isTeacher={isTeacher}
+                quizTimer={quizTimer}
+                limit={data.quizTimeLimit}
+                onComplete={openConfirmSubmit}
+              />
             </Flex>
             <Card sx={{ mt: 2 }}>
               <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -240,8 +264,8 @@ export const QuizShow = () => {
                 </Flex>
               </CardContent>
             </Card>
-            <Button fullWidth variant='contained' sx={{ mt: 2 }} onClick={openConfirmSubmit}>
-              Submit your answers
+            <Button fullWidth variant='contained' sx={{ mt: 2 }} onClick={openConfirmSubmit} disabled={isTeacher}>
+              {isTeacher ? 'Teacher can not submit' : 'Submit your answers'}
             </Button>
           </Grid>
         </Grid>

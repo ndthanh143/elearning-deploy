@@ -21,5 +21,19 @@ export const useAuth = () => {
     queryClient.setQueryData(userInstance.queryKey, null)
   }
 
-  return { accessToken, profile, isLoading, refetch, isAuthenticated, setAuthenticated, isFetched, logout }
+  const isStudent = profile?.data.role === 'Student'
+  const isTeacher = profile?.data.role === 'Teacher'
+
+  return {
+    accessToken,
+    profile,
+    isLoading,
+    refetch,
+    isAuthenticated,
+    setAuthenticated,
+    isFetched,
+    logout,
+    isStudent,
+    isTeacher,
+  }
 }

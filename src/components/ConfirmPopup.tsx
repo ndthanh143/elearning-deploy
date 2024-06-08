@@ -5,8 +5,8 @@ import { DeleteOutline, InfoOutlined } from '@mui/icons-material'
 
 export type ConfirmPopupProps = {
   isOpen: boolean
-  title: string
-  subtitle: string
+  title?: string
+  subtitle?: string
   onAccept: () => void
   onClose: () => void
   isLoading?: boolean

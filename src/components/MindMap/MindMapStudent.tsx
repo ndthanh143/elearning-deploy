@@ -1,6 +1,8 @@
-import { Box } from '@mui/material'
-import { useEffect } from 'react'
+import { Box, IconButton } from '@mui/material'
+import { useEffect, useState } from 'react'
 import ReactFlow, { useNodesState, useEdgesState, Node, Edge, MarkerType } from 'reactflow'
+import FullscreenIcon from '@mui/icons-material/Fullscreen'
+import FullscreenExitIcon from '@mui/icons-material/FullscreenExit'
 
 import 'reactflow/dist/style.css'
 import { CustomEdge } from './CustomEdge'
@@ -9,6 +11,8 @@ import { CustomNodeComponent } from './CustomNodeComponent'
 import { ChildNodeComponent } from './ChildNodeComponent'
 import { ProfileSetting } from './components/actions'
 import { LessonPlan } from '@/services/lessonPlan/lessonPlan.dto'
+import { CustomTooltip } from '..'
+import { primary } from '@/styles/theme'
 
 const nodeTypes = {
   customNode: CustomNodeComponent, // Define your custom node type
@@ -25,8 +29,9 @@ interface IMindMapProps {
 }
 
 export function MindMapStudent({ lessonPlan }: IMindMapProps) {
-  const [nodes, setNodes, onNodesChange] = useNodesState([])
+  const [nodes, setNodes] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
+  const [fullscreen, setFullscreen] = useState(false)
 
   const units = lessonPlan.units
 
@@ -51,14 +56,14 @@ export function MindMapStudent({ lessonPlan }: IMindMapProps) {
         source: parentNodeId || '',
         target: currentNodeId,
         type: isDefaultUnit ? 'customEdge' : 'childEdge',
-        ...(isDefaultUnit && {
-          markerEnd: {
-            type: MarkerType.ArrowClosed,
-            width: 10,
-            height: 10,
-            color: '#F79B8D',
-          },
-        }),
+        // ...(isDefaultUnit && {
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          width: 10,
+          height: 10,
+          color: isDefaultUnit ? primary[500] : '#7EB6C0',
+        },
+        // }),
       })
     }
 
@@ -66,17 +71,34 @@ export function MindMapStudent({ lessonPlan }: IMindMapProps) {
     setEdges(initialEdges)
   }, [units])
 
-  return (
-    <Box display='flex' flexDirection='column' position='relative'>
-      <ProfileSetting lessonPlanId={lessonPlan.id} />
+  const toggleFullscreen = () => {
+    setFullscreen(!fullscreen)
+  }
 
+  return (
+    <Box display='flex' flexDirection='column' position='relative' borderRadius={3} overflow='hidden'>
+      <CustomTooltip title={fullscreen ? 'Exist full screen' : 'View full screen'}>
+        <IconButton
+          onClick={toggleFullscreen}
+          sx={{ position: fullscreen ? 'fixed' : 'absolute', top: 16, left: 16, zIndex: 10000 }}
+        >
+          {fullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+        </IconButton>
+      </CustomTooltip>
       <Box
-        style={{
-          width: '100%',
+        sx={{
+          width: '100vw',
           height: '100vh',
+          position: fullscreen ? 'fixed' : 'relative',
+          transition: 'all ease-in-out 0.3s',
+          top: 0,
+          left: 0,
           background: '#FFFDF5',
+          zIndex: fullscreen ? 1000 : 'auto',
         }}
       >
+        <ProfileSetting lessonPlanId={lessonPlan.id} />
+
         <Box
           sx={{
             'react-flow__zoompane': {
@@ -88,9 +110,7 @@ export function MindMapStudent({ lessonPlan }: IMindMapProps) {
           component={ReactFlow}
           nodes={nodes}
           edges={edges}
-          onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
-          // fitView
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           panOnScroll={true}
@@ -98,10 +118,8 @@ export function MindMapStudent({ lessonPlan }: IMindMapProps) {
           zoomOnDoubleClick={false}
           zoomOnScroll={false}
           preventScrolling={false}
-          // zoomOnPinch={false}
         ></Box>
       </Box>
-      {/* <Box sx={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 9, pointerEvents: 'none' }} /> */}
     </Box>
   )
 }

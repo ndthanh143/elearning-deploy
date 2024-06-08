@@ -1,10 +1,9 @@
-import { Loading, NoData } from '@/components'
+import { Flex, Loading, NoData } from '@/components'
 import { quizSubmissionKeys } from '@/services/quizSubmission/query'
 import { userKeys } from '@/services/user/user.query'
 import { convertMilisecond, formatDate } from '@/utils'
 import {
   Box,
-  Button,
   Card,
   CardContent,
   Pagination,
@@ -19,16 +18,16 @@ import {
 import { useQuery } from '@tanstack/react-query'
 import { groupBy, mapValues, maxBy } from 'lodash'
 import { useState } from 'react'
-import { useBoolean } from '@/hooks'
-import { BarChart } from '@mui/icons-material'
+import { Course } from '@/services/course/course.dto'
+import { Filter, QuizStatistic } from '../components'
 
 const DEFAULT_LIMIT = 12
-export const QuizSubmission = () => {
+export const QuizSubmission = ({ courses }: { courses: Course[] }) => {
   const [page, setPage] = useState(0)
-  const { value: isOpenUnsubmit, setTrue: openUnsubmit, setFalse: closeUnsubmit } = useBoolean(false)
-  const { value: isOpenViewStatistic, setTrue: openViewStatistic, setFalse: closeViewStatistic } = useBoolean(false)
 
-  const quizSubmissionInstance = quizSubmissionKeys.list({ courseId, quizId, page: page, size: DEFAULT_LIMIT })
+  const [courseId, setCourseId] = useState<Number>()
+
+  const quizSubmissionInstance = quizSubmissionKeys.list({ page: page, size: DEFAULT_LIMIT })
   const {
     data: quizSubmissions,
     isLoading,
@@ -59,83 +58,74 @@ export const QuizSubmission = () => {
   const headings = ['Student', 'Date', 'Score', 'Total time']
 
   return (
-    <Stack gap={1}>
-      <Typography fontWeight={700}>
-        Quiz submissions ({quizSubmissions?.totalElements || 0}/{quizSubmissions?.totalElements || 0})
-      </Typography>
-      <Card>
-        <CardContent>
-          <Stack height='100%' justifyContent='space-between'>
-            {students && students.length > 0 && (
-              <ModalUnsubmit isOpen={isOpenUnsubmit} onClose={closeUnsubmit} data={students} />
-            )}
-            <Box>
-              <Stack direction='row' justifyContent='space-between'>
-                {students && students.length > 0 && <Button onClick={openUnsubmit}>View Unsubmitted students</Button>}
-                {filterData.length > 0 && (
-                  <Button sx={{ display: 'flex', gap: 1 }} variant='outlined' onClick={openViewStatistic}>
-                    <BarChart />
-                    View Statistics
-                  </Button>
+    <Stack gap={2}>
+      <Flex justifyContent='space-between'>
+        <Typography fontWeight={700} variant='body1'>
+          Quiz
+        </Typography>
+        <Filter courses={courses} />
+      </Flex>
+      <Stack gap={4}>
+        <Card>
+          <CardContent>
+            <Typography variant='body1' fontWeight={700} mb={1}>
+              List submissions
+            </Typography>
+            <Stack height='100%' justifyContent='space-between'>
+              <Box>
+                <Stack direction='row' justifyContent='space-between'></Stack>
+                {isLoading && (
+                  <Box display='flex' alignItems='center' height='100%'>
+                    <Loading />
+                  </Box>
                 )}
-              </Stack>
-              {isLoading && (
-                <Box display='flex' alignItems='center' height='100%'>
-                  <Loading />
-                </Box>
-              )}
-              {(isFetched && !quizSubmissions?.content.length) || !quizSubmissions?.content.length ? (
-                <Box display='flex' alignItems='center' height='100%'>
-                  <NoData title='No data' />
-                </Box>
-              ) : (
-                <Stack>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        {headings.map((item, index) => (
-                          <TableCell key={item} align={!(index === headings.length - 1) ? 'left' : 'right'}>
-                            {item}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {filterData?.map(
-                        (submission) =>
-                          submission && (
-                            <TableRow>
-                              <TableCell>{submission.studentInfo.fullName}</TableCell>
-                              <TableCell>{formatDate.toDateTime(new Date(submission.createDate))}</TableCell>
-                              <TableCell>{submission.score.toFixed(2)}</TableCell>
-                              <TableCell align='right'>{convertMilisecond(submission.totalTime)}</TableCell>
-                            </TableRow>
-                          ),
-                      )}
-                    </TableBody>
-                  </Table>
-                </Stack>
-              )}
-            </Box>
+                {(isFetched && !quizSubmissions?.content.length) || !quizSubmissions?.content.length ? (
+                  <Box display='flex' alignItems='center' height='100%'>
+                    <NoData title='No data' />
+                  </Box>
+                ) : (
+                  <Stack>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          {headings.map((item, index) => (
+                            <TableCell key={item} align={!(index === headings.length - 1) ? 'left' : 'right'}>
+                              {item}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {filterData?.map(
+                          (submission) =>
+                            submission && (
+                              <TableRow>
+                                <TableCell>{submission.studentInfo.fullName}</TableCell>
+                                <TableCell>{formatDate.toDateTime(new Date(submission.createDate))}</TableCell>
+                                <TableCell>{submission.score.toFixed(2)}</TableCell>
+                                <TableCell align='right'>{convertMilisecond(submission.totalTime)}</TableCell>
+                              </TableRow>
+                            ),
+                        )}
+                      </TableBody>
+                    </Table>
+                  </Stack>
+                )}
+              </Box>
 
-            {quizSubmissions && quizSubmissions.totalPages > 1 && (
-              <Pagination
-                page={page + 1}
-                onChange={(_, page) => setPage(page - 1)}
-                count={quizSubmissions?.totalPages}
-                sx={{ mt: 2, justifyContent: 'center', display: 'start' }}
-              />
-            )}
-            {filterData && (
-              <ModalQuizStatistic
-                isOpen={isOpenViewStatistic}
-                onClose={closeViewStatistic}
-                data={(filterData as any) || []}
-              />
-            )}
-          </Stack>
-        </CardContent>
-      </Card>
+              {quizSubmissions && quizSubmissions.totalPages > 1 && (
+                <Pagination
+                  page={page + 1}
+                  onChange={(_, page) => setPage(page - 1)}
+                  count={quizSubmissions?.totalPages}
+                  sx={{ mt: 2, justifyContent: 'center', display: 'start' }}
+                />
+              )}
+            </Stack>
+          </CardContent>
+        </Card>
+        {filterData && <QuizStatistic data={(filterData as any) || []} />}
+      </Stack>
     </Stack>
   )
 }

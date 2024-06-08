@@ -6,5 +6,5 @@ import { useLocalStorage } from '@/hooks'
 export const QuizPage = () => {
   const { storedValue: isStarted } = useLocalStorage<boolean>('quizStarted', false)
 
-  return <Box>{!true ? <QuizInfo /> : <QuizShow />}</Box>
+  return <Box>{!isStarted ? <QuizInfo /> : <QuizShow />}</Box>
 }

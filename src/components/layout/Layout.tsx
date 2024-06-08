@@ -1,10 +1,9 @@
 import { Flex, Header, SideBar } from '..'
-import { Box, Stack } from '@mui/material'
+import { Box } from '@mui/material'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks'
-import { PropsWithChildren, useEffect, useState } from 'react'
+import { PropsWithChildren, useEffect } from 'react'
 import { useWebSocket } from '@/hooks/useWebSocket'
-import { RoleEnum } from '@/services/auth/auth.dto'
 
 import 'reactflow/dist/style.css'
 
@@ -13,12 +12,6 @@ export const Layout = ({ children = null }: PropsWithChildren) => {
   const { pathname } = useLocation()
 
   const { accessToken, profile, isFetched } = useAuth()
-
-  const [isCollapse, setIsCollapse] = useState(false)
-
-  const handleCollapse = () => {
-    setIsCollapse(true)
-  }
 
   const { init, close } = useWebSocket()
   useEffect(() => {
@@ -58,7 +51,7 @@ export const Layout = ({ children = null }: PropsWithChildren) => {
         </Box>
         <Flex gap={1} justifyContent='start' alignItems='start'>
           <Box pt={6}>
-            <SideBar isCollapse={isCollapse} onCollapse={handleCollapse} />
+            <SideBar />
           </Box>
           <Box py={10} sx={{ overflowY: 'scroll' }} flex={1} height='100vh'>
             {children || <Outlet />}

@@ -1,10 +1,11 @@
-import { ConfirmPopup, Flex } from '@/components'
+import { ConfirmPopup, CustomMenu, Flex } from '@/components'
 import { useAlert, useAuth, useBoolean, useMenu } from '@/hooks'
 import { lessonPlanKey } from '@/services/lessonPlan/lessonPlan.query'
 import { lessonPlanService } from '@/services/lessonPlan/lessonPlan.service'
 import {
   ChevronLeftOutlined,
   CloseOutlined,
+  DeleteRounded,
   DoNotDisturbAltRounded,
   EditOutlined,
   MoreHorizOutlined,
@@ -17,7 +18,6 @@ import {
   IconButton,
   ListItemIcon,
   ListItemText,
-  Menu,
   MenuItem,
   MenuList,
   Stack,
@@ -124,22 +124,24 @@ export function ActionSetting() {
             </IconButton>
           </Flex>
         ) : (
-          <Button
-            variant='text'
-            color='secondary'
-            sx={{ display: 'flex', alignItems: 'center', px: 2, fontWeight: 700 }}
-            onClick={openSelectPlans}
-          >
-            {currentLessonPlan?.name}
-            <ChevronLeftOutlined sx={{ rotate: '-90deg' }} fontSize='small' />
-          </Button>
+          <>
+            <Button
+              variant='text'
+              color='secondary'
+              sx={{ display: 'flex', alignItems: 'center', px: 2, fontWeight: 700 }}
+              onClick={openSelectPlans}
+            >
+              {currentLessonPlan?.name}
+              <ChevronLeftOutlined sx={{ rotate: '-90deg' }} fontSize='small' />
+            </Button>
+            <Divider orientation='vertical' flexItem />
+            <IconButton color='secondary' onClick={onOpen}>
+              <MoreHorizOutlined />
+            </IconButton>
+          </>
         )}
-        <Divider orientation='vertical' flexItem />
-        <IconButton color='secondary' onClick={onOpen}>
-          <MoreHorizOutlined />
-        </IconButton>
       </Box>
-      <Menu
+      <CustomMenu
         open={isOpen}
         anchorEl={anchorElMore}
         onClose={onClose}
@@ -176,10 +178,13 @@ export function ActionSetting() {
               onClose()
             }}
           >
+            <ListItemIcon>
+              <DeleteRounded color='error' fontSize='small' />
+            </ListItemIcon>
             <Typography variant='body2'>Move to trash</Typography>
           </MenuItem>
         </MenuList>
-      </Menu>
+      </CustomMenu>
       <ConfirmPopup
         onClose={closeConfirmPopup}
         onAccept={handleDelete}

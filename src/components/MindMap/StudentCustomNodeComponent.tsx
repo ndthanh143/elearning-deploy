@@ -3,6 +3,7 @@ import { Box, Typography } from '@mui/material'
 import { blue, green } from '@mui/material/colors'
 import { Handle, NodeProps, Position } from 'reactflow'
 import { MutableRefObject } from 'react'
+import { primary } from '@/styles/theme'
 
 type StatusNodeType = 'lock' | 'done' | 'current'
 
@@ -22,7 +23,7 @@ export const StudentCustomNodeComponent = (
       backgroundColor: green[500],
     },
     current: {
-      backgroundColor: '#F79B8D',
+      backgroundColor: primary[500],
     },
   }
 
@@ -53,6 +54,7 @@ export const StudentCustomNodeComponent = (
             borderColor: blue[500],
           },
           zIndex: 10,
+          boxShadow: 10,
         }}
       >
         <Typography variant='body2' textAlign={'center'}>

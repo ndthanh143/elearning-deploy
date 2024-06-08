@@ -30,7 +30,7 @@ export type Unit = {
   description: string
   id: number
   lectureInfo?: Lecture
-  lessonPlanInfo: LessonPlan
+  lessonPlanInfo?: LessonPlan
   name: string
   parent?: Unit
   position?: Position

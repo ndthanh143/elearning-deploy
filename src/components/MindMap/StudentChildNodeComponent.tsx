@@ -89,11 +89,11 @@ export const StudentChildNodeComponent = (props: NodeProps<Unit>) => {
     },
     quiz: {
       name: unit.quizInfo?.quizTitle,
-      navigate: () => navigate(`${pathname}/quiz/${unit.quizInfo?.id}`),
+      navigate: () => navigate(`${pathname}/u/${unit.id}/quiz/${unit.quizInfo?.id}`),
     },
     resource: {
       name: unit.resourceInfo?.title,
-      navigate: () => navigate(`${pathname}/resource/${unit.resourceInfo?.id}`),
+      navigate: () => navigate(`${pathname}/u/${unit.id}/resource/${unit.resourceInfo?.id}`),
     },
   }
 
@@ -202,14 +202,17 @@ export const StudentChildNodeComponent = (props: NodeProps<Unit>) => {
   return (
     <>
       <Box
-        border={4}
         borderRadius={6}
         borderColor={selected ? blue[500] : 'transparent'}
-        padding={0.5}
         position='relative'
         ref={parentRef}
         sx={{
           transition: 'all ease 0.2s',
+          boxShadow: 10,
+          filter:
+            selected || status === 'current'
+              ? `drop-shadow(0px 0px 0.75rem ${status === 'done' ? green[500] : blue[500]})`
+              : 'none',
         }}
         onClick={(e) => {
           openMenu(e)

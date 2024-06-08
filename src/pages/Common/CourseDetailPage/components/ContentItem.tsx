@@ -2,7 +2,7 @@ import actions from '@/assets/images/icons/actions'
 import { Flex } from '@/components'
 import { Unit } from '@/services/unit/types'
 import { downloadFileByLink } from '@/utils'
-import { CheckCircle, LockOutlined } from '@mui/icons-material'
+import { CheckCircle, CheckCircleRounded, LockOutlined } from '@mui/icons-material'
 import { Box, Typography } from '@mui/material'
 import { useLocation, useNavigate } from 'react-router-dom'
 
@@ -84,7 +84,7 @@ export const ContentItem = ({ unit }: ContentItemProps) => {
             <Box component='img' src={dataProps[childType].iconUrl} alt={dataProps[childType].title} width={25} />
             <Typography>{dataProps[childType].title}</Typography>
           </Flex>
-          {status === 'done' && <CheckCircle color='success' />}
+          {status === 'done' && <CheckCircleRounded color='success' />}
           {status === 'lock' && <LockOutlined color='secondary' />}
         </Flex>
       </Box>

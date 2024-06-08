@@ -7,6 +7,7 @@ import { lessonPlanService } from '@/services/lessonPlan/lessonPlan.service'
 import { useAlert, useAuth } from '@/hooks'
 import { useNavigate } from 'react-router-dom'
 import { lessonPlanKey } from '@/services/lessonPlan/lessonPlan.query'
+import { icons } from '@/assets/icons'
 
 export function AddPlanSection() {
   const { profile } = useAuth()
@@ -16,12 +17,12 @@ export function AddPlanSection() {
 
   const planType = {
     mindMap: {
-      icon: mindMapIcon,
+      icon: icons['planMindmap'],
       title: 'Mind Map',
       type: 'mindmap',
     },
     basic: {
-      icon: mindMapIcon,
+      icon: icons['planBasic'],
       title: 'Basic',
       type: 'basic',
     },
@@ -69,7 +70,9 @@ export function AddPlanSection() {
             }}
             onClick={handleCreateSamplePlan(value.type as 'mindmap' | 'basic')}
           >
-            <Box component='img' src={value.icon} alt='mind map' sx={{ width: 30, height: 30 }} />
+            <Box width={30} height={30}>
+              {value.icon}
+            </Box>
             <Typography variant='body2'>{value.title}</Typography>
           </Button>
         ))}

@@ -1,4 +1,4 @@
-import { ContentEditable, Flex } from '@/components'
+import { ContentEditable, Flex, LoadingContainer, LoadingOverlay } from '@/components'
 import { useAuth } from '@/hooks'
 import { Avatar, Button, Modal, Stack, Typography } from '@mui/material'
 import { useState, useEffect } from 'react'
@@ -7,9 +7,17 @@ export type ModalActionsTopicProps = {
   isOpen: boolean
   onClose: () => void
   onSubmit: (value: string) => void
+  isLoading: boolean
 } & ({ status: 'update'; defaultValue: string } | { status: 'create'; defaultValue?: string })
 
-export const ModalActionsTopic = ({ isOpen, onClose, onSubmit, status, defaultValue = '' }: ModalActionsTopicProps) => {
+export const ModalActionsTopic = ({
+  isOpen,
+  isLoading,
+  onClose,
+  onSubmit,
+  status,
+  defaultValue = '',
+}: ModalActionsTopicProps) => {
   const { profile } = useAuth()
   const [value, setValue] = useState<string>(defaultValue)
 
@@ -25,10 +33,13 @@ export const ModalActionsTopic = ({ isOpen, onClose, onSubmit, status, defaultVa
 
   const handleSubmit = () => {
     onSubmit(value)
-    if (status === 'create') {
+  }
+
+  useEffect(() => {
+    if (!isOpen && status === 'create') {
       setValue('')
     }
-  }
+  }, [isOpen])
 
   return (
     <Modal
@@ -36,26 +47,28 @@ export const ModalActionsTopic = ({ isOpen, onClose, onSubmit, status, defaultVa
       sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       onClose={handleCancel}
     >
-      <Stack bgcolor='white' borderRadius={3} p={3} gap={2}>
-        <Flex alignItems='center' gap={1}>
-          <Avatar src={profile?.data.avatarPath}>{profile?.data.fullName.charAt(0)}</Avatar>
-          <Typography fontWeight={500}>{profile?.data.fullName}</Typography>
-        </Flex>
-        <ContentEditable
-          value={value}
-          onChange={(value) => setValue(value)}
-          placeholder='What’s on your mind?'
-          sx={{
-            border: '1px dashed grey',
-          }}
-        />
+      <LoadingContainer loading={isLoading}>
+        <Stack bgcolor='white' borderRadius={3} p={3} gap={2}>
+          <Flex alignItems='center' gap={1}>
+            <Avatar src={profile?.data.avatarPath}>{profile?.data.fullName.charAt(0)}</Avatar>
+            <Typography fontWeight={500}>{profile?.data.fullName}</Typography>
+          </Flex>
+          <ContentEditable
+            value={value}
+            onChange={(value) => setValue(value)}
+            placeholder='What’s on your mind?'
+            sx={{
+              border: '1px dashed grey',
+            }}
+          />
 
-        <Stack direction='row' gap={2} justifyContent='end' mt={2}>
-          <Button variant='contained' onClick={handleSubmit} fullWidth>
-            {status === 'create' ? 'Create' : 'Update'}
-          </Button>
+          <Stack direction='row' gap={2} justifyContent='end' mt={2}>
+            <Button variant='contained' onClick={handleSubmit} fullWidth>
+              {status === 'create' ? 'Create' : 'Update'}
+            </Button>
+          </Stack>
         </Stack>
-      </Stack>
+      </LoadingContainer>
     </Modal>
   )
 }

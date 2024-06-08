@@ -1,13 +1,10 @@
 import {
-  ArrowDropDown,
-  DeleteOutline,
-  DraftsOutlined,
+  DeleteRounded,
+  DraftsRounded,
   FilterListOutlined,
   KeyboardDoubleArrowLeftOutlined,
   LogoutOutlined,
-  MenuOutlined,
   MoreHorizOutlined,
-  NotificationsOutlined,
   NotificationsRounded,
   PersonOutline,
 } from '@mui/icons-material'
@@ -32,36 +29,114 @@ import { Link, useNavigate } from 'react-router-dom'
 import { notificationKey } from '@/services/notification/notification.query'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { notificationService } from '@/services/notification/notification.service'
-import { useEffect, useRef } from 'react'
-import { blue, gray } from '@/styles/theme'
+import { useRef } from 'react'
+import { blue, gray, primary } from '@/styles/theme'
 import { images } from '@/assets/images'
+import { motion } from 'framer-motion'
+import { Account } from '@/services/user/user.dto'
+import { icons } from '@/assets/icons'
 
-const parseMessage = (type: string, data: string) => {
+const Message = ({
+  type,
+  data,
+  refId,
+  author,
+}: {
+  type: 'TOPIC' | 'COMMENT'
+  data: string
+  refId: number
+  author?: Account
+}) => {
+  const navigate = useNavigate()
   const parseData = JSON.parse(data)
-  if (type === 'topic') {
-    return (
-      <>
-        <Box maxWidth={300} p={2}>
-          <Stack direction='row' gap={2}>
-            <Stack>
-              <Typography>
-                New topic in forum{' '}
-                <Box
-                  component={Link}
-                  to={`/forum?id=${parseData.forumId}`}
-                  sx={{ color: 'primary.main', textDecoration: 'none', fontWeight: 500 }}
-                >
-                  {parseData.forumTitle}
-                </Box>
-              </Typography>
-              <DangerouseLyRender content={parseData.topicContent} maxHeight={120} overflow='hidden' />
-            </Stack>
-          </Stack>
-        </Box>
-        <Divider />
-      </>
-    )
+
+  const navigateObj = {
+    TOPIC: `/courses/${parseData.forumId}#${refId}`,
+    COMMENT: `/courses/${parseData.forumId}`,
   }
+
+  const renderContent = {
+    TOPIC: {
+      label: (
+        <>
+          created a topic in course{' '}
+          {/* <Box
+            component={Link}
+            to={`/courses/${parseData.forumId}`}
+            sx={{ color: 'primary.main', textDecoration: 'none', fontWeight: 500 }}
+          >
+            {parseData.forumTitle}
+          </Box> */}
+        </>
+      ),
+      content: parseData.topicContent,
+    },
+    COMMENT: {
+      label: (
+        <>
+          commented in{' '}
+          <Box
+            component={Link}
+            to={`/courses/${parseData.forumId}`}
+            sx={{ color: 'primary.main', textDecoration: 'none', fontWeight: 500 }}
+          >
+            {parseData.forumTitle}
+          </Box>
+        </>
+      ),
+      content: parseData.content,
+    },
+  }
+
+  const handleNavigate = () => {
+    navigate(navigateObj[type])
+  }
+
+  return (
+    <>
+      <Box
+        width='100%'
+        p={2}
+        sx={{
+          ':hover': {
+            bgcolor: primary[50],
+          },
+          cursor: 'pointer',
+        }}
+        onClick={handleNavigate}
+      >
+        <Flex mb={1} gap={1} flexWrap='wrap'>
+          <Avatar
+            src={author?.avatarPath}
+            alt={author?.fullName}
+            sx={{
+              bgcolor: 'primary.main',
+              width: 30,
+              height: 30,
+            }}
+          >
+            {author?.fullName.charAt(0)}
+          </Avatar>
+          <Typography variant='body2' fontWeight={700}>
+            {author?.fullName}
+          </Typography>
+          <Typography variant='body2'>{renderContent[type].label}</Typography>
+        </Flex>
+        <Box ml={4}>
+          {type === 'TOPIC' ? (
+            <Box border={1} borderRadius={3} p={1} borderColor='primary.main' bgcolor='primary.main'>
+              <Typography variant='body2' fontWeight={700} color='primary.contrastText'>
+                {parseData.forumTitle}
+              </Typography>
+            </Box>
+          ) : (
+            <DangerouseLyRender content={renderContent[type].content} maxHeight={120} overflow='hidden' />
+          )}
+        </Box>
+      </Box>
+      <Divider sx={{ bgcolor: primary[100] }} />
+    </>
+  )
 }
 
 const Notification = () => {
@@ -86,7 +161,12 @@ const Notification = () => {
     enabled: Boolean(profile?.data.id),
   })
 
-  const { mutate: mutateReadNoti } = useMutation({ mutationFn: notificationService.read })
+  const { mutate: mutateReadNoti } = useMutation({
+    mutationFn: notificationService.read,
+    onSuccess: () => {
+      closeMoreActions()
+    },
+  })
 
   const countUnreadNoti = notifications?.reduce((acc, cur) => {
     return !cur.isRead ? acc + 1 : acc
@@ -94,16 +174,22 @@ const Notification = () => {
 
   useOnClickOutside(notiRef, closeNoti)
 
+  const handleReadAllNoti = () => {
+    const updateNotiList = notifications?.map((noti) => ({ ...noti, isRead: true }))
+    queryClient.setQueryData(notiInstance.queryKey, updateNotiList)
+    mutateReadNoti()
+  }
+
   const moreActionsItem = [
     {
-      icon: <DraftsOutlined fontSize='small' />,
+      icon: <DraftsRounded fontSize='small' />,
       text: 'Mark all as read',
       onClick: () => {
-        closeMoreActions()
+        handleReadAllNoti()
       },
     },
     {
-      icon: <DeleteOutline fontSize='small' />,
+      icon: <DeleteRounded fontSize='small' />,
       text: 'Archive',
       onClick: () => {
         closeMoreActions()
@@ -111,29 +197,22 @@ const Notification = () => {
     },
   ]
 
-  useEffect(() => {
-    if (isOpenNoti && notifications) {
-      const updateNotiList = notifications.map((noti) => ({ ...noti, isRead: true }))
-      queryClient.setQueryData(notiInstance.queryKey, updateNotiList)
-      mutateReadNoti()
-    }
-  }, [isOpenNoti])
-
   return (
     <>
       <Badge badgeContent={countUnreadNoti} color='primary'>
         <IconContainer isActive sx={{ cursor: 'pointer' }} onClick={toggleNoti}>
-          <NotificationsRounded color='primary' />
+          {icons['notification']}
         </IconContainer>
       </Badge>
       <Box
         sx={{
           height: '100vh',
-          width: isOpenNoti ? 300 : 0,
+          width: isOpenNoti ? 400 : 0,
           position: 'absolute',
           overflow: 'hidden',
           zIndex: 10,
           bgcolor: 'white',
+          opacity: isOpenNoti ? 1 : 0,
           borderColor: '#ccc',
           boxShadow: 1,
           left: 0,
@@ -167,15 +246,43 @@ const Notification = () => {
             </Tooltip>
           </Flex>
         </Flex>
-        {notifications &&
-          notifications.map((noti) => (
-            <Box key={noti.id} sx={{ borderBottom: '1px solid #ededed' }}>
-              {parseMessage('topic', noti.message)}
-            </Box>
-          ))}
+        <Stack height='90%' sx={{ overflowY: 'scroll' }}>
+          <Typography px={2} variant='body2' color={gray[500]} fontWeight={500}>
+            Oldest
+          </Typography>
+          {notifications &&
+            notifications.map(
+              (noti) =>
+                (noti.studentInfo || noti.teacherInfo) && (
+                  <Box
+                    key={noti.id}
+                    sx={{ borderBottom: '1px solid #ededed' }}
+                    component={motion.div}
+                    {...(!noti.isRead && {
+                      initial: { backgroundColor: 'transparent' },
+                      animate: !isOpenNoti ? { backgroundColor: primary[400] } : { backgroundColor: primary[100] },
+                    })}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <Message
+                      type={noti.kind}
+                      data={noti.message}
+                      refId={noti.refId}
+                      author={noti.studentInfo || noti.teacherInfo}
+                    />
+                  </Box>
+                ),
+            )}
+        </Stack>
         <Menu anchorEl={anchorElMoreActions} open={isOpenMoreActions} onClose={closeMoreActions}>
           {moreActionsItem.map((item) => (
-            <MenuItem key={item.text} onClick={item.onClick}>
+            <MenuItem
+              key={item.text}
+              onClick={(e) => {
+                e.stopPropagation()
+                item.onClick()
+              }}
+            >
               <ListItemIcon>{item.icon}</ListItemIcon>
               <Typography variant='body2'>{item.text}</Typography>
             </MenuItem>
@@ -204,19 +311,6 @@ export const Header = () => {
         <Grid container>
           <Grid item xs={4}>
             <Flex alignItems='center' height='100%' gap={10}>
-              {/* <Tooltip title='Open sidebar'>
-                <IconButton
-                  onClick={onExpand}
-                  sx={{
-                    visibility: isCollapseSideBar ? 'visible' : 'hidden',
-                    opacity: isCollapseSideBar ? 1 : 0,
-                    transition: 'all',
-                    transitionDuration: 4000,
-                  }}
-                >
-                  <MenuOutlined fontSize='small' />
-                </IconButton>
-              </Tooltip> */}
               <Box
                 component='img'
                 src={images.logo}

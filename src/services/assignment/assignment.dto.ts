@@ -38,3 +38,21 @@ export type UpdateAssignmentPayload = {
 export type GetListAssignmentQuery = {
   courseId?: number
 } & PaginationQuery
+
+export type GetScheduleQuery = {
+  startDate: string
+  endDate: string
+}
+
+export type GetScheduleAssignmentResponse = BaseResponse<AssignmentSchedule[]>
+
+export type AssignmentSchedule = {
+  assignmentTitle: string
+  courseId: number
+  courseName: string
+  endDate: string
+  id: number
+  startDate: string
+  unitId: number
+  unitName: string
+}

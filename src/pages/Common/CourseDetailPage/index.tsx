@@ -1,45 +1,21 @@
-import { Box, Container, Divider, Fab, Stack, Tooltip } from '@mui/material'
-import { ModalLoading } from '../../../components'
+import { Box, Container, Stack } from '@mui/material'
 import { useParams } from 'react-router-dom'
 import { courseKeys } from '../../../services/course/course.query'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { BasicPlanStudent, CourseIntro, TopicList } from './containers'
-import { ModalActionsTopic } from './components'
-import { useAuth, useBoolean } from '@/hooks'
-import { topicService } from '@/services/topic/topic.service'
-import { topicKeys } from '@/services/topic/topic.query'
-import { toast } from 'react-toastify'
-import { TopicOutlined } from '@mui/icons-material'
+import { useQuery } from '@tanstack/react-query'
+import { BasicPlanStudent, CourseIntro, TopicFab } from './containers'
 import { MindMapStudent } from '@/components/MindMap/MindMapStudent'
 import { CourseFooter } from './containers/CourseFooter'
+import { ModalWelcome } from './components'
+import { useAuth, useBoolean } from '@/hooks'
 
 export const CourseDetailPage = () => {
-  const queryClient = useQueryClient()
-
+  const { isStudent } = useAuth()
   const { courseId } = useParams()
-
-  const { profile } = useAuth()
-
-  const { value: isOpenCreateTopic, setFalse: closeCreateTopic } = useBoolean(false)
-  const { value: isOpenTopic, setFalse: closeTopic, setTrue: openTopics } = useBoolean(false)
 
   const courseInstance = courseKeys.detail(Number(courseId))
   const { data: course } = useQuery(courseInstance)
 
-  const { mutate: mutateCreateTopic, isPending: isPendingCreateTopic } = useMutation({
-    mutationFn: topicService.create,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: topicKeys.lists() })
-      closeCreateTopic()
-      toast.success('Create Topic successfully!')
-    },
-  })
-
-  const handleCreateTopic = (values: string) => {
-    if (profile && course) {
-      mutateCreateTopic({ forumId: Number(course.forumInfo?.id), accountId: profile.data.id, topicContent: values })
-    }
-  }
+  const { value: isShowWelcome, setFalse: hideWelcome } = useBoolean(isStudent && course?.isFirstJoin)
 
   return (
     course && (
@@ -50,7 +26,11 @@ export const CourseDetailPage = () => {
               {course.lessonPlanInfo && (
                 <>
                   {course.lessonPlanInfo.type === 'mindmap' ? (
-                    <MindMapStudent lessonPlan={course.lessonPlanInfo} />
+                    <>
+                      <CourseIntro data={course} />
+                      <MindMapStudent lessonPlan={course.lessonPlanInfo} />
+                      <CourseFooter data={course} />
+                    </>
                   ) : (
                     <>
                       <CourseIntro data={course} />
@@ -63,30 +43,9 @@ export const CourseDetailPage = () => {
             </Stack>
           </Box>
 
-          <ModalActionsTopic
-            isOpen={isOpenCreateTopic}
-            onClose={closeCreateTopic}
-            onSubmit={handleCreateTopic}
-            status='create'
-          />
-          <ModalLoading isOpen={isPendingCreateTopic} />
-          <Tooltip title='Open topics'>
-            <Fab
-              sx={{
-                position: 'absolute',
-                bottom: 50,
-                right: 50,
-                visibility: isOpenTopic ? 'hidden' : 'visible',
-                transition: 'all ease 0.1s',
-              }}
-              onClick={openTopics}
-              color='primary'
-            >
-              <TopicOutlined />
-            </Fab>
-          </Tooltip>
+          <TopicFab courseId={course.id} />
         </Container>
-        {course.id && <TopicList forumId={course.id} isOpen={isOpenTopic} onClose={closeTopic} />}
+        {course.welcome && <ModalWelcome message={course.welcome} isOpen={isShowWelcome} onClose={hideWelcome} />}
       </>
     )
   )

@@ -1,4 +1,4 @@
-import { ConfirmPopup, Drawer, Flex } from '@/components'
+import { ConfirmPopup, Flex } from '@/components'
 import { useBoolean } from '@/hooks'
 import { unitKey } from '@/services/unit/query'
 import { Unit, UpdateUnitPayload } from '@/services/unit/types'
@@ -16,6 +16,7 @@ import {
   Button,
   Chip,
   Divider,
+  Drawer,
   IconButton,
   ListItemIcon,
   ListItemText,
@@ -53,7 +54,7 @@ export function DrawerChildNodeDetail({ isOpen, onClose, unit, onEdit }: IDrawer
   const { value: isOpenConfirmPopup, setFalse: closeConfirmPopup, setTrue: openConfirmPopup } = useBoolean()
   const ref = useRef<HTMLDivElement | null>(null)
 
-  const unitInstance = unitKey.list({ lessonPlanId: unit.lessonPlanInfo.id })
+  const unitInstance = unitKey.list({ lessonPlanId: Number(unit.lessonPlanInfo?.id) })
   const { data: units } = useQuery({
     ...unitInstance,
     select: (data) =>
@@ -213,8 +214,8 @@ export function DrawerChildNodeDetail({ isOpen, onClose, unit, onEdit }: IDrawer
 
   return (
     <>
-      <Drawer isOpen={isOpen} onClose={handleClose} ref={ref}>
-        <Stack>
+      <Drawer open={isOpen} anchor='right' onClose={handleClose} ref={ref}>
+        <Stack minWidth={375}>
           <Flex px={2} py={2} justifyContent='space-between'>
             <Flex gap={1}>
               <Typography variant='body2' fontWeight={700}>

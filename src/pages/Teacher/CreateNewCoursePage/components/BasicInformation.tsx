@@ -82,6 +82,7 @@ export function BasicInformation({ form }: IBasicInformationProps) {
                 id='combo-box-category'
                 options={data || []}
                 getOptionLabel={(option) => option.name}
+                value={data?.find((item) => item.id == getValues('categoryId')) || null}
                 onChange={(_, newValue) => newValue && setValue('categoryId', newValue.id)}
                 sx={{ minWidth: 200 }}
                 renderInput={(params) => <TextField {...params} label='Category' size='small' />}

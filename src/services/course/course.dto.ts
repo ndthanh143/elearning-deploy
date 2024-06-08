@@ -23,7 +23,8 @@ export type Course = {
   price?: number
   welcome?: string
   congratulation?: string
-  categoryInfo?: { id: number; categoryName: string }
+  isFirstJoin?: boolean
+  categoryInfo?: { id: number; name: string; categoryName: string }
 } & BaseData
 
 export type CreateCoursePayload = {

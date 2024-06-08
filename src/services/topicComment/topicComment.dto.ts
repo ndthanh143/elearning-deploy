@@ -4,7 +4,8 @@ import { Account } from '../user/user.dto'
 export type TopicCommentResponse = BaseResponse<TopicComment>
 
 export type TopicComment = {
-  accountInfo: Account
+  studentInfo?: Account
+  teacherInfo?: Account
   content: string
 } & BaseData
 

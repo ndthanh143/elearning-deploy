@@ -5,15 +5,13 @@ import ReactFlow, {
   useNodesState,
   useEdgesState,
   addEdge,
-  Node,
-  Edge,
   updateEdge,
   Connection,
   MarkerType,
-  OnNodesChange,
   applyNodeChanges,
+  Edge,
+  OnNodesChange,
 } from 'reactflow'
-
 import 'reactflow/dist/style.css'
 import { CustomEdge } from './CustomEdge'
 import { ChildEdge } from './ChildEdge'
@@ -26,10 +24,12 @@ import { unitKey } from '@/services/unit/query'
 import { unitService } from '@/services/unit'
 import { Flex, Loading } from '..'
 import { CustomConnectionLine } from './CustomConnectionLine'
+import { debounce } from 'lodash'
+import { primary } from '@/styles/theme'
 
 const nodeTypes = {
-  customNode: CustomNodeComponent, // Define your custom node type
-  childNode: ChildNodeComponent, // Define your custom node type
+  customNode: CustomNodeComponent,
+  childNode: ChildNodeComponent,
 }
 
 const edgeTypes = {
@@ -57,29 +57,39 @@ export function MindMap({ lessonPlanId }: IMindMapProps) {
   const unitInstance = unitKey.list({ lessonPlanId, unpaged: true })
   const {
     data: units,
-    refetch: refetchUnits,
     isLoading: isLoadingUnits,
     isFetched: isFetchedUnits,
-  } = useQuery({ ...unitInstance })
+  } = useQuery({
+    ...unitInstance,
+  })
   const { mutate: mutateUpdateUnit, isPending: isLoadingUpdateUnit } = useMutation({ mutationFn: unitService.update })
+
+  // Debounced function to update unit position
+  const debouncedUpdateUnit = useCallback(
+    debounce((id, position) => {
+      mutateUpdateUnit({ id: Number(id), position })
+    }, 300), // adjust the delay as needed
+    [],
+  )
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => {
-      setNodes((nds) => {
-        changes.map((change) => {
-          if (change.type === 'position') {
-            const currentNodeChange = nds.find((node) => node.id === change.id)
-
-            if (currentNodeChange) {
-              mutateUpdateUnit({ id: Number(currentNodeChange.id), position: currentNodeChange.position })
+      setNodes((nds) =>
+        applyNodeChanges(
+          changes.map((change) => {
+            if (change.type === 'position') {
+              const currentNodeChange = nds.find((node) => node.id === change.id)
+              if (currentNodeChange) {
+                debouncedUpdateUnit(currentNodeChange.id, currentNodeChange.position)
+              }
             }
-          }
-        })
-
-        return applyNodeChanges(changes, nds)
-      })
+            return change
+          }),
+          nds,
+        ),
+      )
     },
-    [setNodes],
+    [setNodes, debouncedUpdateUnit],
   )
 
   const onEdgeUpdate = useCallback(
@@ -93,42 +103,45 @@ export function MindMap({ lessonPlanId }: IMindMapProps) {
         mutateUpdateUnit({ id: Number(connections.target), parentId: Number(connections.source) })
         return addEdge({ ...connections, type: 'customEdge' }, els)
       }),
-    [],
+    [mutateUpdateUnit],
   )
 
   useEffect(() => {
-    const initialEdges: Edge[] = []
-
-    const initialNodes: Node<any, string | undefined>[] = []
-
-    for (const item of units?.content || []) {
-      const isDefaultUnit = !Boolean(item.lectureInfo || item.assignmentInfo || item.quizInfo || item.resourceInfo)
-      const currentNodeId = item.id.toString()
-      const parentNodeId = item.parent?.id.toString()
-
-      initialNodes.push({
-        id: currentNodeId,
+    if (units?.content) {
+      const initialNodes = units.content.map((item, index) => ({
+        id: item.id.toString(),
         position: item.position || { x: 0, y: 0 },
         data: item,
-        type: isDefaultUnit ? 'customNode' : 'childNode',
-      })
-      initialEdges.push({
-        id: `e${parentNodeId}-${currentNodeId}`,
-        source: parentNodeId || '',
-        target: currentNodeId,
-        type: isDefaultUnit ? 'customEdge' : 'childEdge',
+        type:
+          !item.lectureInfo && !item.assignmentInfo && !item.quizInfo && !item.resourceInfo
+            ? 'customNode'
+            : 'childNode',
+        index,
+      }))
+
+      const initialEdges = units.content.map((item) => ({
+        id: `e${item.parent?.id}-${item.id}`,
+        source: item.parent?.id.toString() || '',
+        target: item.id.toString(),
+        type:
+          !item.lectureInfo && !item.assignmentInfo && !item.quizInfo && !item.resourceInfo
+            ? 'customEdge'
+            : 'childEdge',
         markerEnd: {
           type: MarkerType.ArrowClosed,
           width: 10,
           height: 10,
-          color: isDefaultUnit ? '#F79B8D' : '#7EB6C0',
+          color:
+            !item.lectureInfo && !item.assignmentInfo && !item.quizInfo && !item.resourceInfo
+              ? primary[500]
+              : '#7EB6C0',
         },
-      })
-    }
+      }))
 
-    setNodes(initialNodes)
-    setEdges(initialEdges)
-  }, [units, refetchUnits])
+      setNodes(initialNodes)
+      setEdges(initialEdges)
+    }
+  }, [units])
 
   if (isLoadingUnits && !isFetchedUnits)
     return (
@@ -146,15 +159,7 @@ export function MindMap({ lessonPlanId }: IMindMapProps) {
         </>
       )}
 
-      <Box
-        style={{
-          width: '100%',
-          height: '100vh',
-          background: '#FFFDF5',
-        }}
-        py={4}
-        ref={scrollContainerRef}
-      >
+      <Box style={{ width: '100%', height: '100vh', background: '#F8F4FE' }} py={4} ref={scrollContainerRef}>
         <Box
           sx={{
             'react-flow__zoompane': {
@@ -169,18 +174,17 @@ export function MindMap({ lessonPlanId }: IMindMapProps) {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
-          // fitView
           onEdgeUpdate={onEdgeUpdate}
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
-          panOnScroll={true}
+          panOnScroll
           onlyRenderVisibleElements={false}
           zoomOnDoubleClick={false}
           zoomOnScroll={false}
           preventScrolling={false}
           connectionLineComponent={CustomConnectionLine}
           connectionLineStyle={connectionLineStyle}
-        ></Box>
+        />
       </Box>
 
       {isLoadingUpdateUnit && (

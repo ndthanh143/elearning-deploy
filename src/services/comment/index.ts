@@ -10,4 +10,7 @@ export const commentService = {
     const { data } = await axiosInstance.get<GetCommentsResponse>('/comment/list', { params: { ...query } })
     return data.data
   },
+  delete: async (id: number) => {
+    await axiosInstance.delete(`/comment/delete/${id}`)
+  },
 }

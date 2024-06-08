@@ -1,25 +1,26 @@
-import { BoxContent, DangerouseLyRender, YoutubeCard } from '@/components'
+import { BoxContent, CustomMenu, DangerouseLyRender, YoutubeCard } from '@/components'
 import { configs } from '@/configs'
 import { useBoolean, useMenu } from '@/hooks'
 import { Assignment } from '@/services/assignment/assignment.dto'
 import { gray } from '@/styles/theme'
 import { downloadFileByLink, formatDate, getAbsolutePathFile } from '@/utils'
-import { MoreVert, PeopleAltOutlined } from '@mui/icons-material'
+import { CopyAllRounded, MoreVert } from '@mui/icons-material'
 import {
   Alert,
   Box,
-  Button,
   Divider,
   Grid,
   IconButton,
+  ListItemIcon,
   Menu,
   MenuItem,
   Snackbar,
   Stack,
   Typography,
 } from '@mui/material'
-import { useLocation } from 'react-router-dom'
-import { FileCard } from '../components'
+import { useLocation, useParams } from 'react-router-dom'
+import { FileCard, ListComment } from '../components'
+import { icons } from '@/assets/icons'
 
 export type AssignmentContentProps = {
   assignment: Assignment
@@ -27,6 +28,8 @@ export type AssignmentContentProps = {
 
 export const AssignmentContent = ({ assignment }: AssignmentContentProps) => {
   const { pathname } = useLocation()
+
+  const { courseId, unitId, assignmentId } = useParams()
 
   const { anchorEl: anchorElMenuMore, isOpen: isOpenMenuMore, onClose: closeMenuMore, onOpen: openMenuMore } = useMenu()
 
@@ -40,9 +43,14 @@ export const AssignmentContent = ({ assignment }: AssignmentContentProps) => {
 
   const genMenuMoreHeading = () => (
     <>
-      <Menu anchorEl={anchorElMenuMore} open={isOpenMenuMore} onClose={closeMenuMore}>
-        <MenuItem onClick={handleCopyUrl}>Sao chép đường liên kết</MenuItem>
-      </Menu>
+      <CustomMenu anchorEl={anchorElMenuMore} open={isOpenMenuMore} onClose={closeMenuMore}>
+        <MenuItem onClick={handleCopyUrl}>
+          <ListItemIcon>
+            <CopyAllRounded fontSize='small' />
+          </ListItemIcon>
+          <Typography variant='body2'>Copy URL</Typography>
+        </MenuItem>
+      </CustomMenu>
       <Snackbar
         open={isOpenCopyAlert}
         autoHideDuration={3000}
@@ -57,22 +65,22 @@ export const AssignmentContent = ({ assignment }: AssignmentContentProps) => {
   )
 
   return (
-    <>
+    <Stack gap={4}>
       <BoxContent>
         <Stack direction='row' justifyContent='space-between' gap={2}>
           <Typography variant='h5'>{assignment.assignmentTitle}</Typography>
           <IconButton onClick={openMenuMore}>
-            <MoreVert color='primary' />
+            <MoreVert />
           </IconButton>
         </Stack>
         <Box display='flex' gap={1}>
-          <Typography variant='body2'>Opened:</Typography>
+          {icons['calendar']}
           <Typography variant='body2' fontWeight={500}>
             {formatDate.toDateTime(assignment.startDate)}
           </Typography>
         </Box>
-        <Box display='flex' gap={1}>
-          <Typography variant='body2'>Due:</Typography>
+        <Box display='flex' gap={1} mt={1}>
+          {icons['deadline']}
           <Typography variant='body2' fontWeight={500}>
             {assignment.endDate ? formatDate.toDateTime(assignment.endDate) : 'Unlimited'}
           </Typography>
@@ -100,13 +108,9 @@ export const AssignmentContent = ({ assignment }: AssignmentContentProps) => {
             ))}
         </Grid>
         <Divider sx={{ marginY: 2 }} />
-        <Stack direction='row' gap={1} alignItems='center'>
-          <PeopleAltOutlined />
-          <Typography>Bình luận</Typography>
-        </Stack>
-        <Button>Thêm bình luận</Button>
       </BoxContent>
+      <ListComment courseId={courseId || ''} unitId={unitId || ''} assignmentId={assignmentId || ''} />
       {genMenuMoreHeading()}
-    </>
+    </Stack>
   )
 }

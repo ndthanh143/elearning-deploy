@@ -1,8 +1,8 @@
-import { BoxContent, ConfirmPopup, DangerouseLyRender } from '@/components'
+import { BoxContent, ConfirmPopup, CustomModal, DangerouseLyRender } from '@/components'
 import Editor from '@/components/ContentEditor/ContentEditor'
 import { useBoolean } from '@/hooks'
 import { CloseOutlined } from '@mui/icons-material'
-import { Box, Button, Divider, IconButton, Modal, Stack, Typography } from '@mui/material'
+import { Box, Button, Card, CardContent, Divider, IconButton, Modal, Stack, Typography } from '@mui/material'
 import { useState } from 'react'
 
 export type ReviewSubmissionTextProps = {
@@ -27,28 +27,22 @@ export const ReviewSubmissionText = ({ content, isOpen, onClose, onUpdate, noEdi
 
   return (
     <>
-      <Modal open={isOpen} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <BoxContent
-          width={{
-            xs: '100%',
-            md: '80%',
-          }}
-        >
-          <Stack direction='row' justifyContent='space-between' pb={1}>
-            <Typography variant='h5'>Your submission content</Typography>
-            <IconButton onClick={onClose}>
-              <CloseOutlined />
-            </IconButton>
-          </Stack>
-          <Divider />
-
+      <CustomModal title='Review submission' isOpen={isOpen} onClose={onClose}>
+        <Box>
           <Box overflow='scroll' height='80vh'>
+            <Typography fontWeight={700} mb={0.5}>
+              Content
+            </Typography>
             {isUpdate ? (
               <Box height='100%'>
                 <Editor value={value} onChange={setValue} />
               </Box>
             ) : (
-              <DangerouseLyRender content={content} />
+              <Card variant='outlined'>
+                <CardContent>
+                  <DangerouseLyRender content={content} />
+                </CardContent>
+              </Card>
             )}
           </Box>
           {!noEdit && (
@@ -70,8 +64,8 @@ export const ReviewSubmissionText = ({ content, isOpen, onClose, onUpdate, noEdi
               )}
             </>
           )}
-        </BoxContent>
-      </Modal>
+        </Box>
+      </CustomModal>
       <ConfirmPopup
         title='Confirm update'
         subtitle='Are you sure to confirm update your new submission?'

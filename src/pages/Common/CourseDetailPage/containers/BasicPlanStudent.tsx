@@ -8,12 +8,15 @@ import { LessonPlan } from '@/services/lessonPlan/lessonPlan.dto'
 import { ContentItem } from '../components'
 import { handleCountItemInParent, handleMappedChildrenUnitByParent, handleMappedUnits } from '@/utils'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@/hooks'
 
 export type BasicPlanStudentProps = {
   lessonPlan: LessonPlan
 }
 
 export const BasicPlanStudent = ({ lessonPlan }: BasicPlanStudentProps) => {
+  const { isTeacher } = useAuth()
+
   const navigate = useNavigate()
   const units = lessonPlan.units
 
@@ -51,9 +54,11 @@ export const BasicPlanStudent = ({ lessonPlan }: BasicPlanStudentProps) => {
         <Flex alignItems='center' justifyContent='space-between'>
           <Flex gap={2}>
             <Typography fontWeight={700}>Content</Typography>
-            <IconContainer isActive sx={{ cursor: 'pointer' }} onClick={handleNavigateEditLessonPlan}>
-              <EditRounded fontSize='small' color='primary' sx={{ width: 18, height: 18 }} />
-            </IconContainer>
+            {isTeacher && (
+              <IconContainer isActive sx={{ cursor: 'pointer' }} onClick={handleNavigateEditLessonPlan}>
+                <EditRounded fontSize='small' color='primary' sx={{ width: 18, height: 18 }} />
+              </IconContainer>
+            )}
           </Flex>
           {units.length > 0 && (
             <Flex justifyContent='end' mb={1}>
@@ -92,7 +97,8 @@ export const BasicPlanStudent = ({ lessonPlan }: BasicPlanStudentProps) => {
                       </Box>
                       <Stack direction='row' gap={3}>
                         <Box display='flex' alignItems='center' gap={1}>
-                          <ArticleOutlined color='primary' />
+                          <Box component='img' src={actions.lecture} alt='lecture' width={25} />
+
                           <Typography>
                             {handleCountItemInParent(mappedChildrenUnitByParent[unit.id]?.children).lecture}
                           </Typography>

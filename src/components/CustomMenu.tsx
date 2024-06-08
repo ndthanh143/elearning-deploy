@@ -1,6 +1,6 @@
 import { Menu, MenuProps } from '@mui/material'
 
-export const CustomMenu = ({ ...props }: MenuProps) => {
+export const CustomMenu = ({ slotProps, ...props }: MenuProps) => {
   return (
     <Menu
       slotProps={{

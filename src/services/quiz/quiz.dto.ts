@@ -5,6 +5,7 @@ import { Unit } from '../unit/types'
 export type QuizResponse = BaseResponse<Quiz>
 export type QuizStartResponse = BaseResponse<QuizStartData>
 export type QuizzesResponse = BasePaginationResponse<Quiz[]>
+export type GetQuizScheduleResponse = BaseResponse<QuizSchedule[]>
 
 export type GetQuizStartQuery = {
   courseId: number
@@ -71,4 +72,22 @@ export type CreateQuizPayload = {
 
 export type GetListQuizQuery = {
   courseId?: number
+}
+
+export type GetQuizScheduleQuery = {
+  startDate: string
+  endDate: string
+}
+
+export type QuizSchedule = {
+  attemptNumber: string
+  courseId: number
+  courseName: string
+  endDate: number
+  id: number
+  quizTimeLimit: number
+  quizTitle: string
+  startDate: number
+  unitId: number
+  unitName: string
 }

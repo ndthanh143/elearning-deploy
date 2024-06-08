@@ -48,26 +48,26 @@ export default function ContentEditor({ minHeight, value, onChange, sx, ...props
     }
   }
 
-  useEffect(() => {
-    const handleClick = () => {
-      const editor = quillRef.current?.getEditor()
-      if (editor) {
-        editor.focus()
-      }
-    }
+  // useEffect(() => {
+  //   const handleClick = () => {
+  //     const editor = quillRef.current?.getEditor()
+  //     if (editor) {
+  //       editor.focus()
+  //     }
+  //   }
 
-    const container = document.querySelector('.ql-container')
-    if (container) {
-      container.addEventListener('click', handleClick)
-    }
+  //   const container = document.querySelector('.ql-container')
+  //   if (container) {
+  //     container.addEventListener('click', handleClick)
+  //   }
 
-    // Cleanup event listener on component unmount
-    return () => {
-      if (container) {
-        container.removeEventListener('click', handleClick)
-      }
-    }
-  }, [])
+  //   // Cleanup event listener on component unmount
+  //   return () => {
+  //     if (container) {
+  //       container.removeEventListener('click', handleClick)
+  //     }
+  //   }
+  // }, [])
 
   const formats = [
     'header',

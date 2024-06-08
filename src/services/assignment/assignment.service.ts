@@ -4,6 +4,8 @@ import {
   AssignmentsResponse,
   CreateAssignmentPayload,
   GetListAssignmentQuery,
+  GetScheduleAssignmentResponse,
+  GetScheduleQuery,
   UpdateAssignmentPayload,
 } from './assignment.dto'
 
@@ -14,6 +16,13 @@ export const assignmentService = {
   },
   getDetail: async (assignmentId: number) => {
     const { data } = await axiosInstance.get<AssignmentResponse>(`/assignment/retrieve/${assignmentId}`)
+
+    return data.data
+  },
+  getSchedule: async (query: GetScheduleQuery) => {
+    const { data } = await axiosInstance.get<GetScheduleAssignmentResponse>('/assignment/schedule', {
+      params: { ...query },
+    })
 
     return data.data
   },

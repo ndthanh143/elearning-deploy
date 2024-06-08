@@ -1,10 +1,9 @@
 import { Box, Card, CardContent, Container, Grid, Pagination, Skeleton, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { useAuth, useBoolean } from '@/hooks'
+import { useAuth } from '@/hooks'
 import { coursesRegistrationKeys } from '@/services/coursesRegistration/coursesRegistration.query'
 import { CourseCard, NoData } from '@/components'
-import { ModalSchedule } from './components'
 import { BannerHeading } from '../HomePage/components'
 
 const DEFAULT_PAGE_SIZE = 10
@@ -12,7 +11,6 @@ export const StudentCoursesPage = () => {
   const { profile } = useAuth()
 
   const [page, setPage] = useState(0)
-  const { value: isOpenModalSchedule, setFalse: closeModalSchedule } = useBoolean()
 
   const coursesInstance = coursesRegistrationKeys.list({
     studentId: Number(profile?.data.id),
@@ -76,7 +74,6 @@ export const StudentCoursesPage = () => {
           />
         )}
       </Container>
-      <ModalSchedule isOpen={isOpenModalSchedule} onClose={closeModalSchedule} />
     </>
   )
 }

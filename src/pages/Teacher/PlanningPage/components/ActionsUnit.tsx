@@ -36,20 +36,22 @@ export const ActionsUnit = ({ data: unit }: ActionsUnitProps) => {
   const { value: isOpenSectionModal, setTrue: openSectionModal, setFalse: closeSectionModal } = useBoolean()
   const { value: isOpenConfirm, setTrue: openConfirm, setFalse: closeConfirm } = useBoolean()
 
-  const [quiz, setQuiz] = useState<Quiz | null>(null)
-
-  const { mutate: mutateCreateQuiz, isPending: isPendingCreateQuiz } = useMutation({
+  const {
+    mutate: mutateCreateQuiz,
+    isPending: isPendingCreateQuiz,
+    data: quiz,
+    reset,
+  } = useMutation({
     mutationFn: quizService.create,
     onSuccess: (data) => {
       if (data) {
         mutateCreateUnit({
-          lessonPlanId: unit.lessonPlanInfo.id,
+          lessonPlanId: Number(unit.lessonPlanInfo?.id),
           description: data.quizTitle,
           parentId: unit.id,
           name: data.quizTitle,
           quizId: data.id,
         })
-        setQuiz(data)
       }
     },
   })
@@ -84,7 +86,7 @@ export const ActionsUnit = ({ data: unit }: ActionsUnitProps) => {
     mutationFn: lectureService.create,
     onSuccess: (data) => {
       mutateCreateUnit({
-        lessonPlanId: unit.lessonPlanInfo.id,
+        lessonPlanId: Number(unit.lessonPlanInfo?.id),
         description: data.lectureName,
         parentId: unit.id,
         name: data.lectureName,
@@ -97,7 +99,7 @@ export const ActionsUnit = ({ data: unit }: ActionsUnitProps) => {
     mutationFn: resourceService.create,
     onSuccess: (data) => {
       mutateCreateUnit({
-        lessonPlanId: unit.lessonPlanInfo.id,
+        lessonPlanId: Number(unit.lessonPlanInfo?.id),
         description: data.title,
         parentId: unit.id,
         name: data.title,
@@ -110,7 +112,7 @@ export const ActionsUnit = ({ data: unit }: ActionsUnitProps) => {
     mutationFn: assignmentService.create,
     onSuccess: (data) => {
       mutateCreateUnit({
-        lessonPlanId: unit.lessonPlanInfo.id,
+        lessonPlanId: Number(unit.lessonPlanInfo?.id),
         description: data.assignmentContent,
         parentId: unit.id,
         name: data.assignmentTitle,
@@ -118,8 +120,6 @@ export const ActionsUnit = ({ data: unit }: ActionsUnitProps) => {
       })
     },
   })
-
-  const handleCloseQuiz = () => setQuiz(null)
 
   const { mutate: mutateUpdate } = useMutation({
     mutationFn: unitService.update,
@@ -267,7 +267,7 @@ export const ActionsUnit = ({ data: unit }: ActionsUnitProps) => {
       <ResourceActions isOpen={isOpenResource} onClose={closeResource} onCreate={mutateCreateResource} />
       <AssignmentActions isOpen={isOpenAssignment} onClose={closeAssignment} onCreate={mutateCreateAssignment} />
 
-      {quiz && <QuizActions isOpen onClose={handleCloseQuiz} defaultData={quiz} />}
+      {quiz && <QuizActions isOpen onClose={reset} defaultData={quiz} />}
       <ConfirmPopup
         title='Confirm delete'
         subtitle='Are you sure to delete this section, all relative data will be remove.'

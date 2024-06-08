@@ -3,9 +3,8 @@ import { ConfirmPopup, Flex } from '@/components'
 import { useBoolean, useMenu } from '@/hooks'
 import { Course } from '@/services/course/course.dto'
 import { getAbsolutePathFile } from '@/utils'
-import { CategoryOutlined, DeleteOutline, EditOutlined, Groups, MoreHorizOutlined } from '@mui/icons-material'
+import { CategoryRounded, DeleteRounded, EditRounded, GroupsRounded, MoreHorizOutlined } from '@mui/icons-material'
 import {
-  Box,
   Card,
   CardContent,
   CardMedia,
@@ -36,6 +35,8 @@ export const TeacherCourseCard = ({ data, onDelete }: TeacherCourseCardProps) =>
     navigate(`/courses/${data.id}/manage`)
   }
 
+  console.log('data', data)
+
   return (
     <>
       <Card
@@ -56,10 +57,13 @@ export const TeacherCourseCard = ({ data, onDelete }: TeacherCourseCardProps) =>
         <CardContent>
           <Stack gap={1} width='100%'>
             <Chip
+              color='primary'
               label={
-                <Flex gap={1} sx={{ opacity: 0.7 }}>
-                  <CategoryOutlined fontSize='small' />
-                  <Typography variant='body2'>Design</Typography>
+                <Flex gap={0.5} sx={{ opacity: 1 }}>
+                  <CategoryRounded fontSize='small' sx={{ width: 15, height: 15 }} />
+                  <Typography variant='body2' fontWeight={600}>
+                    {data.categoryInfo?.categoryName || '--'}
+                  </Typography>
                 </Flex>
               }
               sx={{ width: 'fit-content' }}
@@ -79,7 +83,7 @@ export const TeacherCourseCard = ({ data, onDelete }: TeacherCourseCardProps) =>
             </Typography>
             <Flex justifyContent='space-between'>
               <Flex gap={1}>
-                <Groups />
+                <GroupsRounded />
                 <Typography variant='body2'>20 students</Typography>
               </Flex>
               <IconButton
@@ -97,15 +101,17 @@ export const TeacherCourseCard = ({ data, onDelete }: TeacherCourseCardProps) =>
       <Menu open={isOpenMore} anchorEl={AnchorElMore} onClose={closeMoreMenu}>
         <MenuItem onClick={handleClickEdit}>
           <ListItemIcon>
-            <EditOutlined fontSize='small' />
+            <EditRounded fontSize='small' />
           </ListItemIcon>
           <Typography variant='body2'>Edit</Typography>
         </MenuItem>
-        <MenuItem onClick={openConfirmPopup}>
+        <MenuItem onClick={openConfirmPopup} color='error'>
           <ListItemIcon>
-            <DeleteOutline fontSize='small' />
+            <DeleteRounded fontSize='small' color='error' />
           </ListItemIcon>
-          <Typography variant='body2'>Remove this course</Typography>
+          <Typography variant='body2' color='error'>
+            Remove this course
+          </Typography>
         </MenuItem>
       </Menu>
 

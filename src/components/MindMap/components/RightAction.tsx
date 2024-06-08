@@ -1,3 +1,4 @@
+import { CustomTooltip } from '@/components'
 import { useBoolean } from '@/hooks'
 import { AssignmentActions, LectureActions, ModalSection, SectionModalProps } from '@/pages/Teacher/PlanningPage/modals'
 import { ResourceActions } from '@/pages/Teacher/PlanningPage/modals/ResourceActions'
@@ -9,10 +10,15 @@ import { unitKey } from '@/services/unit/query'
 import { CreateUnitPayload } from '@/services/unit/types'
 import {
   AddCircleOutlineOutlined,
+  AddCircleRounded,
   ArticleOutlined,
+  ArticleRounded,
   AssignmentOutlined,
+  AssignmentRounded,
   FileUploadOutlined,
   QuizOutlined,
+  QuizRounded,
+  UploadRounded,
 } from '@mui/icons-material'
 import { IconButton, Stack, Tooltip } from '@mui/material'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -37,9 +43,12 @@ export function RightAction({ lessonPlanId }: IRightActionProps) {
     mutationFn: unitService.create,
     onSuccess: (payload) => {
       closeAddSection()
+      console.log('payload', payload)
       fitView({
         nodes: [{ id: payload.id.toString() }],
         duration: 500,
+        minZoom: 1,
+        maxZoom: 1,
       })
 
       let toastMessage = 'Create unit successfully!'
@@ -132,27 +141,27 @@ export function RightAction({ lessonPlanId }: IRightActionProps) {
   const listButtonsProps = {
     section: {
       title: 'Add new section',
-      icon: <AddCircleOutlineOutlined />,
+      icon: <AddCircleRounded />,
       onClick: openAddSection,
     },
     lecture: {
       title: 'Add new lecture',
-      icon: <ArticleOutlined />,
+      icon: <ArticleRounded />,
       onClick: openLecture,
     },
     resource: {
       title: 'Upload new File',
-      icon: <FileUploadOutlined />,
+      icon: <UploadRounded />,
       onClick: openResource,
     },
     quiz: {
       title: 'Add new quiz',
-      icon: <QuizOutlined />,
+      icon: <QuizRounded />,
       onClick: () => {},
     },
     assignment: {
       title: 'Add new assignment',
-      icon: <AssignmentOutlined />,
+      icon: <AssignmentRounded />,
       onClick: openAssignment,
     },
   }
@@ -173,9 +182,11 @@ export function RightAction({ lessonPlanId }: IRightActionProps) {
         zIndex={10}
       >
         {Object.entries(listButtonsProps).map(([key, value]) => (
-          <Tooltip title={value.title} key={key}>
-            <IconButton onClick={value.onClick}>{value.icon}</IconButton>
-          </Tooltip>
+          <CustomTooltip title={value.title} key={key} placement='left'>
+            <IconButton onClick={value.onClick} color='primary'>
+              {value.icon}
+            </IconButton>
+          </CustomTooltip>
         ))}
       </Stack>
 

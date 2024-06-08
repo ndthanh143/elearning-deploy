@@ -12,6 +12,7 @@ import {
   ListItemIcon,
   Menu,
   MenuItem,
+  Stack,
   Typography,
 } from '@mui/material'
 import thumbnailBasic from '@/assets/images/planingPage/thumbnail-basic.webp'
@@ -22,6 +23,7 @@ import { useAlert, useBoolean, useMenu } from '@/hooks'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { lessonPlanService } from '@/services/lessonPlan/lessonPlan.service'
 import { lessonPlanKey } from '@/services/lessonPlan/lessonPlan.query'
+import { PlanLabel } from '.'
 
 interface IPlanCardProps {
   data: LessonPlan
@@ -65,28 +67,24 @@ export function PlanCard({ data, viewOnly }: IPlanCardProps) {
   })
 
   return (
-    <Card>
+    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <CardMedia
         image={thumbnailProps[(data.type as 'basic' | 'mindmap') || 'basic'].src}
         sx={{ height: 150, cursor: 'pointer' }}
         onClick={() => !viewOnly && navigate(`/planning/${data.id}`)}
       />
-      <CardContent>
-        <Box>
-          <Typography variant='body1' fontWeight='bold'>
-            {data.name}
-          </Typography>
-          <Typography variant='body2' color={gray[300]}>
-            {formatDate.toRelative(new Date())}
-          </Typography>
+      <CardContent sx={{ flex: 1 }}>
+        <Stack justifyContent='space-between' height='100%'>
+          <Box flex={1}>
+            <Typography variant='body1' fontWeight='bold'>
+              {data.name}
+            </Typography>
+            <Typography variant='body2' color={gray[300]}>
+              {formatDate.toRelative(new Date())}
+            </Typography>
+          </Box>
           <Flex justifyContent='space-between'>
-            <Chip
-              variant='filled'
-              label={planName[data.type ? (data.type as 'mindmap') : 'basic']}
-              color='primary'
-              size='small'
-              sx={{ mt: 1 }}
-            />
+            {data.type && <PlanLabel type={data.type} sx={{ mt: 1 }} />}
             {!viewOnly && (
               <IconButton
                 onClick={(e) => {
@@ -100,7 +98,7 @@ export function PlanCard({ data, viewOnly }: IPlanCardProps) {
               </IconButton>
             )}
           </Flex>
-        </Box>
+        </Stack>
       </CardContent>
       <Menu open={isOpenMoreMenu} onClose={closeMoreMenu} anchorEl={anchorElMenu}>
         <MenuItem onClick={() => navigate(`/planning/${data.id}`)}>

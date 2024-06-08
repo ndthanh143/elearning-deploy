@@ -1,7 +1,7 @@
-import { BoxContent } from '@/components'
+import { CustomModal, Flex } from '@/components'
 import Editor from '@/components/ContentEditor/ContentEditor'
-import { CloseOutlined } from '@mui/icons-material'
-import { Box, Button, Divider, IconButton, Modal, Stack, Typography } from '@mui/material'
+import { DoNotDisturbAltRounded } from '@mui/icons-material'
+import { Box, Button, Typography } from '@mui/material'
 import { useState } from 'react'
 
 export type TextPopupProps = {
@@ -19,22 +19,21 @@ export const TextPopup = ({ defaultValue = '', isOpen, onClose, onSubmit }: Text
   }
 
   return (
-    <Modal open={isOpen} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClose={onClose}>
-      <BoxContent width='80%' height='80vh' display='flex' flexDirection='column'>
-        <Stack direction='row' justifyContent='space-between' mb={1}>
-          <Typography variant='h5'>Draft your anwser</Typography>
-          <IconButton onClick={onClose}>
-            <CloseOutlined />
-          </IconButton>
-        </Stack>
-        <Divider />
-        <Box height='100%' my={4}>
-          <Editor value={value} onChange={setValue} />
-        </Box>
-        <Button variant='contained' onClick={handleSubmit}>
+    <CustomModal title='Draft your anwser' isOpen={isOpen} onClose={onClose}>
+      <Box height='100%'>
+        <Typography variant='body1' fontWeight={700} mb={0.5}>
+          Your anwser
+        </Typography>
+        <Editor value={value} onChange={setValue} />
+      </Box>
+      <Flex gap={2}>
+        <Button variant='outlined' onClick={onClose} fullWidth startIcon={<DoNotDisturbAltRounded />}>
+          Cancel
+        </Button>
+        <Button variant='contained' onClick={handleSubmit} fullWidth>
           Submit
         </Button>
-      </BoxContent>
-    </Modal>
+      </Flex>
+    </CustomModal>
   )
 }

@@ -1,7 +1,7 @@
 import { Box, Button, Chip, Modal, Stack, TextField, Typography } from '@mui/material'
-import { BoxContent, ConfirmPopup, Dropzone, Flex, Link } from '@/components'
+import { BoxContent, Dropzone, Flex, Link } from '@/components'
 import { AddOutlined, DoNotDisturbAltOutlined, SendOutlined } from '@mui/icons-material'
-import { useBoolean } from '@/hooks'
+import { useAlert } from '@/hooks'
 import { useEffect, useState } from 'react'
 import { object, string } from 'yup'
 import { useForm } from 'react-hook-form'
@@ -9,6 +9,8 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as XLSX from 'xlsx'
 import { toast } from 'react-toastify'
 import { regexPattern } from '@/utils'
+import { useMutation } from '@tanstack/react-query'
+import { teacherService } from '@/services'
 
 type ModalAddStudentToCourseProps = {
   isOpen: boolean
@@ -18,11 +20,11 @@ type ModalAddStudentToCourseProps = {
 const schema = object({
   email: string().matches(regexPattern.emailValidation, 'Please invalid correct email').required('Please type email'),
 })
-export const ModalAddStudentToCourse = ({ isOpen, onClose }: ModalAddStudentToCourseProps) => {
-  const { value: isOpenConfirm, setFalse: closeConfirm, setTrue: openConfirm } = useBoolean()
+export const ModalAddStudentToCourse = ({ isOpen, courseId, onClose }: ModalAddStudentToCourseProps) => {
+  const { triggerAlert } = useAlert()
   const [type, setType] = useState<'add' | 'upload'>('add')
 
-  const [studentEmails, setStudentEmails] = useState<string[]>([])
+  const [emails, setEmails] = useState<string[]>([])
   const {
     register,
     handleSubmit,
@@ -32,11 +34,20 @@ export const ModalAddStudentToCourse = ({ isOpen, onClose }: ModalAddStudentToCo
     formState: { isValid, errors },
   } = useForm({ resolver: yupResolver(schema) })
 
-  const handleRemoveEmail = (email: string) => () => setStudentEmails((prev) => prev.filter((e) => e !== email))
+  const { mutate: mutateInviteStudents } = useMutation({
+    mutationFn: teacherService.inviteStudentsToCourse,
+    onSuccess: () => {
+      onClose()
+      setEmails([])
+      triggerAlert('Invite students successfully', 'success')
+    },
+  })
+
+  const handleRemoveEmail = (email: string) => () => setEmails((prev) => prev.filter((e) => e !== email))
 
   const handleAddEmail = ({ email }: { email: string }) => {
     if (isValid) {
-      setStudentEmails((prev) => [...prev, email])
+      setEmails((prev) => [...prev, email])
       reset()
     }
   }
@@ -51,7 +62,7 @@ export const ModalAddStudentToCourse = ({ isOpen, onClose }: ModalAddStudentToCo
         emailData.push(trimmedEmail)
       }
     }
-    setStudentEmails(emailData)
+    setEmails(emailData)
     return true
   }
 
@@ -80,15 +91,19 @@ export const ModalAddStudentToCourse = ({ isOpen, onClose }: ModalAddStudentToCo
     }
   }
 
+  const handleInvites = () => {
+    mutateInviteStudents({ courseId, emails })
+  }
+
   const handleClose = () => {
     setType('add')
-    setStudentEmails([])
+    setEmails([])
     reset()
     onClose()
   }
 
   useEffect(() => {
-    if (studentEmails.includes(watch('email'))) {
+    if (emails.includes(watch('email'))) {
       setError('email', {
         type: 'validate',
         message: 'Email already exists',
@@ -161,7 +176,7 @@ export const ModalAddStudentToCourse = ({ isOpen, onClose }: ModalAddStudentToCo
               px={2}
               minHeight={150}
             >
-              {studentEmails.map((email) => (
+              {emails.map((email) => (
                 <Chip label={email} onDelete={handleRemoveEmail(email)} key={email} />
               ))}
             </Flex>
@@ -181,21 +196,14 @@ export const ModalAddStudentToCourse = ({ isOpen, onClose }: ModalAddStudentToCo
               fullWidth
               variant='contained'
               sx={{ display: 'flex', gap: 1 }}
-              onClick={openConfirm}
-              disabled={studentEmails.length === 0}
+              onClick={handleInvites}
+              disabled={emails.length === 0}
             >
               Send
               <SendOutlined fontSize='small' />
             </Button>
           </Flex>
         </Stack>
-        <ConfirmPopup
-          isOpen={isOpenConfirm}
-          onClose={closeConfirm}
-          title='Invite students'
-          subtitle='Are you sure to invite these students?'
-          onAccept={() => {}}
-        />
       </BoxContent>
     </Modal>
   )

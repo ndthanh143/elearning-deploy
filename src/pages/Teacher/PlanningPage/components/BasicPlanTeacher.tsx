@@ -201,7 +201,7 @@ export const BasicPlanTeacher = ({ lessonPlanId }: BasicPlanTeacherProps) => {
 
   return (
     units && (
-      <Container sx={{ my: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Container sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <Button
           startIcon={<ArrowBackOutlined fontSize='small' />}
           color='secondary'

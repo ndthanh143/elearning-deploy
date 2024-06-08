@@ -58,6 +58,8 @@ export function FormCourseHandle({ handleSubmit, defaultValues }: IFormCourseHan
   const [step, setStep] = useState(0)
   const navigate = useNavigate()
 
+  console.log('defaultValues', defaultValues)
+
   const form = useForm({
     resolver: yupResolver(schema),
     defaultValues: {

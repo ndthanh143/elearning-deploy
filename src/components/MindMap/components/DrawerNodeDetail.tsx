@@ -43,7 +43,7 @@ export function DrawerNodeDetail({ isOpen, onClose, unit }: IDrawerNodeDetailPro
 
   const queryClient = useQueryClient()
 
-  const unitInstance = unitKey.list({ lessonPlanId: unit.lessonPlanInfo.id })
+  const unitInstance = unitKey.list({ lessonPlanId: Number(unit.lessonPlanInfo?.id) })
   const { data: units } = useQuery({
     ...unitInstance,
     select: (data) => data.content.filter((item) => item.id !== unit.id),

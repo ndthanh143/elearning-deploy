@@ -1,14 +1,17 @@
 import { ArrowBack, CheckCircle, ErrorOutline } from '@mui/icons-material'
-import { Button, Divider, Grid, Stack, Typography } from '@mui/material'
+import { Button, Chip, Container, Divider, Grid, Stack, Typography } from '@mui/material'
 import { generateAwnserKey } from '@/utils'
 import { quizSubmissionKeys } from '@/services/quizSubmission/query'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useState } from 'react'
 import { Answer } from '../components'
-import { BoxContent } from '@/components'
+import { BoxContent, Flex } from '@/components'
 import { Question } from '@/services/quizSubmission/dto'
 import { isEqual } from 'lodash'
+
+const isPublicAnswer = false
+const isPublicScore = false
 
 export const QuizReview = () => {
   const navigate = useNavigate()
@@ -45,33 +48,43 @@ export const QuizReview = () => {
 
   return (
     data && (
-      <>
+      <Container>
         <Button variant='text' color='secondary' sx={{ mb: 2, display: 'flex', gap: 1 }} onClick={handleBack}>
           <ArrowBack fontSize='small' />
           Back
         </Button>
         <Grid container spacing={4} minHeight={700}>
           <Grid item xs={4}>
-            <BoxContent height='80vh'>
-              <Stack direction='row' gap={1}>
-                <Typography>Corrects/Question:</Typography>
-                <Typography color='success.main' fontWeight={500}>
-                  {correctCounts}/{data.questions.length}
-                </Typography>
-              </Stack>
-              <Stack direction='row' gap={1} mb={1}>
-                <Typography>Scores:</Typography>
-                <Typography color='success.main' fontWeight={500}>
-                  {data.score.toFixed(2)}
-                </Typography>
-              </Stack>
+            <BoxContent height='75vh' display='flex' flexDirection='column'>
+              {isPublicScore ? (
+                <>
+                  <Stack direction='row' gap={1}>
+                    <Typography>Corrects/Question:</Typography>
+                    <Typography color='success.main' fontWeight={500}>
+                      {correctCounts}/{data.questions.length}
+                    </Typography>
+                  </Stack>
+                  <Stack direction='row' gap={1} mb={2}>
+                    <Typography>Scores:</Typography>
+                    <Typography color='success.main' fontWeight={500}>
+                      {data.score.toFixed(2)}
+                    </Typography>
+                  </Stack>
+                </>
+              ) : (
+                <Flex gap={1} mb={2}>
+                  <Typography>Questions</Typography>
+                  <Chip label={data.questions.length} size='small' color='primary' />
+                </Flex>
+              )}
+
               <Divider />
               <Stack
                 gap={1}
                 sx={{
-                  overflowY: 'auto',
+                  overflowY: 'scroll',
+                  height: '100%',
                 }}
-                maxHeight='70vh'
               >
                 {data.questions.map((question, index) => {
                   const isActivatingQuestion = currentQuestionIndex === index
@@ -112,11 +125,13 @@ export const QuizReview = () => {
                           {question.questionContent}
                         </Typography>
                       </Stack>
-                      {checkCorrectQuestion(question) && <CheckCircle color='success' />}
-                      {(question.answers.some((anwser) => !anwser.isCorrect && anwser.isSelected) ||
-                        question.answers.filter((item) => Boolean(item.isSelected)).length === 0) && (
-                        <ErrorOutline color='error' />
-                      )}
+
+                      {isPublicAnswer && checkCorrectQuestion(question) && <CheckCircle color='success' />}
+                      {isPublicAnswer &&
+                        (question.answers.some((anwser) => !anwser.isCorrect && anwser.isSelected) ||
+                          question.answers.filter((item) => Boolean(item.isSelected)).length === 0) && (
+                          <ErrorOutline color='error' />
+                        )}
                     </Stack>
                   )
                 })}
@@ -128,7 +143,7 @@ export const QuizReview = () => {
               display='flex'
               flexDirection='column'
               justifyContent='space-between'
-              height='80vh'
+              height='75vh'
               px={10}
               gap={3}
             >
@@ -140,9 +155,9 @@ export const QuizReview = () => {
                     key={anwser.id}
                     title={anwser.answerContent}
                     label={generateAwnserKey(index)}
-                    isCorrect={anwser.isCorrect && !anwser.isSelected}
-                    isChosen={anwser.isSelected && anwser.isCorrect}
-                    isError={anwser.isSelected && !anwser.isCorrect}
+                    isCorrect={isPublicAnswer && anwser.isCorrect && !anwser.isSelected}
+                    isChosen={isPublicAnswer ? anwser.isSelected && anwser.isCorrect : anwser.isSelected}
+                    isError={isPublicAnswer && anwser.isSelected && !anwser.isCorrect}
                   />
                 ))}
               </Stack>
@@ -158,7 +173,7 @@ export const QuizReview = () => {
             </BoxContent>
           </Grid>
         </Grid>
-      </>
+      </Container>
     )
   )
 }

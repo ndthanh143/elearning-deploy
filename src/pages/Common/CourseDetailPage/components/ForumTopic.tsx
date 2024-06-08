@@ -1,5 +1,5 @@
 import { ConfirmPopup, DangerouseLyRender, ModalLoading } from '@/components'
-import { useAuth, useBoolean, useMenu } from '@/hooks'
+import { useAlert, useAuth, useBoolean, useMenu } from '@/hooks'
 import { Topic } from '@/services/topic/topic.dto'
 import { topicKeys } from '@/services/topic/topic.query'
 import { topicService } from '@/services/topic/topic.service'
@@ -11,7 +11,6 @@ import { MoreHorizOutlined, MoreVert, PeopleAltOutlined, SendOutlined } from '@m
 import { Avatar, Box, Collapse, Divider, IconButton, Menu, MenuItem, Stack, TextField, Typography } from '@mui/material'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
-import { toast } from 'react-toastify'
 import { number, object, string } from 'yup'
 import { ModalActionsTopic } from '.'
 
@@ -27,8 +26,9 @@ const schema = object({
 
 export const ForumTopic = ({ data }: ForumTopicProps) => {
   const queryClient = useQueryClient()
+  const { triggerAlert } = useAlert()
 
-  const { value, toggle } = useBoolean(false)
+  const { value, toggle, setTrue } = useBoolean(false)
   const { value: isOpenConfirmDelete, setTrue: openConfirmDelete, setFalse: closeConfirmDelete } = useBoolean(false)
   const { value: isOpenEdit, setTrue: openEdit, setFalse: closeEdit } = useBoolean(false)
 
@@ -55,7 +55,7 @@ export const ForumTopic = ({ data }: ForumTopicProps) => {
     mutationFn: topicService.delete,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: topicKeys.lists() })
-      toast.success('Delete topic successfully')
+      triggerAlert('Delete topic successfully')
     },
   })
 
@@ -64,6 +64,7 @@ export const ForumTopic = ({ data }: ForumTopicProps) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: topicKeys.lists() })
       resetField('content')
+      setTrue()
     },
   })
 
@@ -71,16 +72,16 @@ export const ForumTopic = ({ data }: ForumTopicProps) => {
     mutationFn: topicCommentService.delete,
     onSuccess: () => {
       closeMenuComment()
-      toast.success('Remove your comment successfully!')
+      triggerAlert('Remove your comment successfully!')
       queryClient.invalidateQueries({ queryKey: topicKeys.all })
     },
   })
 
-  const { mutate: mutateUpdateTopic } = useMutation({
+  const { mutate: mutateUpdateTopic, isPending: isPendingUpdateTopic } = useMutation({
     mutationFn: topicService.update,
     onSuccess: () => {
       closeEdit()
-      toast.success('Update your topic successfully!')
+      triggerAlert('Update your topic successfully!')
       queryClient.invalidateQueries({ queryKey: topicKeys.all })
     },
   })
@@ -99,18 +100,20 @@ export const ForumTopic = ({ data }: ForumTopicProps) => {
     mutateUpdateTopic({ id: data.id, topicContent })
   }
 
+  const accountInfo = data.teacherInfo || data.studentInfo
+
   return (
     <>
       <Stack gap={2}>
         <Stack direction='row' justifyContent='space-between'>
           <Stack direction='row' alignItems='center' gap={1}>
-            <Avatar src={data.accountInfo.avatarPath}>{data.accountInfo.fullName.charAt(0)}</Avatar>
+            <Avatar src={accountInfo?.avatarPath}>{accountInfo?.fullName.charAt(0)}</Avatar>
             <Stack>
-              <Typography fontWeight={500}>{data.accountInfo.fullName}</Typography>
+              <Typography fontWeight={500}>{accountInfo?.fullName}</Typography>
               <Typography variant='caption'>{formatDate.toDateTime(new Date(data.createDate))}</Typography>
             </Stack>
           </Stack>
-          {data.accountInfo.id === profile?.data.id && (
+          {accountInfo?.id === profile?.data.id && (
             <IconButton onClick={openMore}>
               <MoreVert />
             </IconButton>
@@ -130,18 +133,20 @@ export const ForumTopic = ({ data }: ForumTopicProps) => {
               {data.commentInfo.map((comment) => (
                 <Box display='flex' justifyContent='space-between' key={comment.id}>
                   <Box display='flex' alignItems='start' gap={1}>
-                    <Avatar src={comment.accountInfo.avatarPath}>{data.accountInfo.fullName.charAt(0)}</Avatar>
+                    <Avatar src={comment.studentInfo?.avatarPath || comment.teacherInfo?.avatarPath}>
+                      {(comment.studentInfo || comment.teacherInfo)?.fullName.charAt(0)}
+                    </Avatar>
                     <Stack gap={0.5}>
                       <Box display='flex' alignItems='center' gap={1}>
                         <Typography variant='body2' fontWeight={500}>
-                          {comment.accountInfo.fullName}
+                          {(comment.studentInfo || comment.teacherInfo)?.fullName}
                         </Typography>
                         <Typography variant='caption'>{formatDate.toDateTime(comment.createDate)}</Typography>
                       </Box>
                       <Typography variant='body2'>{comment.content}</Typography>
                     </Stack>
                   </Box>
-                  {comment.accountInfo.id == profile?.data.id && (
+                  {(comment.studentInfo || comment.teacherInfo)?.id == profile?.data.id && (
                     <>
                       <IconButton sx={{ float: 'right' }} onClick={openMenuComment}>
                         <MoreHorizOutlined />
@@ -164,7 +169,7 @@ export const ForumTopic = ({ data }: ForumTopicProps) => {
             </Stack>
           </Collapse>
           <Box component='form' onSubmit={handleSubmit(onSubmitHandler)} display='flex' gap={2} alignItems='center'>
-            <Avatar src={profile?.data.avatarPath} />
+            <Avatar src={profile?.data.avatarPath}>{profile?.data.fullName.charAt(0)}</Avatar>
             <TextField
               placeholder='Comment to topic...'
               size='small'
@@ -180,8 +185,22 @@ export const ForumTopic = ({ data }: ForumTopicProps) => {
         </Stack>
       </Stack>
       <Menu open={isOpenMore} anchorEl={anchorMore} onClose={closeMore}>
-        <MenuItem onClick={openEdit}>Edit</MenuItem>
-        <MenuItem onClick={openConfirmDelete}>Remove</MenuItem>
+        <MenuItem
+          onClick={() => {
+            closeMore()
+            openEdit()
+          }}
+        >
+          Edit
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            closeMore()
+            openConfirmDelete()
+          }}
+        >
+          Remove
+        </MenuItem>
       </Menu>
       <ModalActionsTopic
         status='update'
@@ -189,6 +208,7 @@ export const ForumTopic = ({ data }: ForumTopicProps) => {
         onClose={closeEdit}
         onSubmit={handleUpdateTopic}
         isOpen={isOpenEdit}
+        isLoading={isPendingUpdateTopic}
       />
 
       <ConfirmPopup

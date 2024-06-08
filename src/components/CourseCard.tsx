@@ -46,7 +46,7 @@ export const CourseCard = ({ data }: CourseCardProps) => {
       onClick={handleOpenCourse}
     >
       <CardMedia
-        image={common.course || getAbsolutePathFile(data.thumbnail)}
+        image={getAbsolutePathFile(data.thumbnail) || common.course}
         sx={{ objectFit: 'cover', height: 200 }}
       />
       <CardContent>

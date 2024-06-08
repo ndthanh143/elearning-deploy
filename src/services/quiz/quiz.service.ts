@@ -2,6 +2,8 @@ import axiosInstance from '@/axios'
 import {
   CreateQuizPayload,
   GetListQuizQuery,
+  GetQuizScheduleQuery,
+  GetQuizScheduleResponse,
   GetQuizStartQuery,
   QuizResponse,
   QuizStartResponse,
@@ -19,6 +21,13 @@ export const quizService = {
       params: {
         courseId,
       },
+    })
+
+    return data.data
+  },
+  getSchedule: async ({ startDate, endDate }: GetQuizScheduleQuery) => {
+    const { data } = await axiosInstance.get<GetQuizScheduleResponse>('quiz/schedule', {
+      params: { startDate, endDate },
     })
 
     return data.data

@@ -1,4 +1,3 @@
-import { CustomModal } from '@/components'
 import type { QuizSubmission } from '@/services/quizSubmission/dto'
 import { Bar, Doughnut } from 'react-chartjs-2'
 import { Chart as ChartJS } from 'chart.js/auto'
@@ -8,11 +7,9 @@ import { Card, CardContent, Grid, Typography } from '@mui/material'
 ChartJS.register(CategoryScale)
 
 interface IModalQuizStatisticProps {
-  isOpen: boolean
-  onClose: () => void
   data: QuizSubmission[]
 }
-export const ModalQuizStatistic = ({ isOpen, onClose, data }: IModalQuizStatisticProps) => {
+export const QuizStatistic = ({ data }: IModalQuizStatisticProps) => {
   const processData = (data: QuizSubmission[]) => {
     const ranges = Array.from({ length: 10 }, (_, i) => ({ min: i, max: i + 1, count: 0 }))
 
@@ -118,21 +115,27 @@ export const ModalQuizStatistic = ({ isOpen, onClose, data }: IModalQuizStatisti
   }
 
   return (
-    <CustomModal title='Quiz statistic' isOpen={isOpen} onClose={onClose}>
-      <Card sx={{ width: 'fit-content', mt: 2 }}>
-        <CardContent sx={{ display: 'flex', gap: 1 }}>
-          Total Submission: <Typography fontWeight={500}>{data.length} students</Typography>
-        </CardContent>
-      </Card>
-
-      <Grid container spacing={8} mb={2}>
-        <Grid item xs={8}>
-          <Bar data={chartData} options={options} />
-        </Grid>
-        <Grid item xs={4}>
-          <Doughnut data={chartDataDoughnut} />
-        </Grid>
+    <Grid container spacing={4}>
+      <Grid item xs={4}>
+        <Card>
+          <CardContent>
+            <Typography variant='body1' fontWeight={700} mb={1}>
+              Score Distribution
+            </Typography>
+            <Doughnut data={chartDataDoughnut} />
+          </CardContent>
+        </Card>
       </Grid>
-    </CustomModal>
+      <Grid item xs={8}>
+        <Card>
+          <CardContent>
+            <Typography variant='body1' fontWeight={700} mb={1}>
+              Score Distribution
+            </Typography>
+            <Bar data={chartData} options={options} />
+          </CardContent>
+        </Card>
+      </Grid>
+    </Grid>
   )
 }

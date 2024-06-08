@@ -1,11 +1,12 @@
 import { BoxContent, Dropzone, Flex } from '@/components'
 import { UploadEnumType, UploadFileData } from '@/services/file/file.dto'
 import { fileService } from '@/services/file/file.service'
-import { CloseOutlined, CloseRounded, FileUploadRounded } from '@mui/icons-material'
+import { CloseOutlined, FileUploadRounded } from '@mui/icons-material'
 import { Box, Button, Card, CardContent, Divider, IconButton, Modal, Stack, Typography } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { getResourceType } from '@/utils'
+import { icons } from '@/assets/icons'
 
 export type UploadPopupProps = {
   isOpen: boolean
@@ -39,9 +40,7 @@ export const UploadPopup = ({ isOpen, onClose, onSubmit }: UploadPopupProps) => 
             <FileUploadRounded color='primary' />
             <Typography>Upload your file</Typography>
           </Stack>
-          <IconButton onClick={onClose}>
-            <CloseOutlined />
-          </IconButton>
+          <IconButton onClick={onClose}>{icons['close']}</IconButton>
         </Stack>
         <Divider />
         <Stack alignItems='center' gap={4} justifyContent='center' py={2}>
@@ -58,9 +57,7 @@ export const UploadPopup = ({ isOpen, onClose, onSubmit }: UploadPopupProps) => 
                       <Typography>{(file.size / 1024).toFixed(1)}KB</Typography>
                     </Stack>
                     <Box position='absolute' right={0} top='50%' sx={{ transform: 'translateY(-50%)' }}>
-                      <IconButton onClick={() => setFile(null)}>
-                        <CloseRounded fontSize='small' />
-                      </IconButton>
+                      <IconButton onClick={() => setFile(null)}>{icons['close']}</IconButton>
                     </Box>
                   </Flex>
                 </CardContent>
