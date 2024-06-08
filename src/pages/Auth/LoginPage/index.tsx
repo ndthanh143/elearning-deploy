@@ -29,6 +29,7 @@ import { SignUpForm } from './_components'
 import { useAlert, useAuth } from '../../../hooks'
 import { AxiosError } from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { icons } from '@/assets/icons'
 
 const schema = object({
   email: string().required('Please fill in your username'),
@@ -162,7 +163,12 @@ export const LoginPage = () => {
       <Stack width='100%' height='calc(100vh - 200px)' justifyContent='center' alignItems='center' gap={6}>
         {mode === undefined ? (
           <>
-            <Typography variant='h4'>Welcome back! Ready for class?</Typography>
+            <Stack alignItems='center' gap={2}>
+              <Box width={100} height={100}>
+                {icons['education']}
+              </Box>
+              <Typography variant='h4'>Welcome back! Ready for class?</Typography>
+            </Stack>
             <Flex gap={2}>
               <Button
                 variant='contained'

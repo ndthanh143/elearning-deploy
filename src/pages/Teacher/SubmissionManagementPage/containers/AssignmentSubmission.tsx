@@ -73,7 +73,7 @@ export const AssignmentSubmission = ({ courses }: { courses: Course[] }) => {
   const { value: isOpenEditScore, setTrue: openEditScore, setFalse: closeEditScore } = useBoolean(false)
   const { value: isOpenTextReview, setTrue: openTextReview, setFalse: closeTextReview } = useBoolean(false)
   const [selectedCourseId, setSelectedCourseId] = useState<number>()
-  const [selectedAssignmentId, setSelectedAssignmentId] = useState<number>()
+  const [selectedAssignmentId, _] = useState<number>()
 
   const assignmentSubmissionInstance = assignmentSubmissionKeys.list({
     courseId: selectedAssignmentId,
@@ -95,6 +95,8 @@ export const AssignmentSubmission = ({ courses }: { courses: Course[] }) => {
     enabled: Boolean(selectedCourseId),
     select: (data) => data.content,
   })
+
+  console.log('assignments', assignments)
 
   const handleCloseReview = () => {
     setSelectedSubmission(null)

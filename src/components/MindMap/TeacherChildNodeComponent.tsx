@@ -107,7 +107,7 @@ export const TeacherChildNodeComponent = (props: NodeProps<Unit>) => {
           transition: 'all ease 0.2s',
           filter: selected ? `drop-shadow(0 0 0.75rem ${blue[500]})` : 'none',
         }}
-        onClick={(e) => {
+        onClick={() => {
           if (isTeacher) {
             openDrawer()
           }

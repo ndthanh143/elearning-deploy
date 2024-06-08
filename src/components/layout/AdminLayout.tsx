@@ -15,7 +15,6 @@ import NotificationsIcon from '@mui/icons-material/Notifications'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks'
 import { useEffect, useState } from 'react'
-import { RoleEnum } from '@/services/auth/auth.dto'
 import { DashboardOutlined, LogoutOutlined, PeopleOutline } from '@mui/icons-material'
 import { ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 
@@ -93,7 +92,7 @@ export const AdminLayout = () => {
   ]
 
   useEffect(() => {
-    if (!accessToken || profile?.data.role !== RoleEnum.Admin) {
+    if (!accessToken) {
       navigate('/login', {
         state: {
           from: pathname,
@@ -110,8 +109,7 @@ export const AdminLayout = () => {
   }, [profile])
 
   return (
-    profile &&
-    profile.data.role == RoleEnum.Admin && (
+    profile && (
       <Box sx={{ display: 'flex' }}>
         <AppBar position='absolute' open={open}>
           <Toolbar

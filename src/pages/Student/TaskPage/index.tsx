@@ -2,6 +2,7 @@ import { icons } from '@/assets/icons'
 import { ConfirmPopup, CustomModal, CustomSelect, Dropzone, Flex, IconContainer } from '@/components'
 import { useBoolean } from '@/hooks'
 import { StudentCard } from '@/pages'
+import { courseKeys } from '@/services/course/course.query'
 import { gray, primary } from '@/styles/theme'
 import {
   Avatar,
@@ -14,16 +15,19 @@ import {
   Container,
   Divider,
   Grid,
-  Modal,
   Stack,
   Typography,
 } from '@mui/material'
-import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import { GroupCard } from '../GroupPage'
 
 const ListMembers = () => {
   return (
     <Stack gap={2}>
-      {Array.from({ length: 5 }).map((_, index) => (
+      {Array.from({ length: 4 }).map((_, index) => (
         <StudentCard key={index} />
       ))}
     </Stack>
@@ -238,43 +242,94 @@ const TaskDetail = ({ isOpen, onClose }: ITaskDetailProps) => {
   )
 }
 
-const filterData = [
-  { label: 'All', value: 'all' },
-  { label: 'Done', value: 'done' },
-  { label: 'Undone', value: 'undone' },
-]
-
 export function TaskPage() {
+  const [state, setState] = useState<'member' | 'task'>('member')
+
+  const handleChangeState = (state: 'member' | 'task') => () => {
+    setState(state)
+  }
+
+  const [selectedCourseId, setSelectedCourseId] = useState<number>()
+
+  const coursesInstance = courseKeys.list()
+  const { data: courses, isFetched } = useQuery({
+    ...coursesInstance,
+  })
+
+  useEffect(() => {
+    if (courses && isFetched && courses.content.length > 0) {
+      setSelectedCourseId(courses.content[0].id)
+    }
+  }, [isFetched, courses])
+
   const [selectedTask, setSelectedTask] = useState<number | null>(null)
   return (
     <>
       <Container>
         <Grid container spacing={4}>
           <Grid item xs={9}>
-            <Flex justifyContent='space-between' mb={1}>
-              <Typography fontWeight={700} variant='body1' textAlign='start'>
-                Tasks
-              </Typography>
-              <CustomSelect data={filterData} defaultValue={'all'} size='small' />
-            </Flex>
-            <Card variant='outlined' sx={{ p: 1 }}>
-              <CardContent>
-                <Stack gap={4}>
-                  {Array.from({ length: 5 }).map((_, index) => (
-                    <Box key={index} onClick={() => setSelectedTask(index)}>
-                      <TaskCard />
-                    </Box>
-                  ))}
-                </Stack>
-              </CardContent>
-            </Card>
+            <DndProvider backend={HTML5Backend}>
+              <Card>
+                <CardContent>
+                  <Flex justifyContent='space-between'>
+                    <Flex gap={1}>
+                      <Chip
+                        color='primary'
+                        variant={state === 'member' ? 'filled' : 'outlined'}
+                        label='Member'
+                        onClick={handleChangeState('member')}
+                      />
+                      <Chip
+                        color='primary'
+                        variant={state === 'task' ? 'filled' : 'outlined'}
+                        label={'Tasks'}
+                        onClick={handleChangeState('task')}
+                      />
+                    </Flex>
+                    <CustomSelect
+                      data={
+                        courses?.content.map((course) => ({
+                          label: course.courseName,
+                          value: Number(course.id),
+                        })) || []
+                      }
+                      value={Number(selectedCourseId)}
+                      onChange={(e) => setSelectedCourseId(Number(e.target.value))}
+                      size='small'
+                    />
+                  </Flex>
+                  <Divider sx={{ my: 2 }} />
+                  {state === 'member' ? (
+                    <Grid container spacing={2}>
+                      {Array(6)
+                        .fill(true)
+                        .map((_, index) => (
+                          <Grid key={index} item xs={12} sm={6} md={6} lg={4}>
+                            <GroupCard size={4} state={'member'} />
+                          </Grid>
+                        ))}
+                    </Grid>
+                  ) : (
+                    <Stack gap={4}>
+                      {Array(6)
+                        .fill(true)
+                        .map((_, index) => (
+                          <Box key={index} onClick={() => setSelectedTask(index)}>
+                            <TaskCard key={index} />
+                          </Box>
+                        ))}
+                    </Stack>
+                  )}
+                </CardContent>
+              </Card>
+            </DndProvider>
           </Grid>
           <Grid item xs={3}>
-            <Typography fontWeight={700} variant='body1' textAlign='start' mb={1}>
-              Your groupmates
-            </Typography>
             <Card variant='outlined'>
               <CardContent>
+                <Typography fontWeight={700} variant='body1' textAlign='start' mb={2}>
+                  Your groupmates
+                </Typography>
                 <ListMembers />
               </CardContent>
             </Card>

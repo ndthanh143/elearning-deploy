@@ -1,6 +1,5 @@
 import React, { useCallback, useState, useRef } from 'react'
 import { Box, BoxProps, Typography } from '@mui/material'
-import { CloudUploadRounded } from '@mui/icons-material'
 import { icons } from '@/assets/icons'
 
 interface IDropzoneProps extends BoxProps {

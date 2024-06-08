@@ -1,5 +1,5 @@
 import { icons } from '@/assets/icons'
-import { CustomModal, Flex, IconContainer, YoutubeCard } from '@/components'
+import { Flex, YoutubeCard } from '@/components'
 import Editor from '@/components/ContentEditor/ContentEditor'
 import { UrlPopup } from '@/components/UrlPopup'
 import { useBoolean } from '@/hooks'
@@ -8,7 +8,7 @@ import { Assignment, CreateAssignmentPayload, UpdateAssignmentPayload } from '@/
 import { UploadFileData } from '@/services/file/file.dto'
 import { getAbsolutePathFile, parseYoutubeUrlToEmbed } from '@/utils'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { ArrowBackRounded, FileUploadOutlined, FileUploadRounded, YouTube } from '@mui/icons-material'
+import { ArrowBackRounded, FileUploadRounded } from '@mui/icons-material'
 import { Box, Button, Container, IconButton, Stack, TextField, Tooltip, Typography } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers'
 import dayjs from 'dayjs'
@@ -21,6 +21,7 @@ export type AddAssignmentProps = {
   onUpdate?: (payload: UpdateAssignmentPayload) => void
   isOpen: boolean
   defaultData?: Assignment
+  status?: 'create' | 'update'
 }
 
 const schema = object({
@@ -31,7 +32,14 @@ const schema = object({
   state: number().required(),
   urlDocument: string(),
 })
-export const AssignmentActions = ({ isOpen, onClose, defaultData, onCreate, onUpdate }: AddAssignmentProps) => {
+export const AssignmentActions = ({
+  isOpen,
+  status = 'create',
+  onClose,
+  defaultData,
+  onCreate,
+  onUpdate,
+}: AddAssignmentProps) => {
   const { value: isOpenUpload, setTrue: openUpload, setFalse: closeUpload } = useBoolean(false)
   const { value: isOpenYoutube, setTrue: openYoutube, setFalse: closeYoutube } = useBoolean(false)
 

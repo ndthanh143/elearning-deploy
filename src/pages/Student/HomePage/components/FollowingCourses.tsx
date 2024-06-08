@@ -2,7 +2,7 @@ import { CourseCard, Flex, Link, NoData } from '@/components'
 import { useAuth } from '@/hooks'
 import { coursesRegistrationKeys } from '@/services/coursesRegistration/coursesRegistration.query'
 import { ArrowForwardOutlined } from '@mui/icons-material'
-import { Box, Button, Grid, Stack, Typography } from '@mui/material'
+import { Box, Button, Stack, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 
 const DEFAULT_PAGE = 0

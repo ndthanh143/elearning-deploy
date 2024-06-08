@@ -25,6 +25,7 @@ import {
   ConfirmInvitationPage,
   GroupManagementPage,
   TaskPage,
+  ForgotPasswordPage,
 } from './pages'
 
 import 'react-big-calendar/lib/css/react-big-calendar.css'
@@ -144,6 +145,14 @@ const router = createBrowserRouter([
     element: (
       <AuthLayout>
         <SignUpPage />
+      </AuthLayout>
+    ),
+  },
+  {
+    path: 'forgot-password',
+    element: (
+      <AuthLayout>
+        <ForgotPasswordPage />
       </AuthLayout>
     ),
   },

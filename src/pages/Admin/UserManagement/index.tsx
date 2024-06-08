@@ -52,7 +52,6 @@ export const UserManagement = () => {
             <TableCell>Id</TableCell>
             <TableCell>Email</TableCell>
             <TableCell>Full name</TableCell>
-            <TableCell>Nation</TableCell>
             <TableCell>Role</TableCell>
             <TableCell></TableCell>
           </TableRow>
@@ -63,7 +62,6 @@ export const UserManagement = () => {
               <TableCell>{item.id}</TableCell>
               <TableCell>{item.email}</TableCell>
               <TableCell>{item.fullName}</TableCell>
-              <TableCell>{item.nationInfo?.nationName}</TableCell>
               <TableCell>{item.role}</TableCell>
               <TableCell>
                 <Stack direction='row'>

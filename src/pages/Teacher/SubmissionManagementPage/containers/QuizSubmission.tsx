@@ -25,7 +25,7 @@ const DEFAULT_LIMIT = 12
 export const QuizSubmission = ({ courses }: { courses: Course[] }) => {
   const [page, setPage] = useState(0)
 
-  const [courseId, setCourseId] = useState<Number>()
+  const [courseId, _] = useState<Number>()
 
   const quizSubmissionInstance = quizSubmissionKeys.list({ page: page, size: DEFAULT_LIMIT })
   const {
@@ -46,6 +46,8 @@ export const QuizSubmission = ({ courses }: { courses: Course[] }) => {
       )
     },
   })
+
+  console.log('students', students)
 
   const filterQuizSubmissions = groupBy(quizSubmissions?.content, (data) => data.studentInfo.id)
 

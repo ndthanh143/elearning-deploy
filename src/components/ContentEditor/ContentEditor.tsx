@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import ReactQuill from 'react-quill'
 import { Box, BoxProps } from '@mui/material'
 import 'react-quill/dist/quill.snow.css'
@@ -34,19 +34,21 @@ export default function ContentEditor({ minHeight, value, onChange, sx, ...props
     },
   })
 
-  const handleImageUpload = () => {
-    const input = document.createElement('input')
-    input.setAttribute('type', 'file')
-    input.setAttribute('accept', 'image/*')
-    input.click()
+  console.log('mutateUpload', mutateUpload)
 
-    input.onchange = () => {
-      const file = input.files?.[0]
-      if (file) {
-        mutateUpload({ file, type: 'IMAGE' })
-      }
-    }
-  }
+  // const handleImageUpload = () => {
+  //   const input = document.createElement('input')
+  //   input.setAttribute('type', 'file')
+  //   input.setAttribute('accept', 'image/*')
+  //   input.click()
+
+  //   input.onchange = () => {
+  //     const file = input.files?.[0]
+  //     if (file) {
+  //       mutateUpload({ file, type: 'IMAGE' })
+  //     }
+  //   }
+  // }
 
   // useEffect(() => {
   //   const handleClick = () => {

@@ -1,7 +1,7 @@
 import { BoxContent, Dropzone, Flex } from '@/components'
 import { UploadEnumType, UploadFileData } from '@/services/file/file.dto'
 import { fileService } from '@/services/file/file.service'
-import { CloseOutlined, FileUploadRounded } from '@mui/icons-material'
+import { FileUploadRounded } from '@mui/icons-material'
 import { Box, Button, Card, CardContent, Divider, IconButton, Modal, Stack, Typography } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'

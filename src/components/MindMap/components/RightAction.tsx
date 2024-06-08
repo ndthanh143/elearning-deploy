@@ -8,19 +8,8 @@ import { resourceService } from '@/services/resource/resource.service'
 import { unitService } from '@/services/unit'
 import { unitKey } from '@/services/unit/query'
 import { CreateUnitPayload } from '@/services/unit/types'
-import {
-  AddCircleOutlineOutlined,
-  AddCircleRounded,
-  ArticleOutlined,
-  ArticleRounded,
-  AssignmentOutlined,
-  AssignmentRounded,
-  FileUploadOutlined,
-  QuizOutlined,
-  QuizRounded,
-  UploadRounded,
-} from '@mui/icons-material'
-import { IconButton, Stack, Tooltip } from '@mui/material'
+import { AddCircleRounded, ArticleRounded, AssignmentRounded, QuizRounded, UploadRounded } from '@mui/icons-material'
+import { IconButton, Stack } from '@mui/material'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 import { useReactFlow } from 'reactflow'

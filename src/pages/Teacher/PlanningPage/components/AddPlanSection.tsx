@@ -1,7 +1,6 @@
 import { Box, Button, Stack, Typography } from '@mui/material'
 import { AddOutlined } from '@mui/icons-material'
 
-import mindMapIcon from '@/assets/images/planingPage/mindmap.png'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { lessonPlanService } from '@/services/lessonPlan/lessonPlan.service'
 import { useAlert, useAuth } from '@/hooks'

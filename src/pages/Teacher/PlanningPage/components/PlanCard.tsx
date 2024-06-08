@@ -6,7 +6,6 @@ import {
   Card,
   CardContent,
   CardMedia,
-  Chip,
   Divider,
   IconButton,
   ListItemIcon,
@@ -39,11 +38,6 @@ export const thumbnailProps = {
     src: 'https://images.wondershare.com/edrawmind/articles2023/how-to-make-a-mind-map/mind-map.png',
     alt: 'mindmap',
   },
-}
-
-const planName = {
-  mindmap: 'Mind Map',
-  basic: 'Basic',
 }
 
 export function PlanCard({ data, viewOnly }: IPlanCardProps) {

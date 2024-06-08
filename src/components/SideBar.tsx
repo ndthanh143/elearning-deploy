@@ -3,7 +3,6 @@ import {
   EditCalendarRounded,
   EventNoteRounded,
   GridViewRounded,
-  GroupRounded,
   GroupsRounded,
   LibraryBooksRounded,
   PeopleRounded,
@@ -126,25 +125,6 @@ export const SideBar = () => {
   return (
     profile && (
       <Flex justifyContent='center' pt={6} width={100} overflow='hidden' sx={{ transition: 'all ease 0.2s' }}>
-        {/* <Box display='flex' justifyContent='space-between' py={1} px={2} alignItems='center'>
-          <Box display='flex' alignItems='center' gap={2} bgcolor='#F8F4FE' borderRadius='100%' border={1} p={1}>
-            <Box
-              component='img'
-              src={images.logo}
-              alt='logo'
-              width={30}
-              height={30}
-              style={{
-                objectFit: 'cover',
-              }}
-            />
-          </Box>
-          <Tooltip title='Close sidebar'>
-            <IconButton onClick={onCollapse}>
-              <KeyboardDoubleArrowLeftOutlined />
-            </IconButton>
-          </Tooltip>
-        </Box> */}
         <Stack gap={5} justifyContent='start' alignItems='start'>
           {listMenu[profile.data.role].map((item) => (
             <CustomTooltip title={item.title} key={item.href} placement='right'>

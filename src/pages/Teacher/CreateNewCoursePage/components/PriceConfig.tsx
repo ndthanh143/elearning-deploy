@@ -1,5 +1,5 @@
 import { CustomSelect, Flex } from '@/components'
-import { MenuItem, Select, Stack, Typography } from '@mui/material'
+import { Stack, Typography } from '@mui/material'
 import { CreateCourseForm } from '.'
 
 const listCurrentCyAndMounts: Record<string, { label: string; value: number }[]> = {

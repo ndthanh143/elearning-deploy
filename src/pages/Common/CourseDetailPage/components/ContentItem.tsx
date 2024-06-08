@@ -2,7 +2,7 @@ import actions from '@/assets/images/icons/actions'
 import { Flex } from '@/components'
 import { Unit } from '@/services/unit/types'
 import { downloadFileByLink } from '@/utils'
-import { CheckCircle, CheckCircleRounded, LockOutlined } from '@mui/icons-material'
+import { CheckCircleRounded, LockOutlined } from '@mui/icons-material'
 import { Box, Typography } from '@mui/material'
 import { useLocation, useNavigate } from 'react-router-dom'
 

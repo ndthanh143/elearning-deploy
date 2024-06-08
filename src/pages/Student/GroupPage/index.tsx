@@ -1,6 +1,6 @@
 import { Button, CustomSelect, Flex } from '@/components'
 import { useAlert, useBoolean } from '@/hooks'
-import { primary } from '@/styles/theme'
+import { gray, primary } from '@/styles/theme'
 import { AddRounded, AutoModeRounded, MoreVertRounded } from '@mui/icons-material'
 import {
   Avatar,
@@ -26,9 +26,18 @@ import { icons } from '@/assets/icons'
 
 const ronaldoImg = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcgCaW2c1ugKTOqZA1jKxvPoVoT5kGuQPvOg&s'
 
-export const StudentCard: React.FC = () => {
+export const StudentCard = () => {
   return (
-    <Flex gap={1} sx={{ bgcolor: primary[50], borderRadius: 3, p: 1, width: '100%' }}>
+    <Flex
+      gap={1}
+      sx={{
+        bgcolor: primary[50],
+        borderRadius: 3,
+        p: 1,
+        width: '100%',
+        filter: `drop-shadow(0 0 0.5rem ${primary[500]})`,
+      }}
+    >
       <Avatar src={ronaldoImg} sx={{ width: 40, height: 40 }}>
         N
       </Avatar>
@@ -36,23 +45,11 @@ export const StudentCard: React.FC = () => {
         <Typography variant='body2' fontWeight={700}>
           Cristiano Ronaldo
         </Typography>
-        <Typography variant='body2' textOverflow='ellipsis'>
+        <Typography variant='body2' textOverflow='ellipsis' color={gray[500]}>
           ronaldo.cristiano@gmail.com
         </Typography>
       </Stack>
     </Flex>
-  )
-}
-
-const ListStudent: React.FC = () => {
-  return (
-    <Stack gap={1}>
-      {Array(10)
-        .fill(true)
-        .map((item, index) => (
-          <StudentCard key={index} />
-        ))}
-    </Stack>
   )
 }
 
@@ -83,7 +80,7 @@ interface Task {
   deadline: string
 }
 
-const TaskCard: React.FC<TaskCardProps> = ({ task, index, moveTask }) => {
+export const TaskCard: React.FC<TaskCardProps> = ({ task, index, moveTask }) => {
   const [{ isDragging }, drag] = useDrag({
     type: 'TASK',
     item: { index },
@@ -147,7 +144,7 @@ interface GroupCardProps {
   state: 'member' | 'task'
 }
 
-const GroupCard: React.FC<GroupCardProps> = ({ size, state = 'member' }) => {
+export const GroupCard: React.FC<GroupCardProps> = ({ size, state = 'member' }) => {
   const { triggerAlert } = useAlert()
   const { value: isOpenAddTask, setTrue: openAddTask, setFalse: closeAddTask } = useBoolean()
 
@@ -178,7 +175,7 @@ const GroupCard: React.FC<GroupCardProps> = ({ size, state = 'member' }) => {
     },
   ])
 
-  const handleRemoveStudent = (index: number) => () => {
+  const handleRemoveStudent = () => () => {
     triggerAlert('Remove student at index')
   }
 
@@ -252,7 +249,7 @@ const GroupCard: React.FC<GroupCardProps> = ({ size, state = 'member' }) => {
                           },
                           userSelect: 'none',
                         }}
-                        onClick={handleRemoveStudent(index)}
+                        onClick={handleRemoveStudent()}
                       >
                         -
                       </Flex>

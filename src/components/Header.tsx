@@ -5,7 +5,6 @@ import {
   KeyboardDoubleArrowLeftOutlined,
   LogoutOutlined,
   MoreHorizOutlined,
-  NotificationsRounded,
   PersonOutline,
 } from '@mui/icons-material'
 import {

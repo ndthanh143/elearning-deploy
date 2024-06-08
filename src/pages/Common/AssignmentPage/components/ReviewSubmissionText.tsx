@@ -1,8 +1,7 @@
-import { BoxContent, ConfirmPopup, CustomModal, DangerouseLyRender } from '@/components'
+import { ConfirmPopup, CustomModal, DangerouseLyRender } from '@/components'
 import Editor from '@/components/ContentEditor/ContentEditor'
 import { useBoolean } from '@/hooks'
-import { CloseOutlined } from '@mui/icons-material'
-import { Box, Button, Card, CardContent, Divider, IconButton, Modal, Stack, Typography } from '@mui/material'
+import { Box, Button, Card, CardContent, Divider, Stack, Typography } from '@mui/material'
 import { useState } from 'react'
 
 export type ReviewSubmissionTextProps = {

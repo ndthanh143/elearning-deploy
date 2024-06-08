@@ -89,21 +89,6 @@ const CustomToolBar = ({ views, view, onView, onNavigate, label }: ToolbarProps<
   )
 }
 
-const statusProps = {
-  done: {
-    text: 'Done',
-    color: 'success',
-  },
-  expired: {
-    text: 'Expired',
-    color: 'error',
-  },
-  upcoming: {
-    text: 'Upcoming',
-    color: 'warning',
-  },
-}
-
 const eventTypeProps = {
   quiz: {
     icon: icons['quiz'],

@@ -1,33 +1,24 @@
 import { object, string } from 'yup'
-import { toast } from 'react-toastify'
 import { useForm } from 'react-hook-form'
-import { useEffect, useState } from 'react'
-import GoogleLogin from 'react-google-login'
-import { useMutation } from '@tanstack/react-query'
+import { useState } from 'react'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useLocation, useNavigate } from 'react-router-dom'
 import { ArrowBackOutlined, ArrowForwardOutlined } from '@mui/icons-material'
-import { Box, Button, Container, Divider, IconButton, Stack, Typography } from '@mui/material'
+import { Box, Button, Container, IconButton, Stack, Typography } from '@mui/material'
 
 import { images } from '@/assets/images'
 import { Flex, Link } from '@/components'
-import authService from '@/services/auth/auth.service'
-import { LoginAdminPayload, RoleEnum } from '@/services/auth/auth.dto'
-
-import { useAuth } from '../../../hooks'
-import { configs } from '../../../configs'
 import { SignUpForm } from './components'
+import { icons } from '@/assets/icons'
 
 const schema = object({
   email: string().required('Please fill in your username'),
   password: string().required('Please fill in your password'),
 })
 
-const clientId = configs.GOOGLE_CLIENT_ID
 export const SignUpPage = () => {
-  const navigate = useNavigate()
-
   const { handleSubmit } = useForm({ resolver: yupResolver(schema) })
+
+  console.log('handleSubmit', handleSubmit)
 
   const [mode, setMode] = useState<'teacher' | 'student' | 'default'>('default')
 
@@ -54,7 +45,7 @@ export const SignUpPage = () => {
           </Link>
         </Flex>
         <Flex gap={0.5}>
-          <Typography variant='body2'>Don't have an account?</Typography>
+          <Typography variant='body2'>Have an account?</Typography>
           <Link href='/login' variant='body2' sx={{ textDecoration: 'none' }}>
             Log in
           </Link>
@@ -70,9 +61,12 @@ export const SignUpPage = () => {
       >
         {mode === 'default' ? (
           <>
-            <Typography variant='h4' maxWidth={500} textAlign='center'>
-              Start using Edpuzzle, stop boring classes in their tracks.
-            </Typography>
+            <Stack alignItems='center' gap={2}>
+              <Box width={100} height={100}>
+                {icons['education']}
+              </Box>
+              <Typography variant='h4'>Start using Edpuzzle, stop boring classes in their tracks.</Typography>
+            </Stack>
             <Flex gap={2}>
               <Button
                 variant='contained'

@@ -44,18 +44,6 @@ export const StudentCard: React.FC = () => {
   )
 }
 
-const ListStudent: React.FC = () => {
-  return (
-    <Stack gap={1}>
-      {Array(10)
-        .fill(true)
-        .map((item, index) => (
-          <StudentCard key={index} />
-        ))}
-    </Stack>
-  )
-}
-
 const AddGroup: React.FC = () => {
   return (
     <Card variant='outlined' sx={{ height: '100%' }}>
@@ -179,7 +167,7 @@ const GroupCard: React.FC<GroupCardProps> = ({ size, state = 'member' }) => {
   ])
 
   const handleRemoveStudent = (index: number) => () => {
-    triggerAlert('Remove student at index')
+    triggerAlert(`Remove student at ${index}`)
   }
 
   const moveTask = (fromIndex: number, toIndex: number) => {

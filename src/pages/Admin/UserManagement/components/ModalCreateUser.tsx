@@ -1,5 +1,4 @@
 import { BoxContent } from '@/components'
-import { nationKeys } from '@/services/nation/query'
 import { roleKeys } from '@/services/role/query'
 import { Account } from '@/services/user/user.dto'
 import { userService } from '@/services/user/user.service'
@@ -32,9 +31,6 @@ export const ModalCreateUser = ({ isOpen, onClose, defaultValue, status }: IModa
   const roleInstance = roleKeys.list()
   const { data: roles } = useQuery({ ...roleInstance })
 
-  const nationInstance = nationKeys.list()
-  const { data: nations } = useQuery({ ...nationInstance })
-
   const { register, handleSubmit } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -42,8 +38,6 @@ export const ModalCreateUser = ({ isOpen, onClose, defaultValue, status }: IModa
       kind: 1,
       email: defaultValue?.email,
       fullName: defaultValue?.fullName,
-      nationId: defaultValue?.nationInfo.id,
-      roleId: defaultValue?.roleInfo.id,
     },
   })
 
@@ -101,15 +95,8 @@ export const ModalCreateUser = ({ isOpen, onClose, defaultValue, status }: IModa
           )}
           <Stack>
             <Typography>Role</Typography>
-            <Select {...register('roleId')} size='small' defaultValue={defaultValue?.roleInfo?.id}>
+            <Select {...register('roleId')} size='small' defaultValue={defaultValue?.role}>
               {roles?.map((role: any) => <MenuItem value={role.id}>{role.name}</MenuItem>)}
-            </Select>
-          </Stack>
-          <Stack>
-            <Typography>Nation</Typography>
-
-            <Select size='small' {...register('nationId')} defaultValue={defaultValue?.nationInfo?.id}>
-              {nations?.content.map((nation: any) => <MenuItem value={nation.id}>{nation.nationName}</MenuItem>)}
             </Select>
           </Stack>
         </Stack>

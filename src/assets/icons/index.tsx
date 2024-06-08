@@ -3,11 +3,14 @@ import { CalendarIcon } from './CalendarIcon'
 import { CloseIcon } from './CloseIcon'
 import { DeadlineIcon } from './DeadlineIcon'
 import { DescriptionIcon } from './DescriptionIcon'
+import { EducationIcon } from './EducationIcon'
 import { ExcelIcon } from './Excel'
 import { GroupIcon } from './GroupIcon'
 import { LectureIcon } from './LectureIcon'
+import { LockIcon } from './LockIcon'
 import { NoDataIcon } from './Nodata'
 import { NotificationIcon } from './Notification'
+import { OTPIcon } from './OTPIcon'
 import { Owl } from './Owl'
 import { PlanBasicIcon } from './PlanBasicIcon'
 import { PlanMindMapIcon } from './PlanMindMapIcon'
@@ -38,4 +41,7 @@ export const icons = {
   calendar: <CalendarIcon />,
   deadline: <DeadlineIcon />,
   upload: <UploadIcon />,
+  lock: <LockIcon />,
+  education: <EducationIcon />,
+  otp: <OTPIcon />,
 } as const
