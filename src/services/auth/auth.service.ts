@@ -31,9 +31,9 @@ const authService = {
   },
   signUp: async ({ type, payload }: { type: 'teacher' | 'student'; payload: SignUpPayload }) => {
     const routePath = type === 'teacher' ? 'teacher/signup' : 'student/signup'
-    const { data } = await axiosInstance.post(routePath, payload)
+    const { data } = await axiosInstance.post<AuthLoginResponse>(routePath, payload)
 
-    return data
+    return data.data
   },
   login: async ({ type, payload }: { type: 'teacher' | 'student'; payload: LoginAdminPayload }) => {
     const routePath = type === 'teacher' ? 'teacher/login' : 'student/login'

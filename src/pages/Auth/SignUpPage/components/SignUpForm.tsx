@@ -1,10 +1,11 @@
-import { useAlert } from '@/hooks'
+import { useAlert, useAuth } from '@/hooks'
 import { SignUpPayload } from '@/services/auth/auth.dto'
 import authService from '@/services/auth/auth.service'
 import { regexPattern } from '@/utils'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Alert, Box, Button, Stack, TextField } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
+import Cookies from 'js-cookie'
 import { useForm } from 'react-hook-form'
 import { object, string } from 'yup'
 
@@ -30,6 +31,8 @@ const schema = object({
 })
 
 export function SignUpForm({ type }: { type: 'teacher' | 'student' }) {
+  const { refetch, setAuthenticated } = useAuth()
+
   const { triggerAlert } = useAlert()
   const {
     register,
@@ -40,7 +43,9 @@ export function SignUpForm({ type }: { type: 'teacher' | 'student' }) {
   const { mutate: mutateSignUp, isError } = useMutation({
     mutationFn: authService.signUp,
     onSuccess: (payload) => {
-      console.log('payload', payload)
+      Cookies.set('access_token', payload.access_token)
+      setAuthenticated()
+      refetch()
       triggerAlert('Sign up successfully!')
     },
   })
