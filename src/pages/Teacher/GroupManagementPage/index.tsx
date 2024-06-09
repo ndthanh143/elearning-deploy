@@ -1,4 +1,4 @@
-import { Button, CustomSelect, Flex } from '@/components'
+import { Button, CustomModal, CustomSelect, Flex } from '@/components'
 import { useAlert, useBoolean } from '@/hooks'
 import { primary } from '@/styles/theme'
 import { AddRounded, AutoModeRounded, MoreVertRounded } from '@mui/icons-material'
@@ -14,6 +14,7 @@ import {
   IconButton,
   Button as MuiButton,
   Stack,
+  TextField,
   Typography,
 } from '@mui/material'
 import { Fragment, useEffect, useState } from 'react'
@@ -44,17 +45,34 @@ export const StudentCard: React.FC = () => {
   )
 }
 
-const AddGroup: React.FC = () => {
+const ModalAddGroup = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   return (
-    <Card variant='outlined' sx={{ height: '100%' }}>
-      <CardContent sx={{ height: '100%' }}>
-        <Flex justifyContent='center' alignItems='center' height='100%'>
-          <Button startIcon={<AddRounded />} fullWidth sx={{ py: 2 }}>
-            Add new group
-          </Button>
-        </Flex>
-      </CardContent>
-    </Card>
+    <CustomModal title='Create new group' isOpen={isOpen} onClose={onClose} sx={{ maxWidth: 400 }}>
+      <Stack gap={2}>
+        <TextField type='number' label='Size' />
+        <MuiButton variant='contained' fullWidth>
+          Create
+        </MuiButton>
+      </Stack>
+    </CustomModal>
+  )
+}
+
+const AddGroup = () => {
+  const { value: isOpenModalAddGroup, setTrue: openModalAddGroup, setFalse: closeModalAddGroup } = useBoolean(true)
+  return (
+    <>
+      <Card variant='outlined' sx={{ height: '100%' }}>
+        <CardContent sx={{ height: '100%' }}>
+          <Flex justifyContent='center' alignItems='center' height='100%'>
+            <Button startIcon={<AddRounded />} fullWidth sx={{ py: 2 }} onClick={openModalAddGroup}>
+              Add new group
+            </Button>
+          </Flex>
+        </CardContent>
+      </Card>
+      <ModalAddGroup isOpen={isOpenModalAddGroup} onClose={closeModalAddGroup} />
+    </>
   )
 }
 

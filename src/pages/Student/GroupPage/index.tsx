@@ -53,20 +53,6 @@ export const StudentCard = () => {
   )
 }
 
-const AddGroup: React.FC = () => {
-  return (
-    <Card variant='outlined' sx={{ height: '100%' }}>
-      <CardContent sx={{ height: '100%' }}>
-        <Flex justifyContent='center' alignItems='center' height='100%'>
-          <Button startIcon={<AddRounded />} fullWidth sx={{ py: 2 }}>
-            Add new group
-          </Button>
-        </Flex>
-      </CardContent>
-    </Card>
-  )
-}
-
 interface TaskCardProps {
   task: Task
   index: number
@@ -346,11 +332,6 @@ export const GroupPage: React.FC = () => {
                     <Grid item xs={12} sm={6} md={6} lg={3}>
                       <GroupCard size={4} state={state} />
                     </Grid>
-                    {index === 5 && (
-                      <Grid item xs={12} sm={6} md={6} lg={3}>
-                        <AddGroup />
-                      </Grid>
-                    )}
                   </Fragment>
                 ))}
             </Grid>
