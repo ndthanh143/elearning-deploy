@@ -4,9 +4,8 @@ import { Box, BoxProps } from '@mui/material'
 import 'react-quill/dist/quill.snow.css'
 import { useMutation } from '@tanstack/react-query'
 import { fileService } from '@/services/file/file.service'
-import 'react-quill/dist/quill.snow.css'
-
 import { getAbsolutePathFile } from '@/utils'
+import 'react-quill/dist/quill.snow.css'
 
 export interface EditorProps extends Omit<BoxProps, 'onChange'> {
   minHeight?: number
@@ -16,6 +15,79 @@ export interface EditorProps extends Omit<BoxProps, 'onChange'> {
 
 export default function ContentEditor({ minHeight, value, onChange, sx, ...props }: EditorProps) {
   const quillRef = useRef<ReactQuill>(null)
+  // const [richText, setRichText] = useState('')
+  // const [pdfUrl, setPdfUrl] = useState('')
+  // const [pdfPages, setPdfPages] = useState([])
+  // const [file, setFile] = useState<File | null>(null)
+
+  // const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = event.target.files?.[0]
+  //   if (file) {
+  //     setFile(file)
+  //     const pdf = await file.arrayBuffer()
+  //     const pdfDoc = await getDocument(pdf).promise
+  //     let text = ''
+  //     let pages = []
+
+  //     for (let i = 1; i <= pdfDoc.numPages; i++) {
+  //       const page = await pdfDoc.getPage(i)
+  //       const content = await page.getTextContent()
+  //       text += content.items.map((item) => item.str).join(' ') + '\n'
+  //       pages.push(page)
+  //     }
+
+  //     // setPdfPages(pages)
+  //     // const formattedHtml = convertToRichText(text)
+  //     // setRichText(formattedHtml)
+  //   }
+  // }
+
+  // const convertToRichText = (text) => {
+  //   const lines = text.split('\n')
+  //   let html = ''
+  //   let inList = false
+
+  //   lines.forEach((line) => {
+  //     const trimmedLine = line.trim()
+
+  //     // Detect headers (simple heuristic: lines with all caps or specific patterns)
+  //     if (/^[A-Z\s]+$/.test(trimmedLine) && trimmedLine.length > 0) {
+  //       html += `<h2>${trimmedLine}</h2>`
+  //     }
+  //     // Detect list items
+  //     else if (/^\d+\./.test(trimmedLine)) {
+  //       if (!inList) {
+  //         html += '<ol>'
+  //         inList = true
+  //       }
+  //       html += `<li>${trimmedLine}</li>`
+  //     } else if (/^[-*]/.test(trimmedLine)) {
+  //       if (!inList) {
+  //         html += '<ul>'
+  //         inList = true
+  //       }
+  //       html += `<li>${trimmedLine}</li>`
+  //     } else {
+  //       if (inList) {
+  //         html += inList === 'ol' ? '</ol>' : '</ul>'
+  //         inList = false
+  //       }
+  //       // Detect bold (simple heuristic: text within ** or __)
+  //       const boldText = trimmedLine
+  //         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+  //         .replace(/__(.*?)__/g, '<strong>$1</strong>')
+  //       // Detect italic (simple heuristic: text within * or _)
+  //       const italicText = boldText.replace(/\*(.*?)\*/g, '<em>$1</em>').replace(/_(.*?)_/g, '<em>$1</em>')
+  //       html += `<p>${italicText}</p>`
+  //     }
+  //   })
+
+  //   if (inList) {
+  //     html += inList === 'ol' ? '</ol>' : '</ul>'
+  //   }
+
+  //   return html
+  // }
 
   const { mutate: mutateUpload } = useMutation({
     mutationFn: fileService.upload,
@@ -25,7 +97,7 @@ export default function ContentEditor({ minHeight, value, onChange, sx, ...props
 
       if (editor) {
         const range = editor.getSelection()
-        const value = { url: getAbsolutePathFile(imageUrl), width: '300px', height: 'auto' } // Set your desired width and height
+        const value = { url: getAbsolutePathFile(imageUrl), width: '300px', height: 'auto' }
         editor?.insertEmbed(range?.index || 0, 'custom-image', value)
       }
     },
@@ -34,42 +106,7 @@ export default function ContentEditor({ minHeight, value, onChange, sx, ...props
     },
   })
 
-  console.log('mutateUpload', mutateUpload)
-
-  // const handleImageUpload = () => {
-  //   const input = document.createElement('input')
-  //   input.setAttribute('type', 'file')
-  //   input.setAttribute('accept', 'image/*')
-  //   input.click()
-
-  //   input.onchange = () => {
-  //     const file = input.files?.[0]
-  //     if (file) {
-  //       mutateUpload({ file, type: 'IMAGE' })
-  //     }
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   const handleClick = () => {
-  //     const editor = quillRef.current?.getEditor()
-  //     if (editor) {
-  //       editor.focus()
-  //     }
-  //   }
-
-  //   const container = document.querySelector('.ql-container')
-  //   if (container) {
-  //     container.addEventListener('click', handleClick)
-  //   }
-
-  //   // Cleanup event listener on component unmount
-  //   return () => {
-  //     if (container) {
-  //       container.removeEventListener('click', handleClick)
-  //     }
-  //   }
-  // }, [])
+  console.log(mutateUpload)
 
   const formats = [
     'header',
@@ -86,44 +123,46 @@ export default function ContentEditor({ minHeight, value, onChange, sx, ...props
   ]
 
   return (
-    <Box
-      ref={quillRef}
-      component={ReactQuill}
-      overflow='scroll'
-      theme='snow'
-      value={value}
-      onChange={onChange}
-      modules={{
-        toolbar: {
-          container: [
-            [{ header: [1, 2, 3, false] }],
-            ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-            [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
-            ['link', 'image'],
-            ['clean'],
-          ],
-        },
-
-        clipboard: {
-          matchVisual: false,
-        },
-      }}
-      formats={formats}
-      placeholder='Write something...'
-      sx={{
-        '.ql-toolbar.ql-snow': {
-          borderTopLeftRadius: 12,
-          borderTopRightRadius: 12,
-        },
-        '.ql-container': {
-          borderBottomLeftRadius: 12,
-          borderBottomRightRadius: 12,
-          minHeight: minHeight || 400,
-          fontSize: 18,
-        },
-        ...sx,
-      }}
-      {...props}
-    />
+    <>
+      {/* <input type='file' accept='application/pdf' onChange={handleFileChange} /> */}
+      <Box
+        ref={quillRef}
+        component={ReactQuill}
+        overflow='scroll'
+        theme='snow'
+        value={value}
+        onChange={onChange}
+        modules={{
+          toolbar: {
+            container: [
+              [{ header: [1, 2, 3, false] }],
+              ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+              [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
+              ['link', 'image'],
+              ['clean'],
+            ],
+          },
+          clipboard: {
+            matchVisual: false,
+          },
+        }}
+        formats={formats}
+        placeholder='Write something...'
+        sx={{
+          '.ql-toolbar.ql-snow': {
+            borderTopLeftRadius: 12,
+            borderTopRightRadius: 12,
+          },
+          '.ql-container': {
+            borderBottomLeftRadius: 12,
+            borderBottomRightRadius: 12,
+            minHeight: minHeight || 400,
+            fontSize: 18,
+          },
+          ...sx,
+        }}
+        {...props}
+      />
+    </>
   )
 }

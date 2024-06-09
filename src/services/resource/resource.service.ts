@@ -1,8 +1,18 @@
 import axiosInstance from '@/axios'
 
-import { CreateResourcePayload, GetResourceResponse, UpdateResourcePayload } from './resource.dto'
+import {
+  CreateResourcePayload,
+  CreateTrackingResourcePayload,
+  GetResourceResponse,
+  UpdateResourcePayload,
+} from './resource.dto'
 
 export const resourceService = {
+  getResourceDetails: async (resourceId: number) => {
+    const { data } = await axiosInstance.get<GetResourceResponse>(`/resources/retrieve/${resourceId}`)
+
+    return data.data
+  },
   create: async (payload: CreateResourcePayload) => {
     const { data } = await axiosInstance.post<GetResourceResponse>('/resources/create', payload)
 
@@ -15,5 +25,8 @@ export const resourceService = {
   },
   delete: async (resourceId: number) => {
     await axiosInstance.delete(`/resources/delete/${resourceId}`)
+  },
+  createTracking: async (payload: CreateTrackingResourcePayload) => {
+    await axiosInstance.post('/resource-tracking/create', payload)
   },
 }

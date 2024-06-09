@@ -26,6 +26,7 @@ import {
   GroupManagementPage,
   TaskPage,
   ForgotPasswordPage,
+  ResourcePage,
 } from './pages'
 
 import 'react-big-calendar/lib/css/react-big-calendar.css'
@@ -49,6 +50,9 @@ import { Dashboard, UserManagement } from './pages/Admin'
 import { ReactFlowProvider } from 'reactflow'
 import { PlanningDetailPage } from './pages/Teacher/PlanningDetailPage'
 import { AuthLayout, CoursesPageLayout } from './components/layout'
+import { GlobalWorkerOptions, version } from 'pdfjs-dist'
+
+GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${version}/build/pdf.worker.mjs`
 
 const router = createBrowserRouter([
   {
@@ -70,6 +74,10 @@ const router = createBrowserRouter([
           {
             path: 'quiz/:quizId',
             element: <QuizPage />,
+          },
+          {
+            path: 'resource/:resourceId',
+            element: <ResourcePage />,
           },
         ],
       },

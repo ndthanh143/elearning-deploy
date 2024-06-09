@@ -1,11 +1,11 @@
 import actions from '@/assets/images/icons/actions'
-import { ConfirmPopup } from '@/components'
+import { ConfirmPopup, CustomMenu } from '@/components'
 import { useAlert, useBoolean, useMenu } from '@/hooks'
 import { lessonPlanKey } from '@/services/lessonPlan/lessonPlan.query'
 import { unitService } from '@/services/unit'
 import { Unit } from '@/services/unit/types'
 import { Settings } from '@mui/icons-material'
-import { Box, IconButton, Menu, MenuItem, Stack, Typography } from '@mui/material'
+import { Box, IconButton, MenuItem, Stack, Typography } from '@mui/material'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export type ContentItemProps = {
@@ -99,10 +99,10 @@ export const ContentItem = ({ unit, onClick, onEdit }: ContentItemProps) => {
         </IconButton>
       </Box>
 
-      <Menu anchorEl={anchorEl} onClose={onClose} open={isOpen}>
+      <CustomMenu anchorEl={anchorEl} onClose={onClose} open={isOpen}>
         <MenuItem onClick={handleEdit}>Edit</MenuItem>
         <MenuItem onClick={openConfirm}>Delete</MenuItem>
-      </Menu>
+      </CustomMenu>
 
       <ConfirmPopup
         isOpen={isOpenConfirm}
