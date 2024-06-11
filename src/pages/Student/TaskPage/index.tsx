@@ -1,7 +1,6 @@
 import { icons } from '@/assets/icons'
 import { ConfirmPopup, CustomModal, CustomSelect, Dropzone, Flex, IconContainer } from '@/components'
 import { useBoolean } from '@/hooks'
-import { StudentCard } from '@/pages'
 import { courseKeys } from '@/services/course/course.query'
 import { gray, primary } from '@/styles/theme'
 import {
@@ -25,13 +24,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import { GroupCard } from '../GroupPage'
 
 const ListMembers = () => {
-  return (
-    <Stack gap={2}>
-      {Array.from({ length: 4 }).map((_, index) => (
-        <StudentCard key={index} />
-      ))}
-    </Stack>
-  )
+  return <Stack gap={2}></Stack>
 }
 
 const TaskStatus = ({ status }: { status: 'done' | 'undone' }) => {

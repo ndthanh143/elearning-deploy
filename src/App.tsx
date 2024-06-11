@@ -51,6 +51,8 @@ import { ReactFlowProvider } from 'reactflow'
 import { PlanningDetailPage } from './pages/Teacher/PlanningDetailPage'
 import { AuthLayout, CoursesPageLayout } from './components/layout'
 import { GlobalWorkerOptions, version } from 'pdfjs-dist'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 
 GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${version}/build/pdf.worker.mjs`
 
@@ -217,10 +219,12 @@ function App() {
           <ToastContainer position='bottom-right' />
           <AlertComponent />
           <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <RouterProvider router={router} />
-            </LocalizationProvider>
+            <DndProvider backend={HTML5Backend}>
+              <CssBaseline />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <RouterProvider router={router} />
+              </LocalizationProvider>
+            </DndProvider>
           </ThemeProvider>
         </QueryClientProvider>
       </ReactFlowProvider>
