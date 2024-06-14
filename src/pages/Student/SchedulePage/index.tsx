@@ -1,6 +1,6 @@
 import { Container, Stack } from '@mui/material'
 import { TaskCalendar } from './containers'
-import { BannerHeading } from '../HomePage/components'
+import { BannerHeading } from '../StudentHomePage/components'
 
 export const SchedulePage = () => {
   return (

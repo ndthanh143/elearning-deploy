@@ -1,5 +1,5 @@
 import { ConfirmPopup, CustomMenu, Flex } from '@/components'
-import { useAlert, useBoolean, useMenu } from '@/hooks'
+import { useAlert, useAuth, useBoolean, useMenu } from '@/hooks'
 import { gray, primary } from '@/styles/theme'
 import { AddRounded, DeleteRounded, EditRounded, MoreVertRounded } from '@mui/icons-material'
 import {
@@ -13,16 +13,16 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
-import { ModalAddTask, TaskCard } from '.'
+import { ModalAddTask, TaskCard, StudentCard } from '.'
 import { icons } from '@/assets/icons'
-import { Group, TaskInfo } from '@/services/group/dto'
-import { StudentCard } from '..'
-import { useMutation } from '@tanstack/react-query'
-import { taskService } from '@/services'
+import { GetGroupListQuery, GetListGroupResponse, Group, TaskInfo } from '@/services/group/dto'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { groupTaskService, taskService } from '@/services'
 import { object, string } from 'yup'
 import { UseFormReturn, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useState } from 'react'
+import { groupKeys } from '@/services/group/query'
 
 interface GroupCardProps {
   size: number
@@ -30,6 +30,7 @@ interface GroupCardProps {
   data: Group
   onUpdate?: () => void
   onDelete?: () => void
+  queryKey?: (GetGroupListQuery | 'list' | 'group')[]
 }
 
 export type FormTaskModal = UseFormReturn<
@@ -50,8 +51,16 @@ const taskSchema = object({
   endDate: string().required('End date is required'),
 })
 
-export const GroupCard = ({ state = 'member', data, onUpdate = () => {}, onDelete = () => {} }: GroupCardProps) => {
+export const GroupCard = ({
+  state = 'member',
+  queryKey,
+  data,
+  onUpdate = () => {},
+  onDelete = () => {},
+}: GroupCardProps) => {
+  const { isTeacher } = useAuth()
   const { triggerAlert } = useAlert()
+  const queryClient = useQueryClient()
   const { anchorEl, onClose, isOpen, onOpen } = useMenu()
   const { value: isOpenAddTask, setTrue: openAddTask, setFalse: closeAddTask } = useBoolean()
   const [selectedDeleteTask, setSelectedDeleteTask] = useState<number | null>(null)
@@ -63,11 +72,58 @@ export const GroupCard = ({ state = 'member', data, onUpdate = () => {}, onDelet
     triggerAlert(`Remove student at ${index}`)
   }
 
+  const { mutate: mutateGrantTask } = useMutation({
+    mutationFn: groupTaskService.create,
+    onSuccess: (payload) => {
+      if (queryKey) {
+        queryClient.setQueryData(queryKey, (old: GetListGroupResponse['data']) => {
+          const newTaskInfo: TaskInfo = {
+            id: payload.taskInfo.id,
+            description: payload.taskInfo.description,
+            endDate: payload.endDate,
+            startDate: payload.startDate,
+            name: payload.taskInfo.name,
+            groupId: payload.groupInfo.id,
+            groupName: payload.groupInfo.name,
+          }
+
+          return {
+            ...old,
+            content: old.content.map((group) => {
+              if (group.id === data.id) {
+                return {
+                  ...group,
+                  taskInfo: [...group.taskInfo, newTaskInfo],
+                }
+              }
+              return group
+            }),
+          }
+        })
+      }
+      triggerAlert('Create task successfully', 'success'), closeAddTask()
+    },
+    onError: () => {
+      triggerAlert('Create task failed', 'error')
+    },
+  })
+
+  const { mutate: mutateUpdateGrantTask } = useMutation({
+    mutationFn: taskService.changeTimeTaskForGroup,
+  })
+
   const { mutate: mutateCreateTask, isPending: isPendingCreateTask } = useMutation({
     mutationFn: taskService.create,
-    onSuccess: () => {
+    onSuccess: (payload) => {
       triggerAlert('Create task successfully', 'success')
       closeAddTask()
+
+      mutateGrantTask({
+        endDate: new Date(form.getValues('endDate')).toISOString(),
+        groupId: data.id,
+        startDate: new Date(form.getValues('startDate')).toISOString(),
+        taskId: payload.id,
+      })
     },
 
     onError: () => {
@@ -75,9 +131,30 @@ export const GroupCard = ({ state = 'member', data, onUpdate = () => {}, onDelet
     },
   })
 
-  const { mutate: mutateDeleteTask, isPending: isPendingDeleteTask } = useMutation({
-    mutationFn: taskService.delete,
+  const { mutate: mutateUpdateTask } = useMutation({
+    mutationFn: taskService.update,
+  })
+
+  const { mutate: mutateRemoveTaskfromGroup, isPending: isPendingRemoveTaskfromGroup } = useMutation({
+    mutationFn: taskService.removeTaskFromGroup,
     onSuccess: () => {
+      if (queryKey) {
+        queryClient.setQueryData(queryKey, (old: GetListGroupResponse['data']) => {
+          return {
+            ...old,
+            content: old.content.map((group) => {
+              if (group.id === data.id) {
+                return {
+                  ...group,
+                  taskInfo: group.taskInfo.filter((task) => task.id !== selectedDeleteTask),
+                }
+              }
+              return group
+            }),
+          }
+        })
+      }
+      setSelectedDeleteTask(null)
       triggerAlert('Delete task successfully', 'success')
     },
 
@@ -94,10 +171,35 @@ export const GroupCard = ({ state = 'member', data, onUpdate = () => {}, onDelet
     console.log(fromIndex, toIndex)
   }
 
-  const handleCreateTask = (payload: { name: string; description: string; startDate: string; endDate: string }) => {
-    console.log(payload)
+  const handleCreateTask = async (payload: {
+    name: string
+    description: string
+    startDate: string
+    endDate: string
+  }) => {
     if (selectedEditTask) {
-      handleUpdateTask()
+      const updateTaskPromises = [
+        payload.endDate || payload.startDate
+          ? mutateUpdateGrantTask({
+              groupId: data.id,
+              taskId: selectedEditTask.id,
+              endDate: new Date(payload.endDate).toISOString(),
+              startDate: new Date(payload.startDate).toISOString(),
+            })
+          : Promise.resolve(),
+        payload.name || payload.description
+          ? mutateUpdateTask({ id: selectedEditTask.id, name: payload.name, description: payload.description })
+          : Promise.resolve(),
+      ]
+      await Promise.all(updateTaskPromises)
+        .then(() => {
+          queryClient.invalidateQueries({ queryKey: groupKeys.lists() })
+          setSelectedEditTask(null)
+          triggerAlert('Update task successfully', 'success')
+        })
+        .catch(() => {
+          triggerAlert('Update task failed', 'error')
+        })
     } else {
       mutateCreateTask({ name: payload.name, description: payload.description })
     }
@@ -106,15 +208,26 @@ export const GroupCard = ({ state = 'member', data, onUpdate = () => {}, onDelet
   const totalMemberGroup = data.studentInfo.length
   const restMember = data.size - totalMemberGroup
 
-  const handleUpdateTask = () => {
+  const handleUpdateTask = (task: TaskInfo) => () => {
+    form.setValue('name', task.name)
+    form.setValue('description', task.description)
+    form.setValue('startDate', task.startDate)
+    form.setValue('endDate', task.endDate)
+
+    setSelectedEditTask(task)
+  }
+
+  const handleCloseModalTask = () => {
     if (selectedEditTask) {
-      //   mutateUpdateTask(selectedEditTask)
+      setSelectedEditTask(null)
+    } else {
+      closeAddTask()
     }
   }
 
   const handleDeleteTask = () => {
     if (selectedDeleteTask) {
-      mutateDeleteTask(selectedDeleteTask)
+      mutateRemoveTaskfromGroup({ groupId: data.id, taskId: selectedDeleteTask })
     }
   }
 
@@ -133,30 +246,32 @@ export const GroupCard = ({ state = 'member', data, onUpdate = () => {}, onDelet
             position='relative'
           >
             <StudentCard data={student} />
-            <Flex
-              bgcolor='primary.main'
-              position='absolute'
-              height={20}
-              width={20}
-              borderRadius='100%'
-              justifyContent='center'
-              color='white'
-              right={-8}
-              top={-8}
-              sx={{
-                cursor: 'pointer',
-                ':hover': {
-                  bgcolor: primary[600],
-                },
-                ':focus': {
-                  bgcolor: primary[700],
-                },
-                userSelect: 'none',
-              }}
-              onClick={handleRemoveStudent(index)}
-            >
-              -
-            </Flex>
+            {isTeacher && (
+              <Flex
+                bgcolor='primary.main'
+                position='absolute'
+                height={20}
+                width={20}
+                borderRadius='100%'
+                justifyContent='center'
+                color='white'
+                right={-8}
+                top={-8}
+                sx={{
+                  cursor: 'pointer',
+                  ':hover': {
+                    bgcolor: primary[600],
+                  },
+                  ':focus': {
+                    bgcolor: primary[700],
+                  },
+                  userSelect: 'none',
+                }}
+                onClick={handleRemoveStudent(index)}
+              >
+                -
+              </Flex>
+            )}
           </Flex>
         ))}
         {Array(restMember)
@@ -192,7 +307,7 @@ export const GroupCard = ({ state = 'member', data, onUpdate = () => {}, onDelet
           data={task}
           moveTask={moveTask}
           index={index}
-          onUpdate={() => setSelectedEditTask(task)}
+          onUpdate={handleUpdateTask(task)}
           onDelete={() => setSelectedDeleteTask(task.id)}
         />
       ))
@@ -219,27 +334,30 @@ export const GroupCard = ({ state = 'member', data, onUpdate = () => {}, onDelet
                 </Typography>
               </Flex>
             </Flex>
-            <Flex gap={1}>
-              {state === 'member' ? (
-                <IconButton onClick={onOpen}>
-                  <MoreVertRounded fontSize='small' />
-                </IconButton>
-              ) : (
-                <MuiButton startIcon={<AddRounded fontSize='small' />} size='small' onClick={openAddTask}>
-                  Add task
-                </MuiButton>
-              )}
-            </Flex>
+            {isTeacher && (
+              <Flex gap={1}>
+                {state === 'member' ? (
+                  <IconButton onClick={onOpen}>
+                    <MoreVertRounded fontSize='small' />
+                  </IconButton>
+                ) : (
+                  <MuiButton startIcon={<AddRounded fontSize='small' />} size='small' onClick={openAddTask}>
+                    Add task
+                  </MuiButton>
+                )}
+              </Flex>
+            )}
           </Flex>
           <Divider sx={{ my: 2 }} />
           <Stack gap={2}>{state === 'member' ? renderMembers() : renderTasks()}</Stack>
         </CardContent>
       </Card>
       <ModalAddTask
-        isOpen={isOpenAddTask}
-        onClose={closeAddTask}
+        isOpen={isOpenAddTask || !!selectedEditTask}
+        onClose={handleCloseModalTask}
         onSubmit={handleCreateTask}
         form={form}
+        status={selectedEditTask ? 'edit' : 'create'}
         loading={isPendingCreateTask}
       />
       <CustomMenu anchorEl={anchorEl} open={isOpen} onClose={onClose}>
@@ -268,11 +386,12 @@ export const GroupCard = ({ state = 'member', data, onUpdate = () => {}, onDelet
       </CustomMenu>
       <ConfirmPopup
         title='Remove Task'
-        subtitle='Are'
+        subtitle='Are you sure to remove this task?'
+        type='delete'
         isOpen={!!selectedDeleteTask}
         onClose={() => setSelectedDeleteTask(null)}
         onAccept={handleDeleteTask}
-        isLoading={isPendingDeleteTask}
+        isLoading={isPendingRemoveTaskfromGroup}
       />
     </>
   )

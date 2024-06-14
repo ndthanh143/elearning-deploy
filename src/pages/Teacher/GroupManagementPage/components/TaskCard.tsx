@@ -44,7 +44,6 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 
   return (
     <>
-      {' '}
       <Stack
         ref={(node) => drag(drop(node))}
         gap={1}
@@ -69,13 +68,13 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             <Flex gap={1}>
               {icons['calendar']}
               <Typography variant='body2' fontWeight={600}>
-                {formatDate.toDateTime(data.startDate)}
+                {formatDate.toDateTime(new Date(data.startDate))}
               </Typography>
             </Flex>
             <Flex gap={1}>
               {icons['deadline']}
               <Typography variant='body2' fontWeight={600}>
-                {formatDate.toDateTime(data.endDate)}
+                {formatDate.toDateTime(new Date(data.endDate))}
               </Typography>
             </Flex>
           </Stack>
@@ -102,7 +101,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           <ListItemIcon>
             <DeleteRounded fontSize='small' />
           </ListItemIcon>
-          <Typography variant='body2'>Edit</Typography>
+          <Typography variant='body2'>Remove</Typography>
         </MenuItem>
       </CustomMenu>
     </>

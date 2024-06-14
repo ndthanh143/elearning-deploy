@@ -1,5 +1,5 @@
 export * from './Auth/LoginPage'
-export * from './Student/HomePage'
+export * from './Student/StudentHomePage'
 export * from './Student/StudentCoursesPage'
 export * from './Common/CourseDetailPage'
 export * from './Common/QuizPage'

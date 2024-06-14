@@ -9,7 +9,7 @@ export function AuthLayout({ children }: PropsWithChildren) {
 
   useEffect(() => {
     if (profile) {
-      const url = profile.data.role === 'Student' ? '/' : '/courses'
+      const url = profile.data.role === 'Student' ? '/home' : '/courses'
       navigate(url)
     }
   }, [profile])

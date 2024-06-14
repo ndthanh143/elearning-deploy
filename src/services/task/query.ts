@@ -7,4 +7,7 @@ export const taskKeys = {
   lists: () => [...taskKeys.all, 'list'] as const,
   list: (query: GetTaskListQuery = {}) =>
     defineQuery([...taskKeys.lists(), query], () => taskService.getListTask(query)),
+  listByGroups: () => [...taskKeys.all, 'list-by-group'] as const,
+  listByGroup: (groupId: number) =>
+    defineQuery([...taskKeys.lists(), groupId], () => taskService.getListTaskByGroup(groupId)),
 }

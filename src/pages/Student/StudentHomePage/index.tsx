@@ -1,13 +1,13 @@
 import { Container, Grid, Stack } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../hooks'
-import { Activity, FollowingCourses, BannerHeading, ListStudent, Overview } from './components'
+import { Activity, FollowingCourses, BannerHeading, Overview } from './components'
 import { RoleEnum } from '@/services/auth/auth.dto'
 import { useEffect } from 'react'
 import dayjs from 'dayjs'
 import { icons } from '@/assets/icons'
 
-export const HomePage = () => {
+export const StudentHomePage = () => {
   const navigate = useNavigate()
 
   const { profile, isAuthenticated } = useAuth()
@@ -38,7 +38,6 @@ export const HomePage = () => {
           <Grid item xs={3.5}>
             <Stack gap={4}>
               <Activity />
-              <ListStudent />
             </Stack>
           </Grid>
         </Grid>

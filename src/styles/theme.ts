@@ -99,6 +99,7 @@ export const theme = createTheme({
           borderRadius: 12,
           fontStyle: 'normal',
           textTransform: 'unset',
+          boxShadow: 'none',
         },
       },
     },

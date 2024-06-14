@@ -1,5 +1,5 @@
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
-import { CssBaseline, ThemeProvider, Typography } from '@mui/material'
+import { CssBaseline, ThemeProvider } from '@mui/material'
 import { ToastContainer } from 'react-toastify'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import NProgress from 'nprogress'
@@ -12,7 +12,7 @@ import {
   CourseDetailPage,
   CreateNewCoursePage,
   EditCoursePage,
-  HomePage,
+  StudentHomePage,
   LecturePage,
   LoginPage,
   StudentManagement,
@@ -27,6 +27,7 @@ import {
   TaskPage,
   ForgotPasswordPage,
   ResourcePage,
+  LandingPage,
 } from './pages'
 
 import 'react-big-calendar/lib/css/react-big-calendar.css'
@@ -39,7 +40,7 @@ import '@fontsource/roboto/700.css'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import './App.css'
-import { Suspense, useEffect } from 'react'
+import { useEffect } from 'react'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import { configs } from './configs'
 import { QuizReview } from './pages/Common/QuizPage/containers'
@@ -85,62 +86,111 @@ const router = createBrowserRouter([
       },
     ],
   },
+  { path: '/', element: <LandingPage /> },
+
   {
-    path: '/',
+    path: '/home',
     element: (
-      <Suspense fallback={<Typography>Loading...</Typography>}>
-        <Layout />
-      </Suspense>
+      <Layout>
+        <StudentHomePage />
+      </Layout>
     ),
+  },
+  {
+    path: 'profile',
+    element: (
+      <Layout>
+        <ProfilePage />
+      </Layout>
+    ),
+  },
+  {
+    path: 'courses',
+    element: <Layout />,
     children: [
-      { index: true, element: <HomePage /> },
-      { path: 'profile', element: <ProfilePage /> },
+      { index: true, element: <CoursesPageLayout /> },
+      { path: 'create', element: <CreateNewCoursePage /> },
+      { path: ':courseId/manage', element: <EditCoursePage /> },
+    ],
+  },
+  {
+    path: 'planning',
+    children: [
       {
-        path: 'courses',
-        children: [
-          { index: true, element: <CoursesPageLayout /> },
-          { path: 'create', element: <CreateNewCoursePage /> },
-          { path: ':courseId/manage', element: <EditCoursePage /> },
-        ],
-      },
-      {
-        path: 'planning',
-        children: [{ index: true, element: <PlanningPage /> }],
-      },
-      {
-        path: 'group',
-        children: [{ index: true, element: <GroupManagementPage /> }],
-      },
-      {
-        path: 'student-manage',
-        element: <StudentManagement />,
-      },
-      {
-        path: 'submission-management',
-        element: <SubmissionManagementPage />,
-      },
-      {
-        path: 'schedule',
-        element: <SchedulePage />,
-      },
-      {
-        path: 'confirm-invitation',
-        element: <ConfirmInvitationPage />,
-      },
-      {
-        path: 'quiz-submission',
-        children: [
-          {
-            path: ':quizSubmissionId',
-            element: <QuizReview />,
-          },
-        ],
-      },
-      {
-        path: 'tasks',
-        element: <TaskPage />,
+        index: true,
+        element: (
+          <Layout>
+            <PlanningPage />
+          </Layout>
+        ),
       },
     ],
+  },
+  {
+    path: 'group',
+    children: [
+      {
+        index: true,
+        element: (
+          <Layout>
+            <GroupManagementPage />
+          </Layout>
+        ),
+      },
+    ],
+  },
+  {
+    path: 'student-manage',
+    element: (
+      <Layout>
+        <StudentManagement />
+      </Layout>
+    ),
+  },
+  {
+    path: 'submission-management',
+    element: (
+      <Layout>
+        <SubmissionManagementPage />
+      </Layout>
+    ),
+  },
+  {
+    path: 'schedule',
+    element: (
+      <Layout>
+        <SchedulePage />
+      </Layout>
+    ),
+  },
+  {
+    path: 'confirm-invitation',
+    element: (
+      <Layout>
+        <ConfirmInvitationPage />
+      </Layout>
+    ),
+  },
+  {
+    path: 'quiz-submission',
+    children: [
+      {
+        path: ':quizSubmissionId',
+        element: (
+          <Layout>
+            <QuizReview />
+          </Layout>
+        ),
+      },
+    ],
+  },
+  {
+    path: 'tasks',
+    element: (
+      <Layout>
+        <TaskPage />
+      </Layout>
+    ),
   },
   {
     path: 'login',

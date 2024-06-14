@@ -8,7 +8,7 @@ export type GetTaskListQuery = {}
 export type UpdateTaskPayload = {
   id: number
   name: string
-  size: number
+  description: string
 }
 
 export type CreateTaskPayload = {
@@ -19,5 +19,17 @@ export type CreateTaskPayload = {
 export interface Task {
   id: number
   name: string
-  description: number
+  description: string
+}
+
+export type RemoveTaskFromGroupPayload = {
+  groupId: number
+  taskId: number
+}
+
+export type ChangeTimeTaskForGroupPayload = {
+  groupId: number
+  taskId: number
+  startDate: string
+  endDate: string
 }

@@ -73,10 +73,10 @@ export interface Info {
 
 export interface TaskInfo {
   description: string
-  endDate: Date
+  endDate: string
   groupId: number
   groupName: string
   id: number
   name: string
-  startDate: Date
+  startDate: string
 }

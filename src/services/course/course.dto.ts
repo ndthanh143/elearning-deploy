@@ -24,6 +24,7 @@ export type Course = {
   welcome?: string
   congratulation?: string
   isFirstJoin?: boolean
+  isPublic?: boolean
   categoryInfo?: { id: number; name: string; categoryName: string }
 } & BaseData
 

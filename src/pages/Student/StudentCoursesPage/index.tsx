@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useAuth } from '@/hooks'
 import { coursesRegistrationKeys } from '@/services/coursesRegistration/coursesRegistration.query'
 import { CourseCard, NoData } from '@/components'
-import { BannerHeading } from '../HomePage/components'
+import { BannerHeading } from '../StudentHomePage/components'
 
 const DEFAULT_PAGE_SIZE = 10
 export const StudentCoursesPage = () => {

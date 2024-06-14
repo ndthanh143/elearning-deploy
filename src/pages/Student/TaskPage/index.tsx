@@ -21,7 +21,10 @@ import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import { GroupCard } from '../GroupPage'
+import { groupKeys } from '@/services/group/query'
+import { GroupCard } from '@/pages/Teacher/GroupManagementPage/components'
+import { taskKeys } from '@/services/task/query'
+import { Task } from '@/services/task/dto'
 
 const ListMembers = () => {
   return <Stack gap={2}></Stack>
@@ -37,7 +40,7 @@ const TaskStatus = ({ status }: { status: 'done' | 'undone' }) => {
   )
 }
 
-const TaskCard = () => {
+const TaskCard = ({ data }: { data: Task }) => {
   return (
     <Badge
       badgeContent={'1'}
@@ -45,6 +48,9 @@ const TaskCard = () => {
       anchorOrigin={{
         vertical: 'top',
         horizontal: 'left',
+      }}
+      sx={{
+        width: '100%',
       }}
     >
       <Card
@@ -55,6 +61,7 @@ const TaskCard = () => {
             cursor: 'pointer',
           },
           transition: 'all 0.15s ease-in-out',
+          width: '100%',
         }}
       >
         <CardContent>
@@ -64,7 +71,7 @@ const TaskCard = () => {
                 {icons['task']}
               </Box>
               <Typography fontWeight={700} variant='body2'>
-                Task 1
+                {data.name}
               </Typography>
             </Flex>
             <TaskStatus status='done' />
@@ -72,10 +79,7 @@ const TaskCard = () => {
           <Divider sx={{ my: 2 }} />
           <Stack gap={0.5}>
             {icons['description']}
-            <Typography variant='body2'>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ac odio nec libero fermentum fringilla.
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ac odio nec libero fermentum fringilla...
-            </Typography>
+            <Typography variant='body2'>{data.description}</Typography>
           </Stack>
           <Stack gap={1} mt={2}>
             <Flex gap={2}>
@@ -100,9 +104,10 @@ const TaskCard = () => {
 interface ITaskDetailProps {
   isOpen: boolean
   onClose: () => void
+  data: Task
 }
 
-const TaskDetail = ({ isOpen, onClose }: ITaskDetailProps) => {
+const TaskDetail = ({ isOpen, onClose, data }: ITaskDetailProps) => {
   const [file, setFile] = useState<File | null>(null)
   const { value: isOpenConfirm, setTrue: openConfirm, setFalse: closeConfirm } = useBoolean(false)
 
@@ -132,7 +137,7 @@ const TaskDetail = ({ isOpen, onClose }: ITaskDetailProps) => {
               {icons['task']}
             </Box>
             <Typography fontWeight={700} variant='body2'>
-              Task 1
+              {data.name}
             </Typography>
           </Flex>
         </Flex>
@@ -153,10 +158,7 @@ const TaskDetail = ({ isOpen, onClose }: ITaskDetailProps) => {
           </Stack>
         </Stack>
         <Stack gap={0.5} mt={2}>
-          <Typography variant='body2'>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ac odio nec libero fermentum fringilla. Lorem
-            ipsum dolor sit amet, consectetur adipiscing elit. Donec ac odio nec libero fermentum fringilla...
-          </Typography>
+          <Typography variant='body2'>{data.description}</Typography>
         </Stack>
         <Stack mt={2} gap={1}>
           <Flex gap={1}>
@@ -237,12 +239,22 @@ const TaskDetail = ({ isOpen, onClose }: ITaskDetailProps) => {
 
 export function TaskPage() {
   const [state, setState] = useState<'member' | 'task'>('member')
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
 
   const handleChangeState = (state: 'member' | 'task') => () => {
     setState(state)
   }
 
   const [selectedCourseId, setSelectedCourseId] = useState<number>()
+
+  const groupInstance = groupKeys.list({ courseId: Number(selectedCourseId) })
+  const { data: groups } = useQuery({
+    ...groupInstance,
+    enabled: Boolean(selectedCourseId),
+  })
+
+  const taskInstance = taskKeys.list()
+  const { data: tasks } = useQuery({ ...taskInstance })
 
   const coursesInstance = courseKeys.list()
   const { data: courses, isFetched } = useQuery({
@@ -255,7 +267,6 @@ export function TaskPage() {
     }
   }, [isFetched, courses])
 
-  const [selectedTask, setSelectedTask] = useState<number | null>(null)
   return (
     <>
       <Container>
@@ -292,27 +303,40 @@ export function TaskPage() {
                     />
                   </Flex>
                   <Divider sx={{ my: 2 }} />
-                  {state === 'member' ? (
-                    <Grid container spacing={2}>
-                      {Array(6)
-                        .fill(true)
-                        .map((_, index) => (
+                  {state === 'member' &&
+                    (groups?.content.length ? (
+                      <Grid container spacing={2}>
+                        {groups?.content.map((group, index) => (
                           <Grid key={index} item xs={12} sm={6} md={6} lg={4}>
-                            <GroupCard size={4} state={'member'} />
+                            <GroupCard size={4} state={'member'} data={group} />
                           </Grid>
                         ))}
-                    </Grid>
-                  ) : (
-                    <Stack gap={4}>
-                      {Array(6)
-                        .fill(true)
-                        .map((_, index) => (
-                          <Box key={index} onClick={() => setSelectedTask(index)}>
-                            <TaskCard key={index} />
+                      </Grid>
+                    ) : (
+                      <Stack alignItems='center' justifyContent='center' minHeight={'70vh'} gap={4}>
+                        {icons['noData']}
+                        <Typography variant='body2' color={gray[500]}>
+                          There is no group in this course, please contact your teacher to create a group
+                        </Typography>
+                      </Stack>
+                    ))}
+                  {state === 'task' &&
+                    (tasks?.content.length ? (
+                      <Stack gap={4}>
+                        {tasks?.content.map((task, index) => (
+                          <Box key={task.id} onClick={() => setSelectedTask(task)}>
+                            <TaskCard key={index} data={task} />
                           </Box>
                         ))}
-                    </Stack>
-                  )}
+                      </Stack>
+                    ) : (
+                      <Stack alignItems='center' justifyContent='center' minHeight={'70vh'} gap={4}>
+                        {icons['noData']}
+                        <Typography variant='body2' color={gray[500]}>
+                          There is no group in this course, please contact your teacher to create a group
+                        </Typography>
+                      </Stack>
+                    ))}
                 </CardContent>
               </Card>
             </DndProvider>
@@ -329,7 +353,7 @@ export function TaskPage() {
           </Grid>
         </Grid>
       </Container>
-      <TaskDetail isOpen={!!selectedTask} onClose={() => setSelectedTask(null)} />
+      {selectedTask && <TaskDetail data={selectedTask} isOpen={!!selectedTask} onClose={() => setSelectedTask(null)} />}
     </>
   )
 }

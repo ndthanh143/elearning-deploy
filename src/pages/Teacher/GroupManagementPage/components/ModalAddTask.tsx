@@ -8,9 +8,10 @@ interface IModalAddTaskProps {
   onClose: () => void
   form: FormTaskModal
   loading: boolean
+  status: 'edit' | 'create'
   onSubmit: (payload: { name: string; description: string; startDate: string; endDate: string }) => void
 }
-export function ModalAddTask({ isOpen, onClose, onSubmit, form }: IModalAddTaskProps) {
+export function ModalAddTask({ isOpen, status, onClose, onSubmit, form }: IModalAddTaskProps) {
   const {
     handleSubmit,
     register,
@@ -29,7 +30,7 @@ export function ModalAddTask({ isOpen, onClose, onSubmit, form }: IModalAddTaskP
                 Task
               </Typography>
               <Typography variant='body2' fontWeight={400}>
-                Add task and setup notification
+                {status === 'create' ? 'Add task and setup notification' : 'Edit task and setup notification'}
               </Typography>
             </Stack>
           </Flex>
@@ -94,7 +95,7 @@ export function ModalAddTask({ isOpen, onClose, onSubmit, form }: IModalAddTaskP
         <Flex gap={1} justifyContent='end' mt={2}>
           <Button>Cancel</Button>
           <Button variant='contained' type='submit'>
-            Submit
+            {status === 'create' ? 'Create' : 'Save'}
           </Button>
         </Flex>
       </Box>

@@ -9,7 +9,7 @@ import { courseService } from '@/services/course/course.service'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import { AddOutlined } from '@mui/icons-material'
-import { BannerHeading } from '@/pages/Student/HomePage/components'
+import { BannerHeading } from '@/pages/Student/StudentHomePage/components'
 
 const DEFAULT_LIMIT = 20
 export const TeacherCoursesPage = () => {

@@ -1,64 +1,18 @@
 import { Button, ConfirmPopup, CustomModal, CustomSelect, Flex } from '@/components'
 import { useAlert, useBoolean } from '@/hooks'
-import { gray, primary } from '@/styles/theme'
-import { AddRounded, AutoModeRounded, AutorenewRounded } from '@mui/icons-material'
-import {
-  Avatar,
-  Card,
-  CardContent,
-  Chip,
-  Container,
-  Divider,
-  Grid,
-  Button as MuiButton,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material'
+import { AddRounded, AutoModeRounded } from '@mui/icons-material'
+import { Card, CardContent, Chip, Container, Divider, Grid, Button as MuiButton, Stack, TextField } from '@mui/material'
 import { Fragment, useEffect, useState } from 'react'
 import { GroupCard, ModalAutoGenerateGroup } from './components'
 import { courseKeys } from '@/services/course/course.query'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { icons } from '@/assets/icons'
 import { groupKeys } from '@/services/group/query'
-import { GetListGroupResponse, Group, Info } from '@/services/group/dto'
+import { GetListGroupResponse, Group } from '@/services/group/dto'
 import { groupService } from '@/services'
 import { number, object, string } from 'yup'
 import { UseFormReturn, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { getAbsolutePathFile } from '@/utils'
-
-export const StudentCard = ({ data }: { data: Info }) => {
-  return (
-    <Flex gap={1} sx={{ bgcolor: primary[50], borderRadius: 3, p: 1, width: '100%' }}>
-      <Avatar src={getAbsolutePathFile(data.avatarPath)} sx={{ width: 40, height: 40 }}>
-        {data.fullName.charAt(0)}
-      </Avatar>
-      <Stack gap={0}>
-        <Typography
-          variant='body2'
-          fontWeight={700}
-          textOverflow='ellipsis'
-          maxWidth={300}
-          whiteSpace='nowrap'
-          overflow='hidden'
-        >
-          {data.fullName}
-        </Typography>
-        <Typography
-          variant='caption'
-          textOverflow='ellipsis'
-          color={gray[500]}
-          maxWidth={300}
-          whiteSpace='nowrap'
-          overflow='hidden'
-        >
-          {data.email}
-        </Typography>
-      </Stack>
-    </Flex>
-  )
-}
 
 type ModalGroupForm = UseFormReturn<
   {
@@ -305,9 +259,6 @@ export const GroupManagementPage: React.FC = () => {
                   onChange={(e) => setSelectedCourseId(Number(e.target.value))}
                   size='small'
                 />
-                <Button startIcon={<AutorenewRounded />} onClick={openModalGenerate}>
-                  Auto Generate
-                </Button>
               </Flex>
             </Flex>
             <Divider sx={{ my: 2 }} />
@@ -321,6 +272,7 @@ export const GroupManagementPage: React.FC = () => {
                       data={group}
                       onUpdate={handleOpenUpdateGroup(group)}
                       onDelete={() => setSelectedDeleteGroup(group.id)}
+                      queryKey={groupInstance.queryKey}
                     />
                   </Grid>
                   {index === groups.content.length - 1 && (

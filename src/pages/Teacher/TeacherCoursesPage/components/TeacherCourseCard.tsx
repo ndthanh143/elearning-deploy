@@ -1,9 +1,9 @@
 import common from '@/assets/images/icons/common'
-import { ConfirmPopup, Flex } from '@/components'
+import { ConfirmPopup, CustomMenu, Flex } from '@/components'
 import { useBoolean, useMenu } from '@/hooks'
 import { Course } from '@/services/course/course.dto'
 import { getAbsolutePathFile } from '@/utils'
-import { CategoryRounded, DeleteRounded, EditRounded, GroupsRounded, MoreHorizOutlined } from '@mui/icons-material'
+import { CategoryRounded, DeleteRounded, EditRounded, MoreHorizOutlined } from '@mui/icons-material'
 import {
   Card,
   CardContent,
@@ -11,7 +11,6 @@ import {
   Chip,
   IconButton,
   ListItemIcon,
-  Menu,
   MenuItem,
   Stack,
   Typography,
@@ -82,10 +81,16 @@ export const TeacherCourseCard = ({ data, onDelete }: TeacherCourseCardProps) =>
               {data.description}
             </Typography>
             <Flex justifyContent='space-between'>
-              <Flex gap={1}>
+              {/* <Flex gap={1}>
                 <GroupsRounded />
                 <Typography variant='body2'>20 students</Typography>
-              </Flex>
+              </Flex> */}
+              <Chip
+                label={data.isPublic ? 'Public' : 'Private'}
+                size='small'
+                sx={{ fontWeight: 700 }}
+                color={data.isPublic ? 'success' : 'secondary'}
+              />
               <IconButton
                 onClick={(e) => {
                   e.stopPropagation()
@@ -98,7 +103,7 @@ export const TeacherCourseCard = ({ data, onDelete }: TeacherCourseCardProps) =>
           </Stack>
         </CardContent>
       </Card>
-      <Menu open={isOpenMore} anchorEl={AnchorElMore} onClose={closeMoreMenu}>
+      <CustomMenu open={isOpenMore} anchorEl={AnchorElMore} onClose={closeMoreMenu}>
         <MenuItem onClick={handleClickEdit}>
           <ListItemIcon>
             <EditRounded fontSize='small' />
@@ -113,7 +118,7 @@ export const TeacherCourseCard = ({ data, onDelete }: TeacherCourseCardProps) =>
             Remove this course
           </Typography>
         </MenuItem>
-      </Menu>
+      </CustomMenu>
 
       <ConfirmPopup
         isOpen={isOpenConfirmPopup}
