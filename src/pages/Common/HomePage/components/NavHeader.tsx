@@ -7,7 +7,7 @@ import { Account } from '@/services/user/user.dto'
 import { DashboardRounded, LogoutRounded } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
 
-const ProfileRender = ({ data, isTeacher, isStudent }: { data: Account; isTeacher: boolean; isStudent: boolean }) => {
+const ProfileRender = ({ data, isTeacher }: { data: Account; isTeacher: boolean; isStudent: boolean }) => {
   const { anchorEl, onClose, onOpen, isOpen } = useMenu()
   const navigate = useNavigate()
   return (

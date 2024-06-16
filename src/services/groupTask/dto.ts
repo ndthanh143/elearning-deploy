@@ -5,7 +5,9 @@ import { Task } from '../task/dto'
 export type GetListGroupTaskResponse = BasePaginationResponse<GroupTask[]>
 export type GetGroupTaskResponse = BaseResponse<GroupTask>
 
-export type GetGroupTaskListQuery = {}
+export type GetGroupTaskListQuery = {
+  groupId?: number
+}
 
 export type UpdateGroupTaskPayload = {
   id: number

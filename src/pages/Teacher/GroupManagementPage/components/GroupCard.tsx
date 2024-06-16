@@ -1,8 +1,9 @@
 import { ConfirmPopup, CustomMenu, Flex } from '@/components'
 import { useAlert, useAuth, useBoolean, useMenu } from '@/hooks'
-import { gray, primary } from '@/styles/theme'
-import { AddRounded, DeleteRounded, EditRounded, MoreVertRounded } from '@mui/icons-material'
+import { blue, gray, primary } from '@/styles/theme'
+import { AddRounded, DeleteRounded, EditRounded, LogoutRounded, MoreVertRounded } from '@mui/icons-material'
 import {
+  Button,
   Card,
   CardContent,
   Divider,
@@ -15,9 +16,9 @@ import {
 } from '@mui/material'
 import { ModalAddTask, TaskCard, StudentCard } from '.'
 import { icons } from '@/assets/icons'
-import { GetGroupListQuery, GetListGroupResponse, Group, TaskInfo } from '@/services/group/dto'
+import { GetGroupListQuery, GetListGroupResponse, Group, GroupTaskInfo } from '@/services/group/dto'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { groupTaskService, taskService } from '@/services'
+import { groupService, groupTaskService, taskService } from '@/services'
 import { object, string } from 'yup'
 import { UseFormReturn, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -30,6 +31,7 @@ interface GroupCardProps {
   data: Group
   onUpdate?: () => void
   onDelete?: () => void
+  onAddStudent?: () => void
   queryKey?: (GetGroupListQuery | 'list' | 'group')[]
 }
 
@@ -57,19 +59,22 @@ export const GroupCard = ({
   data,
   onUpdate = () => {},
   onDelete = () => {},
+  onAddStudent = () => {},
 }: GroupCardProps) => {
-  const { isTeacher } = useAuth()
+  const { isTeacher, isStudent, profile } = useAuth()
   const { triggerAlert } = useAlert()
   const queryClient = useQueryClient()
   const { anchorEl, onClose, isOpen, onOpen } = useMenu()
   const { value: isOpenAddTask, setTrue: openAddTask, setFalse: closeAddTask } = useBoolean()
   const [selectedDeleteTask, setSelectedDeleteTask] = useState<number | null>(null)
-  const [selectedEditTask, setSelectedEditTask] = useState<TaskInfo | null>(null)
+  const [selectedEditTask, setSelectedEditTask] = useState<GroupTaskInfo | null>(null)
 
   const form = useForm({ resolver: yupResolver(taskSchema) })
 
-  const handleRemoveStudent = (index: number) => () => {
-    triggerAlert(`Remove student at ${index}`)
+  const isStudentExistIngroup = data.studentInfo.some((student) => student.id === profile?.data.id)
+
+  const handleRemoveStudent = (studentId: number) => () => {
+    mutateRemoveStudentFromGroup({ groupId: data.id, studentId })
   }
 
   const { mutate: mutateGrantTask } = useMutation({
@@ -77,12 +82,12 @@ export const GroupCard = ({
     onSuccess: (payload) => {
       if (queryKey) {
         queryClient.setQueryData(queryKey, (old: GetListGroupResponse['data']) => {
-          const newTaskInfo: TaskInfo = {
+          const newTaskInfo: GroupTaskInfo = {
             id: payload.taskInfo.id,
             description: payload.taskInfo.description,
             endDate: payload.endDate,
             startDate: payload.startDate,
-            name: payload.taskInfo.name,
+            taskName: payload.taskInfo.name,
             groupId: payload.groupInfo.id,
             groupName: payload.groupInfo.name,
           }
@@ -93,7 +98,7 @@ export const GroupCard = ({
               if (group.id === data.id) {
                 return {
                   ...group,
-                  taskInfo: [...group.taskInfo, newTaskInfo],
+                  groupTaskInfo: [...group.groupTaskInfo, newTaskInfo],
                 }
               }
               return group
@@ -146,7 +151,7 @@ export const GroupCard = ({
               if (group.id === data.id) {
                 return {
                   ...group,
-                  taskInfo: group.taskInfo.filter((task) => task.id !== selectedDeleteTask),
+                  groupTaskInfo: group.groupTaskInfo.filter((task) => task.id !== selectedDeleteTask),
                 }
               }
               return group
@@ -205,16 +210,94 @@ export const GroupCard = ({
     }
   }
 
+  const { mutate: mutateEnroll } = useMutation({
+    mutationFn: groupService.enroll,
+    onSuccess: () => {
+      if (queryKey && profile) {
+        queryClient.setQueryData(queryKey, (old: GetListGroupResponse['data']) => {
+          return {
+            ...old,
+            content: old.content.map((group) => {
+              if (group.id === data.id) {
+                return {
+                  ...group,
+                  studentInfo: [...group.studentInfo, profile.data],
+                }
+              }
+              return group
+            }),
+          }
+        })
+      }
+      triggerAlert('Enroll successfully', 'success')
+    },
+    onError: () => {
+      triggerAlert('Enroll failed', 'error')
+    },
+  })
+
+  const { mutate: mutateLeave } = useMutation({
+    mutationFn: groupService.leave,
+    onSuccess: () => {
+      if (queryKey && profile) {
+        queryClient.setQueryData(queryKey, (old: GetListGroupResponse['data']) => {
+          console.log(old.content)
+          return {
+            ...old,
+            content: old.content.map((group) => {
+              if (group.id === data.id) {
+                return {
+                  ...group,
+                  studentInfo: group.studentInfo.filter((student) => student.id !== profile?.data.id),
+                }
+              }
+              return group
+            }),
+          }
+        })
+      }
+      triggerAlert('Leave successfully', 'success')
+    },
+    onError: () => {
+      triggerAlert('Leave failed', 'error')
+    },
+  })
+
+  const { mutate: mutateRemoveStudentFromGroup } = useMutation({
+    mutationFn: groupService.removeStudentFromGroup,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: groupKeys.lists() })
+      triggerAlert('Remove student successfully', 'success')
+    },
+    onError: () => {
+      triggerAlert('Remove student failed', 'error')
+    },
+  })
+
   const totalMemberGroup = data.studentInfo.length
   const restMember = data.size - totalMemberGroup
 
-  const handleUpdateTask = (task: TaskInfo) => () => {
-    form.setValue('name', task.name)
+  const handleUpdateTask = (task: GroupTaskInfo) => () => {
+    form.setValue('name', task.taskName)
     form.setValue('description', task.description)
     form.setValue('startDate', task.startDate)
     form.setValue('endDate', task.endDate)
 
     setSelectedEditTask(task)
+  }
+
+  const handleEnroll = () => {
+    if (isStudent && !isStudentExistIngroup) {
+      mutateEnroll(data.id)
+    }
+  }
+
+  const handleLeave = () => {
+    if (isStudent) {
+      mutateLeave(data.id)
+    } else {
+      triggerAlert('You are not a student', 'error')
+    }
   }
 
   const handleCloseModalTask = () => {
@@ -237,10 +320,10 @@ export const GroupCard = ({
         {data.studentInfo.map((student, index) => (
           <Flex
             key={index}
-            border={1}
+            border={profile?.data.id === student.id ? 2 : 1}
             borderRadius={3}
             p={1}
-            borderColor='#ededed'
+            borderColor={profile?.data.id === student.id ? blue[500] : '#ededed'}
             minHeight={50}
             justifyContent='center'
             position='relative'
@@ -267,7 +350,7 @@ export const GroupCard = ({
                   },
                   userSelect: 'none',
                 }}
-                onClick={handleRemoveStudent(index)}
+                onClick={handleRemoveStudent(student.id)}
               >
                 -
               </Flex>
@@ -287,21 +370,27 @@ export const GroupCard = ({
               justifyContent='center'
               sx={{
                 ':hover': {
-                  bgcolor: primary[50],
-                  cursor: 'pointer',
+                  bgcolor: isStudent && isStudentExistIngroup ? '' : primary[50],
+                  cursor: isStudent && isStudentExistIngroup ? 'not-allowed' : 'pointer',
                 },
               }}
+              onClick={() => (isTeacher ? onAddStudent() : handleEnroll())}
             >
               <AddRounded color='primary' />
             </Flex>
           ))}
+        {isStudent && data.studentInfo.some((student) => student.id === profile?.data.id) && (
+          <Button onClick={handleLeave} color='error' variant='outlined' startIcon={<LogoutRounded />}>
+            Leave
+          </Button>
+        )}
       </>
     )
   }
 
   const renderTasks = () => {
-    return data.taskInfo.length > 0 ? (
-      data.taskInfo.map((task, index) => (
+    return data.groupTaskInfo.length > 0 ? (
+      data.groupTaskInfo.map((task, index) => (
         <TaskCard
           key={task.id}
           data={task}

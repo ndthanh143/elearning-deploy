@@ -3,7 +3,7 @@ import { useAlert, useBoolean } from '@/hooks'
 import { AddRounded, AutoModeRounded } from '@mui/icons-material'
 import { Card, CardContent, Chip, Container, Divider, Grid, Button as MuiButton, Stack, TextField } from '@mui/material'
 import { Fragment, useEffect, useState } from 'react'
-import { GroupCard, ModalAutoGenerateGroup } from './components'
+import { GroupCard, ModalAutoGenerateGroup, ModalListStudentToAdd } from './components'
 import { courseKeys } from '@/services/course/course.query'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { icons } from '@/assets/icons'
@@ -100,6 +100,7 @@ export const GroupManagementPage: React.FC = () => {
   const [selectedDeleteGroup, setSelectedDeleteGroup] = useState<number | null>(null)
   const [selectedGroupEdit, setSelectedGroupEdit] = useState<number | null>(null)
   const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null)
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null)
 
   const handleChangeState = (state: 'member' | 'task') => () => {
     setState(state)
@@ -150,7 +151,7 @@ export const GroupManagementPage: React.FC = () => {
         return {
           ...oldData,
           content: oldData.content.map((group) =>
-            group.id === payload.id ? { ...newData, taskInfo: group.taskInfo || [] } : group,
+            group.id === payload.id ? { ...newData, groupTaskInfo: group.groupTaskInfo || [] } : group,
           ),
         }
       })
@@ -273,6 +274,7 @@ export const GroupManagementPage: React.FC = () => {
                       onUpdate={handleOpenUpdateGroup(group)}
                       onDelete={() => setSelectedDeleteGroup(group.id)}
                       queryKey={groupInstance.queryKey}
+                      onAddStudent={() => setSelectedGroup(group)}
                     />
                   </Grid>
                   {index === groups.content.length - 1 && (
@@ -326,6 +328,16 @@ export const GroupManagementPage: React.FC = () => {
         isLoading={isPendingDeleteGroup}
         onAccept={handleDeleteGroup}
       />
+      {selectedCourseId && selectedGroup && (
+        <ModalListStudentToAdd
+          isOpen={Boolean(selectedGroup && selectedCourseId)}
+          courseId={selectedCourseId}
+          groupId={selectedGroup.id}
+          groupName={selectedGroup.name}
+          onClose={() => setSelectedGroup(null)}
+          maxStudent={selectedGroup.size - selectedGroup.studentInfo.length}
+        />
+      )}
     </>
   )
 }

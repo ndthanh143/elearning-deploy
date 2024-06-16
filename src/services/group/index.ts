@@ -29,4 +29,16 @@ export const groupService = {
   delete: async (id: number) => {
     await axiosInstance.delete(`group/delete/${id}`)
   },
+  enroll: async (groupId: number) => {
+    await axiosInstance.post(`group/enroll`, { groupId })
+  },
+  leave: async (groupId: number) => {
+    await axiosInstance.delete(`group/leave/${groupId}`)
+  },
+  addStudentToGroup: async (payload: { groupId: number; studentId: number }) => {
+    await axiosInstance.post(`group/add-student-to-group`, payload)
+  },
+  removeStudentFromGroup: async ({ groupId, studentId }: { groupId: number; studentId: number }) => {
+    await axiosInstance.delete(`group/remove-student/${groupId}/${studentId}`)
+  },
 }

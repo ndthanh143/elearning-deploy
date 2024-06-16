@@ -31,7 +31,7 @@ export interface Group {
   name: string
   size: number
   studentInfo: Info[]
-  taskInfo: TaskInfo[]
+  groupTaskInfo: GroupTaskInfo[]
 }
 
 export interface CourseInfo {
@@ -71,12 +71,14 @@ export interface Info {
   id: number
 }
 
-export interface TaskInfo {
+export interface GroupTaskInfo {
   description: string
   endDate: string
   groupId: number
   groupName: string
   id: number
-  name: string
+  taskName: string
   startDate: string
+  isSubmitted?: boolean
+  taskId?: number
 }

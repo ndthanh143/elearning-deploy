@@ -1,16 +1,16 @@
 import { CustomMenu, Flex } from '@/components'
 import { primary } from '@/styles/theme'
 import { DeleteRounded, EditRounded, MoreVertRounded } from '@mui/icons-material'
-import { Box, IconButton, ListItemIcon, MenuItem, Stack, Typography } from '@mui/material'
+import { Box, Chip, IconButton, ListItemIcon, MenuItem, Stack, Typography } from '@mui/material'
 import { useDrag, useDrop, DragSourceMonitor } from 'react-dnd'
 import { icons } from '@/assets/icons'
-import { TaskInfo } from '@/services/group/dto'
+import { GroupTaskInfo } from '@/services/group/dto'
 import { formatDate } from '@/utils'
 import { useMenu } from '@/hooks'
 
 interface TaskCardProps {
   index: number
-  data: TaskInfo
+  data: GroupTaskInfo
   moveTask: (fromIndex: number, toIndex: number) => void
   onUpdate?: () => void
   onDelete?: () => void
@@ -52,9 +52,15 @@ export const TaskCard: React.FC<TaskCardProps> = ({
         bgcolor={primary[50]}
         sx={{ opacity: isDragging ? 0.5 : 1 }}
       >
+        <Chip
+          label={data.isSubmitted ? 'Submited' : 'Unsubmit'}
+          color={data.isSubmitted ? 'success' : 'default'}
+          sx={{ width: 'fit-content' }}
+          size='small'
+        />
         <Flex justifyContent='space-between'>
           <Typography variant='body2' fontWeight={700}>
-            {data.name}
+            {data.taskName}
           </Typography>
           <IconButton onClick={onOpen}>
             <MoreVertRounded fontSize='small' />

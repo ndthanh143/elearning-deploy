@@ -10,7 +10,7 @@ export const StudentCard = ({ data }: { data: Info }) => {
       <Avatar src={getAbsolutePathFile(data.avatarPath)} sx={{ width: 40, height: 40 }}>
         {data.fullName.charAt(0)}
       </Avatar>
-      <Stack gap={0}>
+      <Stack gap={0} width='100%'>
         <Typography
           variant='body2'
           fontWeight={700}
@@ -25,7 +25,7 @@ export const StudentCard = ({ data }: { data: Info }) => {
           variant='caption'
           textOverflow='ellipsis'
           color={gray[500]}
-          maxWidth={300}
+          maxWidth='100%'
           whiteSpace='nowrap'
           overflow='hidden'
         >
