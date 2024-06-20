@@ -17,7 +17,7 @@ const renderColors = {
   black: '#000',
 }
 
-export function IconContainer({ isActive, color = 'primary', ...props }: IIconContainerProps) {
+export function IconContainer({ sx, isActive, onClick, color = 'primary', ...props }: IIconContainerProps) {
   return (
     <Flex
       alignItems='center'
@@ -25,6 +25,11 @@ export function IconContainer({ isActive, color = 'primary', ...props }: IIconCo
       bgcolor={isActive ? renderColors[color] : 'transparent'}
       borderRadius={3}
       p={1}
+      sx={{
+        cursor: onClick ? 'pointer' : 'default',
+        ...sx,
+      }}
+      onClick={onClick}
       {...props}
     />
   )

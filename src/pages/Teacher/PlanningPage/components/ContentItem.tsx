@@ -4,6 +4,7 @@ import { useAlert, useBoolean, useMenu } from '@/hooks'
 import { lessonPlanKey } from '@/services/lessonPlan/lessonPlan.query'
 import { unitService } from '@/services/unit'
 import { Unit } from '@/services/unit/types'
+import { getTypeUnit } from '@/utils'
 import { Settings } from '@mui/icons-material'
 import { Box, IconButton, MenuItem, Stack, Typography } from '@mui/material'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -38,20 +39,7 @@ export const ContentItem = ({ unit, onClick, onEdit }: ContentItemProps) => {
     onClose()
   }
 
-  let childType: 'lecture' | 'assignment' | 'resource' | 'quiz' = 'lecture'
-  if (unit.lectureInfo) {
-    childType = 'lecture'
-  }
-  if (unit.assignmentInfo) {
-    childType = 'assignment'
-  }
-  if (unit.resourceInfo) {
-    childType = 'resource'
-  }
-
-  if (unit.quizInfo) {
-    childType = 'quiz'
-  }
+  const childType = getTypeUnit(unit)
 
   const dataProps = {
     lecture: {
@@ -65,6 +53,10 @@ export const ContentItem = ({ unit, onClick, onEdit }: ContentItemProps) => {
     resource: {
       title: unit.resourceInfo?.title,
       iconUrl: actions.resource,
+    },
+    video: {
+      title: unit.resourceInfo?.title,
+      iconUrl: actions.video,
     },
     quiz: {
       title: unit.quizInfo?.quizTitle,

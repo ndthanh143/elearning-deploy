@@ -153,7 +153,7 @@ export const LecturePage = () => {
   return (
     lectureData && (
       <>
-        <Container>
+        <Container maxWidth='lg'>
           <Flex gap={8} alignItems='start'>
             <Stack gap={2} flex={1}>
               <Stack direction='row' justifyContent='space-between'>

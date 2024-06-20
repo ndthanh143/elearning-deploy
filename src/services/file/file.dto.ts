@@ -13,10 +13,11 @@ export enum UploadEnumType {
   DOCUMENT = 'DOCUMENT',
   THUMBNAIL = 'THUMBNAIL',
   SUBMISSION_FILE = 'SUBMISSION_FILE',
+  VIDEO = 'VIDEO',
 }
 export type UploadFilePayload = {
   file: File
-  type: 'LOGO' | 'AVATAR' | 'IMAGE' | 'DOCUMENT' | 'THUMBNAIL' | 'SUBMISSION_FILE'
+  type: 'LOGO' | 'AVATAR' | 'IMAGE' | 'DOCUMENT' | 'THUMBNAIL' | 'SUBMISSION_FILE' | 'VIDEO'
 }
 
 export interface FileData {

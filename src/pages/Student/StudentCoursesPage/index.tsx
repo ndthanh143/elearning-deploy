@@ -50,8 +50,8 @@ export const StudentCoursesPage = () => {
               </Grid>
             ))}
           {isLoadingCourses &&
-            Array.from({ length: 3 }).map((_, index) => (
-              <Grid item xs={4} key={index}>
+            Array.from({ length: 4 }).map((_, index) => (
+              <Grid item xs={3} key={index}>
                 <Card variant='outlined'>
                   <Skeleton variant='rectangular' height={200} width='100%' />
                   <CardContent>

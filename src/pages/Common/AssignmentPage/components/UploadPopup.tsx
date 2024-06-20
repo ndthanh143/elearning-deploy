@@ -15,9 +15,9 @@ export type UploadPopupProps = {
 }
 
 export const UploadPopup = ({ isOpen, onClose, onSubmit }: UploadPopupProps) => {
-  const [file, setFile] = useState<any | null>(null)
+  const [file, setFile] = useState<File | null>(null)
 
-  const { mutate: mutateUpload } = useMutation({
+  const { mutate: mutateUploadFile } = useMutation({
     mutationKey: ['upload-file'],
     mutationFn: fileService.upload,
     onSuccess: (data) => {
@@ -26,9 +26,25 @@ export const UploadPopup = ({ isOpen, onClose, onSubmit }: UploadPopupProps) => 
     },
   })
 
+  const { mutate: mutateUploadVideo } = useMutation({
+    mutationKey: ['upload-file'],
+    mutationFn: fileService.uploadVideoFile,
+    onSuccess: (data) => {
+      onSubmit(data.data)
+      onClose()
+    },
+  })
+
   const handleSubmit = () => {
     if (file) {
-      mutateUpload({ file, type: UploadEnumType.SUBMISSION_FILE })
+      console.log('file.type', file.type)
+
+      //handle check type file video
+      if (file.type.includes('video')) {
+        mutateUploadVideo({ file: file as any, type: UploadEnumType.VIDEO })
+      } else {
+        mutateUploadFile({ file: file as any, type: UploadEnumType.SUBMISSION_FILE })
+      }
     }
   }
 

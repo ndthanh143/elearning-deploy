@@ -50,7 +50,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
         p={2}
         borderRadius={3}
         bgcolor={primary[50]}
-        sx={{ opacity: isDragging ? 0.5 : 1 }}
+        sx={{ opacity: isDragging ? 0.5 : 1, height: '100%' }}
       >
         <Chip
           label={data.isSubmitted ? 'Submited' : 'Unsubmit'}

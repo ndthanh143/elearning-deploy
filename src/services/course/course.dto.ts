@@ -14,7 +14,7 @@ export type Course = {
   description: string
   thumbnail: string
   teacherInfo: Account
-  lessonPlanInfo?: LessonPlan
+  lessonPlanInfo: LessonPlan
   objectives: string[]
   requirements: string[]
   forumInfo?: Forum

@@ -7,7 +7,7 @@ import { blue, gray } from '@/styles/theme'
 import { green } from '@mui/material/colors'
 import { useRef } from 'react'
 
-import { Unit } from '@/services/unit/types'
+import { Unit, UnitType } from '@/services/unit/types'
 import { DrawerChildNodeDetail } from './components'
 import { LectureActions } from '@/pages/Teacher/PlanningPage/modals'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -15,16 +15,16 @@ import { lectureService } from '@/services/lecture/lecture.service'
 import { toast } from 'react-toastify'
 import { unitService } from '@/services/unit'
 import { unitKey } from '@/services/unit/query'
-
-type NodeDataType = 'lecture' | 'assignment' | 'quiz' | 'resource'
+import { getTypeUnit } from '@/utils'
 
 type StatusNodeType = 'lock' | 'done' | 'current'
 
-const icons: Record<'assignment' | 'lecture' | 'quiz' | 'resource', string> = {
+const icons: Record<UnitType, string> = {
   assignment: actions.assignment,
   lecture: actions.lecture,
   quiz: actions.quiz,
   resource: actions.resource,
+  video: actions.video,
 }
 
 export const TeacherChildNodeComponent = (props: NodeProps<Unit>) => {
@@ -65,7 +65,7 @@ export const TeacherChildNodeComponent = (props: NodeProps<Unit>) => {
   const targetPosition = xPos < (parent?.position?.x || 0) ? Position.Right : Position.Left
   const sourcePosition = xPos < (parent?.position?.x || 0) ? Position.Left : Position.Right
 
-  const type = unit.lectureInfo ? 'lecture' : unit.assignmentInfo ? 'assignment' : unit.quizInfo ? 'quiz' : 'resource'
+  const type = getTypeUnit(unit)
 
   const nodeStatusProperties: Record<StatusNodeType, any> = {
     lock: {
@@ -127,14 +127,7 @@ export const TeacherChildNodeComponent = (props: NodeProps<Unit>) => {
           }}
         >
           <Box display='flex' gap={2} alignItems='center'>
-            <Box
-              component='img'
-              src={icons[type as NodeDataType]}
-              alt='icon'
-              width={40}
-              height={40}
-              borderRadius='100%'
-            />
+            <Box component='img' src={icons[type as UnitType]} alt='icon' width={40} height={40} borderRadius='100%' />
             <Typography variant='body2' textAlign={'center'}>
               {unit.name}
             </Typography>

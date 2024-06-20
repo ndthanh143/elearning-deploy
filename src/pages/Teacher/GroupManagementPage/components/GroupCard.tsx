@@ -32,6 +32,7 @@ interface GroupCardProps {
   onUpdate?: () => void
   onDelete?: () => void
   onAddStudent?: () => void
+  disabled?: boolean
   queryKey?: (GetGroupListQuery | 'list' | 'group')[]
 }
 
@@ -57,6 +58,7 @@ export const GroupCard = ({
   state = 'member',
   queryKey,
   data,
+  disabled,
   onUpdate = () => {},
   onDelete = () => {},
   onAddStudent = () => {},
@@ -371,10 +373,10 @@ export const GroupCard = ({
               sx={{
                 ':hover': {
                   bgcolor: isStudent && isStudentExistIngroup ? '' : primary[50],
-                  cursor: isStudent && isStudentExistIngroup ? 'not-allowed' : 'pointer',
+                  cursor: disabled || (isStudent && isStudentExistIngroup) ? 'not-allowed' : 'pointer',
                 },
               }}
-              onClick={() => (isTeacher ? onAddStudent() : handleEnroll())}
+              onClick={() => (isTeacher ? onAddStudent() : !disabled && handleEnroll())}
             >
               <AddRounded color='primary' />
             </Flex>
@@ -412,8 +414,8 @@ export const GroupCard = ({
 
   return (
     <>
-      <Card variant='outlined'>
-        <CardContent>
+      <Card variant='outlined' sx={{ opacity: disabled ? 0.6 : 1, height: '100%' }}>
+        <CardContent sx={{ height: '100%' }}>
           <Flex justifyContent='space-between'>
             <Flex justifyContent='space-between'>
               <Flex gap={1}>

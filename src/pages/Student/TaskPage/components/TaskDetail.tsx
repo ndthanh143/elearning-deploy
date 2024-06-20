@@ -1,12 +1,15 @@
 import { icons } from '@/assets/icons'
-import { ConfirmPopup, CustomModal, Dropzone, Flex, IconContainer } from '@/components'
+import { ConfirmPopup, CustomModal, Dropzone, Flex, IconContainer, Loading } from '@/components'
 import { useAlert, useBoolean } from '@/hooks'
 import { fileService } from '@/services/file/file.service'
 import { GroupTask } from '@/services/groupTask/dto'
 import { taskSubmissionService } from '@/services/taskSubmission'
+import { GetListSubmissionResponse } from '@/services/taskSubmission/dto'
+import { taskSubmissionKeys } from '@/services/taskSubmission/query'
 import { gray, primary } from '@/styles/theme'
-import { Avatar, Box, Button, Chip, Divider, Stack, Typography } from '@mui/material'
-import { useMutation } from '@tanstack/react-query'
+import { getAbsolutePathFile } from '@/utils'
+import { Box, Button, Chip, Divider, Stack, Typography } from '@mui/material'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 interface ITaskDetailProps {
   isOpen: boolean
@@ -14,14 +17,32 @@ interface ITaskDetailProps {
   data: GroupTask
 }
 
+const getFileName = (url: string) => {
+  const split = url.split('SUBMISSION_FILE/')
+  return split[split.length - 1]
+}
+
 export const TaskDetail = ({ isOpen, onClose, data }: ITaskDetailProps) => {
   const { triggerAlert } = useAlert()
+  const queryClient = useQueryClient()
   const [file, setFile] = useState<File | null>(null)
   const { value: isOpenConfirm, setTrue: openConfirm, setFalse: closeConfirm } = useBoolean(false)
+
+  const taskSubmissionInstance = taskSubmissionKeys.list({ groupTaskId: data.id })
+  const {
+    data: taskSubmission,
+    refetch: refetchTaskSubmission,
+    isFetched: isFetchedTaskSubmission,
+    isFetching: isFetchingTaskSubmission,
+  } = useQuery({
+    ...taskSubmissionInstance,
+    enabled: Boolean(data.id),
+  })
 
   const { mutate: mutateSubmitTask } = useMutation({
     mutationFn: taskSubmissionService.submit,
     onSuccess: () => {
+      refetchTaskSubmission()
       onClose()
       triggerAlert('Submit successfully!')
     },
@@ -40,6 +61,22 @@ export const TaskDetail = ({ isOpen, onClose, data }: ITaskDetailProps) => {
     },
   })
 
+  const { mutate: mutateDeleteSubmission } = useMutation({
+    mutationFn: taskSubmissionService.delete,
+    onSuccess: () => {
+      queryClient.setQueryData(taskSubmissionInstance.queryKey, (oldData: GetListSubmissionResponse['data']) => {
+        return {
+          ...oldData,
+          content: oldData.content.filter((item: any) => item.id !== taskSubmission?.content[0].id),
+        }
+      })
+      triggerAlert('Remove successfully!')
+    },
+    onError: () => {
+      triggerAlert("Can't Remove answer, please try again!", 'error')
+    },
+  })
+
   const handleDownloadFile = () => {
     if (file) {
       const url = URL.createObjectURL(file)
@@ -49,10 +86,26 @@ export const TaskDetail = ({ isOpen, onClose, data }: ITaskDetailProps) => {
       a.click()
       URL.revokeObjectURL(url)
     }
+
+    if (taskSubmission?.content[0]) {
+      const url = getAbsolutePathFile(taskSubmission?.content[0].fileUrl) || ''
+      const a = document.createElement('a')
+      a.href = url
+      a.download = taskSubmission?.content[0].fileUrl
+      a.click()
+      URL.revokeObjectURL(url)
+    }
   }
 
   const handleRemoveAnswer = () => {
-    setFile(null)
+    if (file) {
+      setFile(null)
+    }
+
+    if (taskSubmission?.content[0]) {
+      mutateDeleteSubmission(taskSubmission?.content[0].id)
+    }
+
     closeConfirm()
   }
 
@@ -61,6 +114,8 @@ export const TaskDetail = ({ isOpen, onClose, data }: ITaskDetailProps) => {
       mutateUploadFile({ file: file as any, type: 'SUBMISSION_FILE' })
     }
   }
+
+  console.log('taskSubmission?.content[0]', taskSubmission?.content[0])
 
   return (
     <>
@@ -102,8 +157,13 @@ export const TaskDetail = ({ isOpen, onClose, data }: ITaskDetailProps) => {
               {file ? 'Your answer' : 'Upload your answer'}
             </Typography>
           </Flex>
-          {!file && <Dropzone onFileChange={setFile} />}
-          {file && (
+          {isFetchingTaskSubmission && (
+            <Flex width='100%' py={4}>
+              <Loading />
+            </Flex>
+          )}
+          {isFetchedTaskSubmission && !file && !taskSubmission?.content[0] && <Dropzone onFileChange={setFile} />}
+          {(file || taskSubmission?.content[0]) && (
             <Stack gap={2}>
               <Box
                 border={1}
@@ -120,11 +180,13 @@ export const TaskDetail = ({ isOpen, onClose, data }: ITaskDetailProps) => {
                   </IconContainer>
                   <Stack>
                     <Typography variant='body2' fontWeight={700}>
-                      {file.name}
+                      {file?.name || getFileName(taskSubmission?.content[0].fileUrl || '')}
                     </Typography>
-                    <Typography variant='body2' color={gray[400]}>
-                      {(file.size / 1024).toFixed(1)} KB
-                    </Typography>
+                    {file && (
+                      <Typography variant='body2' color={gray[400]}>
+                        {(file.size / 1024).toFixed(1)} KB
+                      </Typography>
+                    )}
                   </Stack>
                   <Chip
                     label='Remove'
@@ -136,22 +198,6 @@ export const TaskDetail = ({ isOpen, onClose, data }: ITaskDetailProps) => {
                   />
                 </Flex>
               </Box>
-              <Typography variant='body2' fontWeight={700}>
-                Uploader
-              </Typography>
-              <Flex gap={1}>
-                <Avatar src='https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTbyNyLxq6CsGjR7nhyJs0oRhnTSW0SUNYWnMnC-JSExpKha0bac6xzTufwCzAoqLed4J0zztdsnd0wy6U'>
-                  R
-                </Avatar>
-                <Stack>
-                  <Typography fontWeight={700} variant='body2'>
-                    Cristiano Ronaldo
-                  </Typography>
-                  <Typography variant='body2' color={gray[400]}>
-                    ronaldo.cristiano@gmail.com
-                  </Typography>
-                </Stack>
-              </Flex>
             </Stack>
           )}
           <Flex justifyContent='end' mt={2} gap={2}>

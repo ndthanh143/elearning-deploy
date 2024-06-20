@@ -1,4 +1,4 @@
-import { Button, ConfirmPopup, CustomModal, CustomSelect, Flex } from '@/components'
+import { Button, ConfirmPopup, CustomModal, CustomSelect, Flex, Loading } from '@/components'
 import { useAlert, useBoolean } from '@/hooks'
 import { AddRounded, AutoModeRounded } from '@mui/icons-material'
 import { Card, CardContent, Chip, Container, Divider, Grid, Button as MuiButton, Stack, TextField } from '@mui/material'
@@ -120,7 +120,12 @@ export const GroupManagementPage: React.FC = () => {
   })
 
   const groupInstance = groupKeys.list({ courseId: Number(selectedCourseId) })
-  const { data: groups, refetch: refetchGroups } = useQuery({
+  const {
+    data: groups,
+    refetch: refetchGroups,
+    isFetched: isFetchedGroups,
+    isLoading: isLoadingGroups,
+  } = useQuery({
     ...groupInstance,
     enabled: Boolean(selectedCourseId),
   })
@@ -227,6 +232,8 @@ export const GroupManagementPage: React.FC = () => {
     }
   }, [isFetched, courses])
 
+  const listStudent = groups?.content.map((group) => group.studentInfo.map((student) => student.id)).flat() || []
+
   return (
     <>
       <Container>
@@ -264,6 +271,11 @@ export const GroupManagementPage: React.FC = () => {
             </Flex>
             <Divider sx={{ my: 2 }} />
             <Grid container spacing={2}>
+              {(!isFetchedGroups || isLoadingGroups) && (
+                <Flex width='100%' minHeight={'60vh'}>
+                  <Loading />
+                </Flex>
+              )}
               {groups?.content.map((group, index) => (
                 <Fragment key={group.id}>
                   <Grid item xs={12} sm={6} md={6} lg={4}>
@@ -330,6 +342,7 @@ export const GroupManagementPage: React.FC = () => {
       />
       {selectedCourseId && selectedGroup && (
         <ModalListStudentToAdd
+          listExistStudent={listStudent}
           isOpen={Boolean(selectedGroup && selectedCourseId)}
           courseId={selectedCourseId}
           groupId={selectedGroup.id}

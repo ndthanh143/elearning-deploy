@@ -68,7 +68,7 @@ export const QuizSubmission = ({ courses }: { courses: Course[] }) => {
         <Filter courses={courses} />
       </Flex>
       <Stack gap={4}>
-        <Card>
+        <Card elevation={0}>
           <CardContent>
             <Typography variant='body1' fontWeight={700} mb={1}>
               List submissions

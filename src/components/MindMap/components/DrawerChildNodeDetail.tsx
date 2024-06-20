@@ -1,7 +1,7 @@
 import { ConfirmPopup, Flex } from '@/components'
 import { useBoolean } from '@/hooks'
 import { unitKey } from '@/services/unit/query'
-import { Unit, UpdateUnitPayload } from '@/services/unit/types'
+import { Unit, UnitType, UpdateUnitPayload } from '@/services/unit/types'
 import { yupResolver } from '@hookform/resolvers/yup'
 import {
   AutoFixHigh,
@@ -36,7 +36,7 @@ interface IDrawerChildNodeDetailProps {
   isOpen: boolean
   onClose: () => void
   unit: Unit
-  type: 'assignment' | 'lecture' | 'resource' | 'quiz'
+  type: UnitType
   onEdit: () => void
 }
 

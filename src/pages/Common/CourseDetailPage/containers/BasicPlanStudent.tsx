@@ -121,7 +121,9 @@ export const BasicPlanStudent = ({ lessonPlan }: BasicPlanStudentProps) => {
                       <Divider />
                       <Stack gap={1}>
                         {mappedChildrenUnitByParent[unit.id]?.children.length === 0 && (
-                          <NoData title='No Content yet' />
+                          <Box mt={2}>
+                            <NoData title='No Content yet' />
+                          </Box>
                         )}
                         {mappedChildrenUnitByParent[unit.id]?.children.map((child) => {
                           return <ContentItem unit={child} key={child.id} />

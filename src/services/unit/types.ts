@@ -69,3 +69,5 @@ export type SearchUnitQuery = {
   size?: number
   lessonPlanId?: number
 }
+
+export type UnitType = 'assignment' | 'lecture' | 'resource' | 'quiz' | 'video'

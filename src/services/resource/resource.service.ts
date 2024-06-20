@@ -14,7 +14,10 @@ export const resourceService = {
     return data.data
   },
   create: async (payload: CreateResourcePayload) => {
-    const { data } = await axiosInstance.post<GetResourceResponse>('/resources/create', payload)
+    const { data } = await axiosInstance.post<GetResourceResponse>('/resources/create', {
+      contentType: 'video/quicktime',
+      ...payload,
+    })
 
     return data.data
   },

@@ -146,8 +146,8 @@ export const AssignmentSubmission = ({ courses }: { courses: Course[] }) => {
         <Filter courses={courses} />
       </Flex>
       <Stack gap={4}>
-        <Card sx={{ minHeight: '100%' }}>
-          <CardContent>
+        <Card sx={{ height: '100%' }} elevation={0}>
+          <CardContent sx={{ height: '100%' }}>
             <Flex mb={1} justifyContent='space-between'>
               <Typography variant='body2' fontWeight={700}>
                 List submissions

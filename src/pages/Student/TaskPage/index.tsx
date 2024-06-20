@@ -12,12 +12,10 @@ import { GroupCard } from '@/pages/Teacher/GroupManagementPage/components'
 import { groupTaskKeys } from '@/services/groupTask/query'
 import { GroupTask } from '@/services/groupTask/dto'
 import { TaskCardStudent, TaskDetail } from './components'
-
-const ListMembers = () => {
-  return <Stack gap={2}></Stack>
-}
+import { useAuth } from '@/hooks'
 
 export function TaskPage() {
+  const { profile } = useAuth()
   const [state, setState] = useState<'member' | 'task'>('member')
   const [selectedTask, setSelectedTask] = useState<GroupTask | null>(null)
 
@@ -33,8 +31,12 @@ export function TaskPage() {
     enabled: Boolean(selectedCourseId),
   })
 
-  const taskInstance = groupTaskKeys.list()
-  const { data: tasks } = useQuery({ ...taskInstance })
+  const studentGroup = groups?.content.find((group) =>
+    group.studentInfo.some((student) => student.id === profile?.data.id),
+  )
+
+  const taskInstance = groupTaskKeys.list({ groupId: studentGroup?.id })
+  const { data: tasks } = useQuery({ ...taskInstance, enabled: Boolean(studentGroup) })
 
   const coursesInstance = courseKeys.list()
   const { data: courses, isFetched } = useQuery({
@@ -51,11 +53,11 @@ export function TaskPage() {
     <>
       <Container>
         <Grid container spacing={4}>
-          <Grid item xs={9}>
+          <Grid item xs={12}>
             <DndProvider backend={HTML5Backend}>
               <Card>
                 <CardContent>
-                  <Flex justifyContent='space-between'>
+                  <Flex justifyContent='space-between' gap={4}>
                     <Flex gap={1}>
                       <Chip
                         color='primary'
@@ -88,7 +90,13 @@ export function TaskPage() {
                       <Grid container spacing={2}>
                         {groups?.content.map((group, index) => (
                           <Grid key={index} item xs={12} sm={6} md={6} lg={4}>
-                            <GroupCard size={4} state={'member'} data={group} queryKey={groupInstance.queryKey} />
+                            <GroupCard
+                              size={4}
+                              state={'member'}
+                              data={group}
+                              queryKey={groupInstance.queryKey}
+                              disabled={!!studentGroup && group.id !== studentGroup.id}
+                            />
                           </Grid>
                         ))}
                       </Grid>
@@ -121,7 +129,7 @@ export function TaskPage() {
               </Card>
             </DndProvider>
           </Grid>
-          <Grid item xs={3}>
+          {/* <Grid item xs={}>
             <Card variant='outlined'>
               <CardContent>
                 <Typography fontWeight={700} variant='body1' textAlign='start' mb={2}>
@@ -130,7 +138,7 @@ export function TaskPage() {
                 <ListMembers />
               </CardContent>
             </Card>
-          </Grid>
+          </Grid> */}
         </Grid>
       </Container>
       {selectedTask && <TaskDetail data={selectedTask} isOpen={!!selectedTask} onClose={() => setSelectedTask(null)} />}

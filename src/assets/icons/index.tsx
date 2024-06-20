@@ -19,6 +19,7 @@ import { ResourceIcon } from './ResourceIcon'
 import { TaskIcon } from './TaskIcon'
 import { TitleIcon } from './TitleIcon'
 import { UploadIcon } from './UploadIcon'
+import { VideoIcon } from './VideoIcon'
 import { YoutubeIcon } from './Youtube'
 
 export const icons = {
@@ -44,4 +45,5 @@ export const icons = {
   lock: <LockIcon />,
   education: <EducationIcon />,
   otp: <OTPIcon />,
+  video: <VideoIcon />,
 } as const

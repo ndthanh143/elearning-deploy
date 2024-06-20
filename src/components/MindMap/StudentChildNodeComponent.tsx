@@ -10,12 +10,11 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { CheckCircleOutline, LockOutlined } from '@mui/icons-material'
 import { PropsWithChildren, useEffect, useRef } from 'react'
 
-type NodeDataType = 'lecture' | 'assignment' | 'quiz' | 'resource'
-
 type StatusNodeType = 'lock' | 'done' | 'current'
 
 import { keyframes } from '@mui/system'
-import { Unit } from '@/services/unit/types'
+import { Unit, UnitType } from '@/services/unit/types'
+import { getTypeUnit } from '@/utils'
 
 const pingBorder = keyframes`
   0% {
@@ -52,11 +51,12 @@ const AnimatedBox = ({ children, isPing = false }: PropsWithChildren<{ isPing?: 
   )
 }
 
-const icons: Record<'assignment' | 'lecture' | 'quiz' | 'resource', string> = {
+const icons: Record<UnitType, string> = {
   assignment: actions.assignment,
   lecture: actions.lecture,
   quiz: actions.quiz,
   resource: actions.resource,
+  video: actions.video,
 }
 
 export const StudentChildNodeComponent = (props: NodeProps<Unit>) => {
@@ -95,9 +95,12 @@ export const StudentChildNodeComponent = (props: NodeProps<Unit>) => {
       name: unit.resourceInfo?.title,
       navigate: () => navigate(`${pathname}/u/${unit.id}/resource/${unit.resourceInfo?.id}`),
     },
+    video: {
+      name: unit.resourceInfo?.title,
+      navigate: () => navigate(`${pathname}/u/${unit.id}/resource/${unit.resourceInfo?.id}`),
+    },
   }
-
-  const type = unit.lectureInfo ? 'lecture' : unit.assignmentInfo ? 'assignment' : unit.quizInfo ? 'quiz' : 'resource'
+  const type = getTypeUnit(unit)
 
   const contentMenu = () => (
     <Stack py={2} px={2} gap={2} minWidth={200}>
@@ -139,7 +142,7 @@ export const StudentChildNodeComponent = (props: NodeProps<Unit>) => {
       <Button
         fullWidth
         variant={'contained'}
-        onClick={dataTypes[type as NodeDataType].navigate}
+        onClick={dataTypes[type as UnitType].navigate}
         disabled={status === 'lock'}
       >
         {nodeStatusProperties[status].popup.buttonLabel}
@@ -242,7 +245,7 @@ export const StudentChildNodeComponent = (props: NodeProps<Unit>) => {
             <Box display='flex' gap={2} alignItems='center'>
               <Box
                 component='img'
-                src={icons[type as NodeDataType]}
+                src={icons[type as UnitType]}
                 alt='icon'
                 width={40}
                 height={40}

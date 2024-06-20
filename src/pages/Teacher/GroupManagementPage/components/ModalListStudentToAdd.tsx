@@ -24,6 +24,7 @@ interface IModalListStudentToAddProps {
   groupId: number
   groupName: string
   maxStudent: number
+  listExistStudent: number[]
 }
 export function ModalListStudentToAdd({
   courseId,
@@ -31,6 +32,7 @@ export function ModalListStudentToAdd({
   maxStudent,
   groupName,
   isOpen,
+  listExistStudent,
   onClose,
 }: IModalListStudentToAddProps) {
   const { triggerAlert } = useAlert()
@@ -90,16 +92,22 @@ export function ModalListStudentToAdd({
                 secondaryAction={
                   <Checkbox
                     edge='end'
-                    disabled={checked.length >= maxStudent && checked.indexOf(value.id) === -1}
+                    disabled={
+                      listExistStudent.includes(value.id) ||
+                      (checked.length >= maxStudent && checked.indexOf(value.id) === -1)
+                    }
                     onChange={() => handleToggle(value.id)}
-                    checked={checked.indexOf(value.id) !== -1}
+                    checked={listExistStudent.includes(value.id) || checked.indexOf(value.id) !== -1}
                     inputProps={{ 'aria-labelledby': labelId }}
                   />
                 }
                 disablePadding
               >
                 <ListItemButton
-                  disabled={checked.length >= maxStudent && checked.indexOf(value.id) === -1}
+                  disabled={
+                    listExistStudent.includes(value.id) ||
+                    (checked.length >= maxStudent && checked.indexOf(value.id) === -1)
+                  }
                   onClick={() => handleToggle(value.id)}
                 >
                   <ListItemAvatar>

@@ -8,6 +8,10 @@ export type Resource = {
   resourceTrackingInfo?: {
     id: number
   }
+  state: 'PROCESSING' | 'FAILED' | 'DONE'
+  contentType: string
+  duration: number
+  thumbnail?: string
 } & BaseData
 
 export type CreateResourcePayload = {

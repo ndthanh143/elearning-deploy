@@ -1,53 +1,49 @@
 import actions from '@/assets/images/icons/actions'
 import { Flex } from '@/components'
 import { Unit } from '@/services/unit/types'
+import { getTypeUnit } from '@/utils'
 import { CheckCircleRounded, LockOutlined } from '@mui/icons-material'
 import { Box, Typography } from '@mui/material'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 export type ContentItemProps = {
   unit: Unit
 }
 
 export const ContentItem = ({ unit }: ContentItemProps) => {
-  const { pathname } = useLocation()
+  const { courseId } = useParams()
   const navigate = useNavigate()
-  let childType: 'lecture' | 'assignment' | 'resource' | 'quiz' = 'lecture'
-  if (unit.lectureInfo) {
-    childType = 'lecture'
-  }
-  if (unit.assignmentInfo) {
-    childType = 'assignment'
-  }
-  if (unit.resourceInfo) {
-    childType = 'resource'
-  }
-  if (unit.quizInfo) {
-    childType = 'quiz'
-  }
+  const childType = getTypeUnit(unit)
 
   const dataProps = {
     lecture: {
       title: unit.lectureInfo?.lectureName,
       iconUrl: actions.lecture,
-      onClick: () => navigate(`${pathname}/u/${unit.id}/lecture/${unit.lectureInfo?.id}`),
+      onClick: () => navigate(`/courses/${courseId}/u/${unit.id}/lecture/${unit.lectureInfo?.id}`),
     },
     assignment: {
       title: unit.assignmentInfo?.assignmentTitle,
       iconUrl: actions.assignment,
-      onClick: () => navigate(`${pathname}/u/${unit.id}/assign/${unit.assignmentInfo?.id}`),
+      onClick: () => navigate(`/courses/${courseId}/u/${unit.id}/assign/${unit.assignmentInfo?.id}`),
     },
     resource: {
       title: unit.resourceInfo?.title,
       iconUrl: actions.resource,
       // onClick: () => handleDownloadResource(unit.resourceInfo?.urlDocument || ''),
       // onClick: () => setResourceUrl(`${configs.API_URL}/api/file/download${unit.resourceInfo?.urlDocument}`),
-      onClick: () => navigate(`${pathname}/u/${unit.id}/resource/${unit.resourceInfo?.id}`),
+      onClick: () => navigate(`/courses/${courseId}/u/${unit.id}/resource/${unit.resourceInfo?.id}`),
+    },
+    video: {
+      title: unit.resourceInfo?.title,
+      iconUrl: actions.video,
+      // onClick: () => handleDownloadResource(unit.resourceInfo?.urlDocument || ''),
+      // onClick: () => setResourceUrl(`${configs.API_URL}/api/file/download${unit.resourceInfo?.urlDocument}`),
+      onClick: () => navigate(`/courses/${courseId}/u/${unit.id}/resource/${unit.resourceInfo?.id}`),
     },
     quiz: {
       title: unit.quizInfo?.quizTitle,
       iconUrl: actions.quiz,
-      onClick: () => navigate(`${pathname}/u/${unit.id}/quiz/${unit.quizInfo?.id}`),
+      onClick: () => navigate(`/courses/${courseId}/u/${unit.id}/quiz/${unit.quizInfo?.id}`),
     },
   }
 

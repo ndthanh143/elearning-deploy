@@ -54,17 +54,25 @@ import { AuthLayout, CoursesPageLayout } from './components/layout'
 import { GlobalWorkerOptions, version } from 'pdfjs-dist'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
+import { LessonLayout } from './components/layout/LessonLayout'
 
 GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${version}/build/pdf.worker.mjs`
 
 const router = createBrowserRouter([
   {
     path: 'courses/:courseId',
-    element: <Layout />,
     children: [
-      { index: true, element: <CourseDetailPage /> },
+      {
+        index: true,
+        element: (
+          <Layout>
+            <CourseDetailPage />
+          </Layout>
+        ),
+      },
       {
         path: 'u/:unitId',
+        element: <LessonLayout />,
         children: [
           {
             path: 'assign/:assignmentId',
