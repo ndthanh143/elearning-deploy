@@ -33,10 +33,10 @@ export function CoursePlanSelection({ form }: ICoursePlanSelectionProps) {
   return (
     <Stack gap={2} width='100%'>
       <Box>
-        <Typography textAlign='center' variant='h2' fontWeight={500}>
-          Lesson Plan
+        <Typography variant='h3' fontWeight={700}>
+          Select Lesson Plan
         </Typography>
-        <Typography textAlign='center' variant='body1'>
+        <Typography variant='body2'>
           You can apply a lesson plan to your course, this will help you to manage your course better
         </Typography>
       </Box>
@@ -49,6 +49,7 @@ export function CoursePlanSelection({ form }: ICoursePlanSelectionProps) {
               borderColor={watch('lessonPlanId') === plan.id ? 'primary.main' : 'transparent'}
               borderRadius={6}
               p={1}
+              height='100%'
               sx={{ transition: 'all ease-in-out 0.1s' }}
             >
               <PlanCard data={plan} key={plan.id} viewOnly />

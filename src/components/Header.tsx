@@ -308,7 +308,7 @@ export const Header = () => {
     <>
       <Box sx={{ px: 4, boxShadow: '0 1px 2px 0 rgba(0,0,0,.05)' }} position='relative' bgcolor={'#FEF8FF'}>
         <Grid container>
-          <Grid item xs={4}>
+          <Grid item xs={6}>
             <Flex alignItems='center' height='100%' gap={10}>
               <Box
                 component='img'
@@ -325,7 +325,7 @@ export const Header = () => {
               </Typography>
             </Flex>
           </Grid>
-          <Grid item xs={8} display='flex' justifyContent='end' alignItems='center' gap={4}>
+          <Grid item xs={6} display='flex' justifyContent='end' alignItems='center' gap={4}>
             {/* <LanguageSwitcher /> */}
             <Notification />
             <Box display='flex' alignItems='center' gap={2} sx={{ py: 1, cursor: 'pointer' }} onClick={openProfile}>

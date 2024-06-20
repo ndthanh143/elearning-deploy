@@ -1,5 +1,5 @@
 import { useAuth } from '@/hooks'
-import { Button, Divider, Grid, Stack } from '@mui/material'
+import { Button, Grid, Stack } from '@mui/material'
 import { useState } from 'react'
 import { type UseFormReturn, useForm } from 'react-hook-form'
 import { array, number, object, string } from 'yup'
@@ -58,8 +58,6 @@ export function FormCourseHandle({ handleSubmit, defaultValues }: IFormCourseHan
   const [step, setStep] = useState(0)
   const navigate = useNavigate()
 
-  console.log('defaultValues', defaultValues)
-
   const form = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -105,7 +103,7 @@ export function FormCourseHandle({ handleSubmit, defaultValues }: IFormCourseHan
   ]
 
   return (
-    <Stack py={2}>
+    <Stack py={2} px={4} maxWidth='xl'>
       <Flex justifyContent='end' gap={2} mb={2}>
         <Button
           variant='outlined'
@@ -125,15 +123,12 @@ export function FormCourseHandle({ handleSubmit, defaultValues }: IFormCourseHan
           Save
         </Button>
       </Flex>
-      <Grid spacing={2} alignItems='start' container>
-        <Grid item xs={2}>
+      <Grid spacing={4} alignItems='start' container>
+        <Grid item xs={12} lg={3}>
           <TableStep step={step} onChange={setStep} />
         </Grid>
-        <Grid item xs={10}>
-          <Flex gap={4}>
-            <Divider orientation='vertical' variant='middle' flexItem />
-            {steps[step]}
-          </Flex>
+        <Grid item xs={12} lg={9}>
+          <Flex gap={4}>{steps[step]}</Flex>
         </Grid>
       </Grid>
     </Stack>

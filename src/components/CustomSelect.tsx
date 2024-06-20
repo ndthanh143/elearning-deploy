@@ -20,6 +20,9 @@ export function CustomSelect({ data, sx, ...props }: ICustomSelectProps) {
         borderColor: 'transparent !important',
         outline: 'none !important',
         ...sx,
+        '.MuiSvgIcon-root': {
+          color: '#fff',
+        },
       }}
       MenuProps={{
         PaperProps: {

@@ -67,7 +67,7 @@ export function PlanCard({ data, viewOnly }: IPlanCardProps) {
         sx={{ height: 150, cursor: 'pointer' }}
         onClick={() => !viewOnly && navigate(`/planning/${data.id}`)}
       />
-      <CardContent sx={{ flex: 1 }}>
+      <CardContent sx={{ flex: 1, height: '100%' }}>
         <Stack justifyContent='space-between' height='100%'>
           <Box flex={1}>
             <Typography variant='body1' fontWeight='bold'>

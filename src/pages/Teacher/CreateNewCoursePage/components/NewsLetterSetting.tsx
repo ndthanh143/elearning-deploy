@@ -10,11 +10,11 @@ export function NewsLetterSetting({ form }: INewsLetterSettingProps) {
 
   return (
     <Stack gap={4}>
-      <Stack gap={1}>
-        <Typography variant='h5' fontWeight={700}>
+      <Stack>
+        <Typography variant='h3' fontWeight={700}>
           Newsletter for your course
         </Typography>
-        <Typography>
+        <Typography variant='body2'>
           You can write messages to students (optional) to encourage student engagement with course content. This
           message will be automatically sent when they join or complete the course. If you don't want to send a welcome
           or congratulatory message, leave this text box blank.

@@ -107,11 +107,11 @@ export function PriceConfig({ form }: IPriceConfigProps) {
 
   return (
     <Stack gap={4}>
-      <Stack gap={1}>
-        <Typography variant='h5' fontWeight={700}>
+      <Stack>
+        <Typography variant='h3' fontWeight={700}>
           Price configuration
         </Typography>
-        <Typography variant='body1'>
+        <Typography variant='body2'>
           Please select the currency and price for your course. If you want to offer your course for free, it must have
           a total video length of less than 2 hours. Additionally, courses with practice tests cannot be free.
         </Typography>

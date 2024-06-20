@@ -47,6 +47,15 @@ export function BasicInformation({ form }: IBasicInformationProps) {
       <Box component='form'>
         <Stack gap={2}>
           <Stack>
+            <Typography variant='h3' fontWeight={700}>
+              Basic Information
+            </Typography>
+            <Typography variant='body2'>
+              Please fill in the basic information of your course. Make sure to provide accurate and detailed
+              information so that students can easily understand what your course is about.
+            </Typography>
+          </Stack>
+          <Stack>
             <Typography variant='body1' fontWeight={700} color='secondary.main' mb={1}>
               Course Name
             </Typography>

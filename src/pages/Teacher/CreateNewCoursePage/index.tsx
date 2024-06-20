@@ -1,7 +1,6 @@
 import { LoadingOverlay } from '@/components'
 import { courseKeys } from '@/services/course/course.query'
 import { courseService } from '@/services/course/course.service'
-import { Container } from '@mui/material'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -27,9 +26,7 @@ export function CreateNewCoursePage() {
 
   return (
     <>
-      <Container>
-        <FormCourseHandle handleSubmit={handleSubmit} />
-      </Container>
+      <FormCourseHandle handleSubmit={handleSubmit} />
       <LoadingOverlay isOpen={isLoadingCreate} title='Creating your class...' />
     </>
   )
