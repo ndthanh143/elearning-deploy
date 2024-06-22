@@ -89,7 +89,7 @@ export const SideBar = () => {
       {
         title: 'Home Page',
         icon: <GridViewRounded color={pathname === '/' ? 'primary' : 'inherit'} sx={{ width: 30, height: 30 }} />,
-        href: '/',
+        href: '/home',
       },
       {
         title: 'Courses',

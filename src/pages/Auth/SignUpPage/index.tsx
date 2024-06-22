@@ -1,7 +1,4 @@
-import { object, string } from 'yup'
-import { useForm } from 'react-hook-form'
 import { useState } from 'react'
-import { yupResolver } from '@hookform/resolvers/yup'
 import { ArrowBackOutlined, ArrowForwardOutlined } from '@mui/icons-material'
 import { Box, Button, Container, IconButton, Stack, Typography } from '@mui/material'
 
@@ -10,16 +7,7 @@ import { Flex, Link } from '@/components'
 import { SignUpForm } from './components'
 import { icons } from '@/assets/icons'
 
-const schema = object({
-  email: string().required('Please fill in your username'),
-  password: string().required('Please fill in your password'),
-})
-
 export const SignUpPage = () => {
-  const { handleSubmit } = useForm({ resolver: yupResolver(schema) })
-
-  console.log('handleSubmit', handleSubmit)
-
   const [mode, setMode] = useState<'teacher' | 'student' | 'default'>('default')
 
   const toggleMode = (role: 'teacher' | 'student' | 'default') => () => {

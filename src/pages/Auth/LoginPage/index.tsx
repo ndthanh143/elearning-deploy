@@ -28,7 +28,7 @@ import { configs } from '../../../configs'
 import { SignUpForm } from './_components'
 import { useAlert, useAuth } from '../../../hooks'
 import { AxiosError } from 'axios'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { icons } from '@/assets/icons'
 
 const schema = object({
@@ -39,6 +39,7 @@ const schema = object({
 const clientId = configs.GOOGLE_CLIENT_ID
 export const LoginPage = () => {
   const navigate = useNavigate()
+  const { state } = useLocation()
   const { triggerAlert } = useAlert()
 
   const [defaultSignUpValues, setDefaultSignUpValues] = useState<SignUpPayload>({
@@ -67,7 +68,8 @@ export const LoginPage = () => {
     mutationFn: authService.loginGoogle,
     onSuccess: () => {
       setAuthenticated()
-      navigate(mode === 'teacher' ? '/courses' : '/')
+      const url = mode === 'teacher' ? '/courses' : '/home'
+      navigate(state.from || url)
       triggerAlert('Login successfully!')
       refetch()
     },

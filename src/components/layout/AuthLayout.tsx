@@ -1,16 +1,18 @@
 import { useAuth } from '@/hooks'
 import { PropsWithChildren, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Flex, Loading } from '..'
 
 export function AuthLayout({ children }: PropsWithChildren) {
   const { profile, isFetched, accessToken } = useAuth()
   const navigate = useNavigate()
 
+  const { state } = useLocation()
+
   useEffect(() => {
     if (profile) {
       const url = profile.data.role === 'Student' ? '/home' : '/courses'
-      navigate(url)
+      navigate(state.from || url)
     }
   }, [profile])
 
