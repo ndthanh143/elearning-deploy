@@ -1,6 +1,6 @@
 import { Flex, Header, SideBar } from '..'
 import { Box } from '@mui/material'
-import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks'
 import { PropsWithChildren, useEffect } from 'react'
 import { useWebSocket } from '@/hooks/useWebSocket'
@@ -9,7 +9,6 @@ import 'reactflow/dist/style.css'
 
 export const Layout = ({ children = null }: PropsWithChildren) => {
   const navigate = useNavigate()
-  const { pathname } = useLocation()
 
   const { accessToken, profile, isFetched } = useAuth()
 
@@ -27,6 +26,8 @@ export const Layout = ({ children = null }: PropsWithChildren) => {
   }, [profile])
 
   useEffect(() => {
+    const pathname = window.location.href.replace(window.location.origin, '')
+    console.log('from', pathname)
     if (!accessToken) {
       navigate('/login', {
         state: {

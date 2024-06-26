@@ -346,7 +346,7 @@ export const Header = () => {
                   alt={profile?.data.fullName}
                   sx={{ bgcolor: 'primary.main', width: 30, height: 30 }}
                 >
-                  N
+                  {profile?.data.fullName.charAt(0).toUpperCase()}
                 </Avatar>
               </Box>
             </Box>

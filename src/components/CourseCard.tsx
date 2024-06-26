@@ -79,7 +79,9 @@ export const CourseCard = ({ data }: CourseCardProps) => {
           />
           <Flex alignItems='center' justifyContent='space-between' gap={1}>
             <Flex gap={1}>
-              <Avatar src={data.teacherInfo.avatarPath} sx={{ width: 30, height: 30 }} />
+              <Avatar src={data.teacherInfo.avatarPath} sx={{ width: 30, height: 30, bgcolor: 'primary.main' }}>
+                {data.teacherInfo.fullName[0].toUpperCase()}
+              </Avatar>
               <Typography variant='body2' fontWeight={500}>
                 {data.teacherInfo.fullName}
               </Typography>

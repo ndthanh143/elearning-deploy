@@ -1,14 +1,14 @@
 import { useBoolean, useMenu } from '@/hooks'
 import { Box, Button, Popover, Stack, Typography } from '@mui/material'
-import { Position, NodeProps, Handle, useReactFlow } from 'reactflow'
+import { Position, NodeProps, Handle } from 'reactflow'
 import actions from '@/assets/images/icons/actions'
 
 import 'reactflow/dist/style.css'
 import { blue, gray } from '@/styles/theme'
 import { green } from '@mui/material/colors'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { CheckCircleOutline, LockOutlined } from '@mui/icons-material'
-import { PropsWithChildren, useEffect, useRef } from 'react'
+import { CheckCircleRounded, LockRounded } from '@mui/icons-material'
+import { PropsWithChildren, useRef } from 'react'
 
 type StatusNodeType = 'lock' | 'done' | 'current'
 
@@ -23,7 +23,7 @@ const pingBorder = keyframes`
     opacity: 1;
   }
   100% {
-    transform: scale(1.1, 1.5);
+    transform: scale(1.2);
     opacity: 0;
   }
 `
@@ -41,8 +41,8 @@ const AnimatedBox = ({ children, isPing = false }: PropsWithChildren<{ isPing?: 
           left: -1,
           right: -1,
           bottom: -1,
-          borderRadius: 6, // the border-radius of the Box
-          border: `4px solid ${isPing ? blue[500] : 'transparent'}`,
+          borderRadius: '100%', // the border-radius of the Box
+          border: `2px solid ${isPing ? blue[500] : 'transparent'}`,
           animation: isPing ? `${pingBorder} 1s infinite` : 'none',
         },
       }}
@@ -62,16 +62,14 @@ const icons: Record<UnitType, string> = {
 
 export const CourseChildNodeComponent = (props: NodeProps<Unit>) => {
   const { data: unit, xPos, selected } = props
-  const { parent } = unit
+  const { parent, hidden } = unit
 
   const navigate = useNavigate()
-  const { fitView } = useReactFlow()
   const { pathname } = useLocation()
   const parentRef = useRef<HTMLDivElement | null>(null)
 
   const { toggle } = useBoolean()
   const { anchorEl: anchorElMenu, isOpen: isOpenMenu, onClose: closeMenu, onOpen: openMenu } = useMenu(parentRef)
-  // const { value: isOpenDrawer, setFalse: closeDrawer, setTrue: openDrawer } = useBoolean()
 
   if (!unit) {
     return null
@@ -190,79 +188,83 @@ export const CourseChildNodeComponent = (props: NodeProps<Unit>) => {
     status = 'done'
   }
 
-  useEffect(() => {
-    if (status === 'current') {
-      setTimeout(() => {
-        fitView({
-          nodes: [{ id: unit.id.toString() }],
-          duration: 500,
-          minZoom: 1,
-          maxZoom: 1,
-        })
-      }, 100) // Delay fitView to ensure all elements are loaded
-    }
-  }, [status, fitView, unit.id])
+  // useEffect(() => {
+  //   if (status === 'current') {
+  //     setTimeout(() => {
+  //       fitView({
+  //         nodes: [{ id: unit.id.toString() }],
+  //         duration: 500,
+  //         minZoom: 1,
+  //         maxZoom: 1,
+  //       })
+  //     }, 100) // Delay fitView to ensure all elements are loaded
+  //   }
+  // }, [status, fitView, unit.id])
 
   return (
     <>
       <Box
         borderRadius={6}
         padding={0.5}
-        borderColor={selected ? blue[500] : 'transparent'}
         position='relative'
         ref={parentRef}
         sx={{
           transition: 'all ease 0.2s',
-          boxShadow: 10,
-          bgcolor: 'transparent',
-
-          filter:
-            selected || status === 'current'
-              ? `drop-shadow(0px 0px 0.75rem ${status === 'done' ? green[500] : blue[500]})`
-              : 'none',
+          filter: selected ? `drop-shadow(0px 0px 0.25rem ${status === 'done' ? green[500] : blue[500]})` : 'none',
+          opacity: hidden ? 0 : 1,
+          mt: hidden ? 2 : 0,
         }}
         onClick={(e) => {
           openMenu(e)
         }}
-        // overflow='hidden'
       >
-        <AnimatedBox isPing={status === 'current' && !selected}>
-          <Box
-            p={2}
-            border={1}
-            // borderRadius='100%'
-            borderRadius={4}
-            borderColor={nodeStatusProperties[status].borderColor}
-            onClick={toggle}
-            position='relative'
-            sx={{
-              // backgroundColor: nodeStatusProperties[status].backgroundColor,
-              bgcolor: 'transparent',
-              color: nodeStatusProperties[status].textColor,
-              transition: 'all 0.2s ease-in-out',
-              // ':hover': {
-              //   borderRadius: 4,
-              //   '.lecture-name': { width: '100%' },
-              // },
-            }}
-          >
-            <Stack gap={2} alignItems='center' position='relative'>
+        <Box
+          p={2}
+          borderRadius={4}
+          onClick={toggle}
+          position='relative'
+          sx={{
+            transition: 'all 0.2s ease-in-out',
+          }}
+        >
+          <AnimatedBox isPing={status === 'current' && !selected}>
+            <Stack
+              gap={2}
+              alignItems='center'
+              position='relative'
+              sx={{
+                ':hover': {
+                  '.status-node': {
+                    opacity: 1,
+                    top: -30,
+                  },
+                  '.icon-node-status': {
+                    opacity: 0,
+                  },
+                  '.icon-node-img': {
+                    opacity: 1,
+                  },
+                },
+              }}
+            >
               {['done', 'lock'].includes(status) && (
                 <Flex
-                  p={1}
+                  className='status-node'
                   // bgcolor={nodeStatusProperties[status].borderColor}
                   borderRadius={'100%'}
                   position='absolute'
                   zIndex={1}
-                  border={1}
                   borderColor={gray[500]}
                   sx={{
-                    right: -20,
+                    transition: 'all 0.2s ease-in-out',
+                    left: '50%',
                     top: -20,
+                    opacity: 0,
+                    transform: 'translateX(-50%)',
                   }}
                 >
-                  {status === 'lock' && <LockOutlined sx={{ color: '#fff' }} />}
-                  {status == 'done' && <CheckCircleOutline sx={{ color: '#fff' }} />}
+                  {status === 'lock' && <LockRounded sx={{ color: '#333' }} />}
+                  {status == 'done' && <CheckCircleRounded sx={{ color: green[500] }} />}
                 </Flex>
               )}
               <Flex
@@ -270,34 +272,78 @@ export const CourseChildNodeComponent = (props: NodeProps<Unit>) => {
                 width={65}
                 height={65}
                 borderRadius={'100%'}
-                border={1}
-                borderColor={gray[300]}
+                border={2}
+                borderColor={nodeStatusProperties[status].borderColor}
               >
-                <Box component='img' src={icons[type as UnitType]} alt='icon' width={45} height={45} />
+                {status === 'done' && (
+                  <CheckCircleRounded
+                    className='icon-node-status'
+                    sx={{
+                      color: green[500],
+                      opacity: 1,
+                      transition: 'all 0.2s ease-in-out',
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%,-50%)',
+                    }}
+                    fontSize='large'
+                  />
+                )}
+                {status === 'lock' && (
+                  <LockRounded
+                    className='icon-node-status'
+                    sx={{
+                      color: '#333',
+                      opacity: 1,
+                      transition: 'all 0.2s ease-in-out',
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%,-50%)',
+                    }}
+                    fontSize='large'
+                  />
+                )}
+                <Box
+                  component='img'
+                  src={icons[type as UnitType]}
+                  alt='icon'
+                  width={45}
+                  height={45}
+                  sx={{
+                    opacity: ['done', 'lock'].includes(status) ? 0 : 1,
+                    transition: 'all 0.2s ease-in-out',
+                  }}
+                  className='icon-node-img'
+                />
               </Flex>
 
               <Stack position='absolute' top='110%' minWidth={200}>
                 <Typography variant='body2' textAlign={'center'} fontWeight={700}>
                   {unit.name}
                 </Typography>
-                <Typography variant='body2' textAlign={'center'}>
+                <Typography variant='body2' textAlign={'center'} color={gray[500]}>
                   {unit.description}
                 </Typography>
               </Stack>
             </Stack>
-            <Handle
-              type='source'
-              position={sourcePosition}
-              style={{
-                backgroundColor: 'transparent',
-                borderColor: 'transparent',
-                width: 0,
-                height: 0,
-                padding: 0,
-                visibility: 'hidden',
-              }}
-            />
+          </AnimatedBox>
 
+          <Handle
+            type='source'
+            position={sourcePosition}
+            style={{
+              backgroundColor: 'transparent',
+              borderColor: 'transparent',
+              width: 0,
+              height: 0,
+              padding: 0,
+              visibility: 'hidden',
+            }}
+          />
+
+          {!hidden && (
             <Handle
               type='target'
               position={targetPosition}
@@ -310,8 +356,8 @@ export const CourseChildNodeComponent = (props: NodeProps<Unit>) => {
                 visibility: 'hidden',
               }}
             />
-          </Box>
-        </AnimatedBox>
+          )}
+        </Box>
       </Box>
       <Popover
         open={isOpenMenu}

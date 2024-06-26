@@ -1,5 +1,5 @@
 import { Box, IconButton } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import ReactFlow, { useNodesState, useEdgesState, Node, Edge, MarkerType } from 'reactflow'
 import FullscreenIcon from '@mui/icons-material/Fullscreen'
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit'
@@ -11,9 +11,10 @@ import { LessonPlan } from '@/services/lessonPlan/lessonPlan.dto'
 import { CustomTooltip, Loading } from '..'
 import { primary } from '@/styles/theme'
 
-import 'reactflow/dist/style.css'
 import { CourseCustomNodeComponent } from './StudentCustomNodeComponent'
 import { CourseChildNodeComponent } from './StudentChildNodeComponent'
+import { useLocation } from 'react-router-dom'
+import 'reactflow/dist/style.css'
 
 const nodeTypes = {
   customNode: CourseCustomNodeComponent, // Define your custom node type
@@ -32,8 +33,12 @@ interface IMindMapProps {
 
 export function MindMapStudent({ lessonPlan, isLoading }: IMindMapProps) {
   const [nodes, setNodes] = useNodesState([])
+  const [storeNodes, setStoreNodes] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
-  const [fullscreen, setFullscreen] = useState(false)
+  const { hash } = useLocation()
+  const hashId = hash.replace('#', '')
+
+  const [dataNodes, setDataNodes] = useState({})
 
   const units = lessonPlan.units
 
@@ -50,23 +55,31 @@ export function MindMapStudent({ lessonPlan, isLoading }: IMindMapProps) {
       initialNodes.push({
         id: currentNodeId,
         position: item.position || { x: 0, y: 0 },
-        data: item,
+        data: { ...item, hidden: !isDefaultUnit },
         type: isDefaultUnit ? 'customNode' : 'childNode',
+        ...(parentNodeId && {
+          parentNodeId,
+        }),
       })
       initialEdges.push({
         id: `e${parentNodeId}-${currentNodeId}`,
         source: parentNodeId || '',
         target: currentNodeId,
         type: isDefaultUnit ? 'customEdge' : 'childEdge',
-        // ...(isDefaultUnit && {
         markerEnd: {
           type: MarkerType.ArrowClosed,
           width: 10,
           height: 10,
           color: isDefaultUnit ? primary[500] : '#7EB6C0',
         },
-        // }),
       })
+
+      if (!isDefaultUnit) {
+        setDataNodes({
+          ...dataNodes,
+          [currentNodeId]: dataNodes[currentNodeId] ? [item, ...dataNodes[currentNodeId]] : [item],
+        })
+      }
     }
 
     setNodes(initialNodes)
@@ -74,29 +87,50 @@ export function MindMapStudent({ lessonPlan, isLoading }: IMindMapProps) {
   }, [units])
 
   const toggleFullscreen = () => {
-    setFullscreen(!fullscreen)
+    const isFullscreen = hashId === 'fullscreen'
+    window.location.hash = isFullscreen ? '' : 'fullscreen'
   }
 
+  console.log('data', dataNodes)
+
+  const onNodeClick = useCallback(
+    (_: React.MouseEvent, node: Node) => {
+      if (nodes?.length) {
+        const updateNodes = nodes.map((n) => ({
+          ...n,
+          data: {
+            ...n.data,
+            hidden: n.data.parent && n.data.parent?.id.toString() == node.id ? !n.data.hidden : n.data.hidden,
+          },
+        }))
+        setNodes(updateNodes)
+      }
+    },
+    [storeNodes, nodes, setNodes, setStoreNodes],
+  )
+
+  const isFullscreen = hashId === 'fullscreen'
+
   return (
-    <Box display='flex' flexDirection='column' position='relative' borderRadius={3} overflow='hidden'>
-      <CustomTooltip title={fullscreen ? 'Exist full screen' : 'View full screen'}>
+    <Box display='flex' flexDirection='column' position='relative' boxShadow={2} borderRadius={3} overflow='hidden'>
+      <CustomTooltip title={isFullscreen ? 'Exist full screen' : 'View full screen'}>
         <IconButton
           onClick={toggleFullscreen}
-          sx={{ position: fullscreen ? 'fixed' : 'absolute', top: 16, left: 16, zIndex: 10000 }}
+          sx={{ position: isFullscreen ? 'fixed' : 'absolute', top: 16, left: 16, zIndex: isFullscreen ? 10000 : 1 }}
         >
-          {fullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+          {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
         </IconButton>
       </CustomTooltip>
       <Box
         sx={{
           width: '100vw',
           height: '100vh',
-          position: fullscreen ? 'fixed' : 'relative',
-          transition: 'all ease-in-out 0.3s',
+          position: isFullscreen ? 'fixed' : 'relative',
+          transition: 'all ease-in-out 0.2s',
           top: 0,
           left: 0,
-          background: '#FFFDF5',
-          zIndex: fullscreen ? 1000 : 'auto',
+          background: '#F8F4FE',
+          zIndex: isFullscreen ? 1000 : 'auto',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -115,6 +149,7 @@ export function MindMapStudent({ lessonPlan, isLoading }: IMindMapProps) {
               },
             }}
             component={ReactFlow}
+            onNodeClick={onNodeClick}
             nodes={nodes}
             edges={edges}
             onEdgesChange={onEdgesChange}
