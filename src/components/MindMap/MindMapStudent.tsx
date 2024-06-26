@@ -4,19 +4,20 @@ import ReactFlow, { useNodesState, useEdgesState, Node, Edge, MarkerType } from 
 import FullscreenIcon from '@mui/icons-material/Fullscreen'
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit'
 
-import 'reactflow/dist/style.css'
 import { CustomEdge } from './CustomEdge'
 import { ChildEdge } from './ChildEdge'
-import { CustomNodeComponent } from './CustomNodeComponent'
-import { ChildNodeComponent } from './ChildNodeComponent'
 import { ProfileSetting } from './components/actions'
 import { LessonPlan } from '@/services/lessonPlan/lessonPlan.dto'
-import { CustomTooltip } from '..'
+import { CustomTooltip, Loading } from '..'
 import { primary } from '@/styles/theme'
 
+import 'reactflow/dist/style.css'
+import { CourseCustomNodeComponent } from './StudentCustomNodeComponent'
+import { CourseChildNodeComponent } from './StudentChildNodeComponent'
+
 const nodeTypes = {
-  customNode: CustomNodeComponent, // Define your custom node type
-  childNode: ChildNodeComponent, // Define your custom node type
+  customNode: CourseCustomNodeComponent, // Define your custom node type
+  childNode: CourseChildNodeComponent, // Define your custom node type
 }
 
 const edgeTypes = {
@@ -26,9 +27,10 @@ const edgeTypes = {
 
 interface IMindMapProps {
   lessonPlan: LessonPlan
+  isLoading: boolean
 }
 
-export function MindMapStudent({ lessonPlan }: IMindMapProps) {
+export function MindMapStudent({ lessonPlan, isLoading }: IMindMapProps) {
   const [nodes, setNodes] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const [fullscreen, setFullscreen] = useState(false)
@@ -95,30 +97,36 @@ export function MindMapStudent({ lessonPlan }: IMindMapProps) {
           left: 0,
           background: '#FFFDF5',
           zIndex: fullscreen ? 1000 : 'auto',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         }}
       >
         <ProfileSetting lessonPlanId={lessonPlan.id} />
-
-        <Box
-          sx={{
-            'react-flow__zoompane': {
-              maxHeight: '100%',
-              maxWidth: '100%',
-              overflow: 'scroll',
-            },
-          }}
-          component={ReactFlow}
-          nodes={nodes}
-          edges={edges}
-          onEdgesChange={onEdgesChange}
-          nodeTypes={nodeTypes}
-          edgeTypes={edgeTypes}
-          panOnScroll={true}
-          onlyRenderVisibleElements={false}
-          zoomOnDoubleClick={false}
-          zoomOnScroll={false}
-          preventScrolling={false}
-        ></Box>
+        {isLoading ? (
+          <Loading />
+        ) : (
+          <Box
+            sx={{
+              'react-flow__zoompane': {
+                maxHeight: '100%',
+                maxWidth: '100%',
+                overflow: 'scroll',
+              },
+            }}
+            component={ReactFlow}
+            nodes={nodes}
+            edges={edges}
+            onEdgesChange={onEdgesChange}
+            nodeTypes={nodeTypes}
+            edgeTypes={edgeTypes}
+            panOnScroll={true}
+            onlyRenderVisibleElements={false}
+            zoomOnDoubleClick={false}
+            zoomOnScroll={false}
+            preventScrolling={false}
+          />
+        )}
       </Box>
     </Box>
   )

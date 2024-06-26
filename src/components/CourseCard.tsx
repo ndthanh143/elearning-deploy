@@ -42,6 +42,9 @@ export const CourseCard = ({ data }: CourseCardProps) => {
         },
         cursor: 'pointer',
         transition: 'all ease 0.15s',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
       }}
       onClick={handleOpenCourse}
     >
@@ -49,8 +52,8 @@ export const CourseCard = ({ data }: CourseCardProps) => {
         image={getAbsolutePathFile(data.thumbnail) || common.course}
         sx={{ objectFit: 'cover', height: 200 }}
       />
-      <CardContent>
-        <Stack direction='column' gap={1}>
+      <CardContent sx={{ flex: 1 }}>
+        <Stack direction='column' gap={1} justifyContent='space-between'>
           {data.categoryInfo && (
             <Chip
               label={data.categoryInfo?.categoryName}
@@ -63,7 +66,6 @@ export const CourseCard = ({ data }: CourseCardProps) => {
           <Typography fontWeight={700} variant='body1' fontSize={18}>
             {data.courseName}
           </Typography>
-
           <Slider
             value={progress || 1}
             sx={{

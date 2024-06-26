@@ -1,5 +1,5 @@
 import { useAuth, useBoolean } from '@/hooks'
-import { Box, Drawer, Typography } from '@mui/material'
+import { Box, Drawer, Stack, Typography } from '@mui/material'
 import { Position, NodeProps, Handle } from 'reactflow'
 import actions from '@/assets/images/icons/actions'
 
@@ -16,6 +16,7 @@ import { toast } from 'react-toastify'
 import { unitService } from '@/services/unit'
 import { unitKey } from '@/services/unit/query'
 import { getTypeUnit } from '@/utils'
+import { Flex } from '..'
 
 type StatusNodeType = 'lock' | 'done' | 'current'
 
@@ -85,8 +86,8 @@ export const TeacherChildNodeComponent = (props: NodeProps<Unit>) => {
       },
     },
     current: {
-      backgroundColor: blue[500],
-      textColor: '#fff',
+      backgroundColor: '#fff',
+      textColor: '#000',
       borderColor: blue[600],
       popup: {
         buttonLabel: 'Ready',
@@ -115,23 +116,38 @@ export const TeacherChildNodeComponent = (props: NodeProps<Unit>) => {
       >
         <Box
           p={2}
-          border={1}
+          // border={1}
           borderRadius={4}
-          borderColor={nodeStatusProperties[status].borderColor}
+          // borderColor={nodeStatusProperties[status].borderColor}
           onClick={toggle}
           // position='relative'
           sx={{
-            backgroundColor: nodeStatusProperties[status].backgroundColor,
+            // backgroundColor: nodeStatusProperties[status].backgroundColor,
             color: nodeStatusProperties[status].textColor,
             transition: 'all 0.2s ease-in-out',
           }}
         >
-          <Box display='flex' gap={2} alignItems='center'>
-            <Box component='img' src={icons[type as UnitType]} alt='icon' width={40} height={40} borderRadius='100%' />
-            <Typography variant='body2' textAlign={'center'}>
-              {unit.name}
-            </Typography>
-          </Box>
+          <Stack gap={2} alignItems='center' position='relative'>
+            <Flex
+              borderRadius='100%'
+              bgcolor='white'
+              width={60}
+              height={60}
+              justifyContent='center'
+              border={1}
+              borderColor={gray[200]}
+            >
+              <Box component='img' src={icons[type as UnitType]} alt='icon' width={40} height={40} />
+            </Flex>
+            <Stack position='absolute' top='110%' minWidth={200}>
+              <Typography variant='body2' textAlign={'center'} fontWeight={700}>
+                {unit.name}
+              </Typography>
+              {/* <Typography variant='body2' textAlign={'center'} color={gray[500]}>
+                {unit.description}
+              </Typography> */}
+            </Stack>
+          </Stack>
           <Handle
             type='source'
             position={sourcePosition}

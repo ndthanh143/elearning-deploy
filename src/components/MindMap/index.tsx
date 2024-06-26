@@ -26,10 +26,12 @@ import { Flex, Loading } from '..'
 import { CustomConnectionLine } from './CustomConnectionLine'
 import { debounce } from 'lodash'
 import { primary } from '@/styles/theme'
+import { MainNodeComponent } from './MainNodeComponent'
 
 const nodeTypes = {
   customNode: CustomNodeComponent,
   childNode: ChildNodeComponent,
+  mainNode: MainNodeComponent,
 }
 
 const edgeTypes = {
@@ -55,11 +57,7 @@ export function MindMap({ lessonPlanId }: IMindMapProps) {
   const scrollContainerRef = useRef(null)
 
   const unitInstance = unitKey.list({ lessonPlanId, unpaged: true })
-  const {
-    data: units,
-    isLoading: isLoadingUnits,
-    isFetched: isFetchedUnits,
-  } = useQuery({
+  const { data: units, isLoading: isLoadingUnits } = useQuery({
     ...unitInstance,
   })
   const { mutate: mutateUpdateUnit, isPending: isLoadingUpdateUnit } = useMutation({ mutationFn: unitService.update })
@@ -138,17 +136,17 @@ export function MindMap({ lessonPlanId }: IMindMapProps) {
         },
       }))
 
-      setNodes(initialNodes)
+      const mainNode = {
+        id: '0',
+        position: { x: 0, y: 0 },
+        data: { name: 'OOP Language' },
+        type: 'mainNode',
+      }
+
+      setNodes([mainNode, ...initialNodes])
       setEdges(initialEdges)
     }
   }, [units])
-
-  if (isLoadingUnits && !isFetchedUnits)
-    return (
-      <Flex width='100vw' height='100vh' justifyContent='center' alignItems='center'>
-        <Loading />
-      </Flex>
-    )
 
   return (
     <Box display='flex' flexDirection='column' position='relative'>
@@ -159,33 +157,42 @@ export function MindMap({ lessonPlanId }: IMindMapProps) {
         </>
       )}
 
-      <Box style={{ width: '100%', height: '100vh', background: '#F8F4FE' }} py={4} ref={scrollContainerRef}>
-        <Box
-          sx={{
-            'react-flow__zoompane': {
-              maxHeight: '100%',
-              maxWidth: '100%',
-              overflow: 'scroll',
-            },
-          }}
-          component={ReactFlow}
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          onEdgeUpdate={onEdgeUpdate}
-          nodeTypes={nodeTypes}
-          edgeTypes={edgeTypes}
-          panOnScroll
-          onlyRenderVisibleElements={false}
-          zoomOnDoubleClick={false}
-          zoomOnScroll={false}
-          preventScrolling={false}
-          connectionLineComponent={CustomConnectionLine}
-          connectionLineStyle={connectionLineStyle}
-        />
-      </Box>
+      <Flex
+        justifyContent='center'
+        alignItems='center'
+        sx={{ width: '100%', height: '100vh', background: '#F8F4FE' }}
+        ref={scrollContainerRef}
+      >
+        {isLoadingUnits ? (
+          <Loading />
+        ) : (
+          <Box
+            sx={{
+              'react-flow__zoompane': {
+                maxHeight: '100%',
+                maxWidth: '100%',
+                overflow: 'scroll',
+              },
+            }}
+            component={ReactFlow}
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onEdgeUpdate={onEdgeUpdate}
+            nodeTypes={nodeTypes}
+            edgeTypes={edgeTypes}
+            panOnScroll
+            onlyRenderVisibleElements={false}
+            zoomOnDoubleClick={false}
+            zoomOnScroll={false}
+            preventScrolling={false}
+            connectionLineComponent={CustomConnectionLine}
+            connectionLineStyle={connectionLineStyle}
+          />
+        )}
+      </Flex>
 
       {isLoadingUpdateUnit && (
         <Box position='absolute' bottom={10} left={10}>

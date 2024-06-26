@@ -226,23 +226,21 @@ export const TeacherCustomNodeComponent = (
     <>
       <Box
         sx={{
-          backgroundColor: primary[500],
-          color: 'white',
+          backgroundColor: '#fff',
+          color: '#000',
           borderRadius: 4,
           width: 200,
+          border: '1px solid',
+          borderColor: blue[500],
           minHeight: 50,
           fontSize: 12,
           px: 4,
-          py: 3,
+          py: 1,
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
           transition: 'all 0.2s ease-in-out',
-          ':hover': {
-            borderColor: blue[500],
-          },
           zIndex: 10,
-          boxShadow: 10,
           filter: selected ? `drop-shadow(0 0 0.75rem ${primary[500]})` : 'none',
         }}
       >

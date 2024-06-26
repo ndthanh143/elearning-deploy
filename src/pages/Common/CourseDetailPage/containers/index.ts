@@ -1,5 +1,4 @@
 export * from './TopicList'
 export * from './CourseIntro'
-export * from './CourseContent'
 export * from './BasicPlanStudent'
 export * from './TopicFab'

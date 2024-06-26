@@ -23,7 +23,7 @@ export const StudentHomePage = () => {
     (profile?.data.role === RoleEnum.Student && (
       <Container maxWidth={'xl'}>
         <Grid container spacing={4}>
-          <Grid item xs={8.5}>
+          <Grid item xs={12} lg={8.5}>
             <Stack gap={4}>
               <BannerHeading
                 title='Managing emotions helps us maintain balance in the learning process.'
@@ -35,7 +35,7 @@ export const StudentHomePage = () => {
               <FollowingCourses />
             </Stack>
           </Grid>
-          <Grid item xs={3.5}>
+          <Grid item xs={12} lg={3.5}>
             <Stack gap={4}>
               <Activity />
             </Stack>

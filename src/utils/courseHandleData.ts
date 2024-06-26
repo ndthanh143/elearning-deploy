@@ -1,4 +1,4 @@
-import { Unit } from '@/services/unit/types'
+import { Unit, UnitType } from '@/services/unit/types'
 
 export const isMicroItem = (unit: Unit) => {
   return unit.lectureInfo || unit.resourceInfo || unit.assignmentInfo || unit.quizInfo
@@ -37,7 +37,7 @@ export const handleMappedChildrenUnitByParent = ({ group, children }: { group: U
   }, {})
 }
 
-export const handleCountItemInParent = (children: Unit[]) => {
+export const handleCountItemInParen = (children: Unit[]): Record<UnitType, number> => {
   return children.reduce(
     (acc, cur) => {
       if (cur.lectureInfo) {
@@ -58,8 +58,23 @@ export const handleCountItemInParent = (children: Unit[]) => {
           quiz: acc.quiz + 1,
         }
       }
+
+      if (cur.resourceInfo) {
+        if (cur.resourceInfo.urlDocument.includes('VIDEO')) {
+          return {
+            ...acc,
+            video: acc.video + 1,
+          }
+        } else {
+          return {
+            ...acc,
+            resource: acc.resource + 1,
+          }
+        }
+      }
+
       return acc
     },
-    { lecture: 0, assignment: 0, quiz: 0 },
+    { lecture: 0, assignment: 0, quiz: 0, resource: 0, video: 0 },
   )
 }

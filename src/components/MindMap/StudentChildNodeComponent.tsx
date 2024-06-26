@@ -15,6 +15,7 @@ type StatusNodeType = 'lock' | 'done' | 'current'
 import { keyframes } from '@mui/system'
 import { Unit, UnitType } from '@/services/unit/types'
 import { getTypeUnit } from '@/utils'
+import { Flex } from '..'
 
 const pingBorder = keyframes`
   0% {
@@ -59,7 +60,7 @@ const icons: Record<UnitType, string> = {
   video: actions.video,
 }
 
-export const StudentChildNodeComponent = (props: NodeProps<Unit>) => {
+export const CourseChildNodeComponent = (props: NodeProps<Unit>) => {
   const { data: unit, xPos, selected } = props
   const { parent } = unit
 
@@ -116,7 +117,7 @@ export const StudentChildNodeComponent = (props: NodeProps<Unit>) => {
         </Typography>
         {(status === 'current' || status === 'lock') && (
           <Typography variant='caption' color={gray[500]}>
-            2 mins study
+            {unit.resourceInfo?.duration}
           </Typography>
         )}
         {status === 'done' && (
@@ -160,16 +161,16 @@ export const StudentChildNodeComponent = (props: NodeProps<Unit>) => {
       },
     },
     done: {
-      backgroundColor: green[500],
-      textColor: '#fff',
+      backgroundColor: '#fff',
+      textColor: '#000',
       borderColor: green[600],
       popup: {
         buttonLabel: 'Review',
       },
     },
     current: {
-      backgroundColor: blue[500],
-      textColor: '#fff',
+      backgroundColor: '#fff',
+      textColor: '#000',
       borderColor: blue[600],
       popup: {
         buttonLabel: 'Ready',
@@ -206,12 +207,15 @@ export const StudentChildNodeComponent = (props: NodeProps<Unit>) => {
     <>
       <Box
         borderRadius={6}
+        padding={0.5}
         borderColor={selected ? blue[500] : 'transparent'}
         position='relative'
         ref={parentRef}
         sx={{
           transition: 'all ease 0.2s',
           boxShadow: 10,
+          bgcolor: 'transparent',
+
           filter:
             selected || status === 'current'
               ? `drop-shadow(0px 0px 0.75rem ${status === 'done' ? green[500] : blue[500]})`
@@ -232,9 +236,9 @@ export const StudentChildNodeComponent = (props: NodeProps<Unit>) => {
             onClick={toggle}
             position='relative'
             sx={{
-              backgroundColor: nodeStatusProperties[status].backgroundColor,
+              // backgroundColor: nodeStatusProperties[status].backgroundColor,
+              bgcolor: 'transparent',
               color: nodeStatusProperties[status].textColor,
-
               transition: 'all 0.2s ease-in-out',
               // ':hover': {
               //   borderRadius: 4,
@@ -242,21 +246,45 @@ export const StudentChildNodeComponent = (props: NodeProps<Unit>) => {
               // },
             }}
           >
-            <Box display='flex' gap={2} alignItems='center'>
-              <Box
-                component='img'
-                src={icons[type as UnitType]}
-                alt='icon'
-                width={40}
-                height={40}
-                borderRadius='100%'
-              />
-              <Typography variant='body2' textAlign={'center'}>
-                {unit.name}
-              </Typography>
-              {status === 'lock' && <LockOutlined />}
-              {status == 'done' && <CheckCircleOutline />}
-            </Box>
+            <Stack gap={2} alignItems='center' position='relative'>
+              {['done', 'lock'].includes(status) && (
+                <Flex
+                  p={1}
+                  // bgcolor={nodeStatusProperties[status].borderColor}
+                  borderRadius={'100%'}
+                  position='absolute'
+                  zIndex={1}
+                  border={1}
+                  borderColor={gray[500]}
+                  sx={{
+                    right: -20,
+                    top: -20,
+                  }}
+                >
+                  {status === 'lock' && <LockOutlined sx={{ color: '#fff' }} />}
+                  {status == 'done' && <CheckCircleOutline sx={{ color: '#fff' }} />}
+                </Flex>
+              )}
+              <Flex
+                justifyContent='center'
+                width={65}
+                height={65}
+                borderRadius={'100%'}
+                border={1}
+                borderColor={gray[300]}
+              >
+                <Box component='img' src={icons[type as UnitType]} alt='icon' width={45} height={45} />
+              </Flex>
+
+              <Stack position='absolute' top='110%' minWidth={200}>
+                <Typography variant='body2' textAlign={'center'} fontWeight={700}>
+                  {unit.name}
+                </Typography>
+                <Typography variant='body2' textAlign={'center'}>
+                  {unit.description}
+                </Typography>
+              </Stack>
+            </Stack>
             <Handle
               type='source'
               position={sourcePosition}

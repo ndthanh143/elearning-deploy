@@ -1,5 +1,6 @@
 import { AssignmentIcon } from './AssignmentIcon'
 import { CalendarIcon } from './CalendarIcon'
+import { CertIcon } from './CertIcon'
 import { CloseIcon } from './CloseIcon'
 import { DeadlineIcon } from './DeadlineIcon'
 import { DescriptionIcon } from './DescriptionIcon'
@@ -46,4 +47,5 @@ export const icons = {
   education: <EducationIcon />,
   otp: <OTPIcon />,
   video: <VideoIcon />,
+  cert: <CertIcon />,
 } as const

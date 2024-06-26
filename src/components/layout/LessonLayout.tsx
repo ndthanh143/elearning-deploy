@@ -26,7 +26,7 @@ export function LessonLayout() {
   }, [pathname])
 
   return (
-    <Box bgcolor='#F8F4FE'>
+    <Box bgcolor='#F8F4FE' minHeight='100vh'>
       <Header />
       <Grid container mt={4} pb={4}>
         <Grid item xs={12}>

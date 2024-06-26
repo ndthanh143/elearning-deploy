@@ -5,12 +5,12 @@ import { useAuth } from '@/hooks'
 import { Unit } from '@/services/unit/types'
 
 import { TeacherCustomNodeComponent } from './TeacherCustomNodeComponent'
-import { StudentCustomNodeComponent } from './StudentCustomNodeComponent'
+import { CourseCustomNodeComponent } from './StudentCustomNodeComponent'
 
 export const CustomNodeComponent = (
   props: NodeProps<Unit & { parentRef: MutableRefObject<HTMLDivElement>; index: number }>,
 ) => {
   const { isTeacher } = useAuth()
 
-  return isTeacher ? <TeacherCustomNodeComponent {...props} /> : <StudentCustomNodeComponent {...props} />
+  return isTeacher ? <TeacherCustomNodeComponent {...props} /> : <CourseCustomNodeComponent {...props} />
 }

@@ -68,8 +68,9 @@ export const LoginPage = () => {
     mutationFn: authService.loginGoogle,
     onSuccess: () => {
       setAuthenticated()
-      const url = mode === 'teacher' ? '/courses' : '/home'
-      navigate(state.from || url)
+      const url = state && state.from ? state.form : mode === 'teacher' ? '/courses' : '/home'
+
+      navigate(url)
       triggerAlert('Login successfully!')
       refetch()
     },

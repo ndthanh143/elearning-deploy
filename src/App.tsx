@@ -28,6 +28,7 @@ import {
   ForgotPasswordPage,
   ResourcePage,
   LandingPage,
+  CourseCertificatePage,
 } from './pages'
 
 import 'react-big-calendar/lib/css/react-big-calendar.css'
@@ -67,6 +68,14 @@ const router = createBrowserRouter([
         element: (
           <Layout>
             <CourseDetailPage />
+          </Layout>
+        ),
+      },
+      {
+        path: 'certificate',
+        element: (
+          <Layout>
+            <CourseCertificatePage />,
           </Layout>
         ),
       },

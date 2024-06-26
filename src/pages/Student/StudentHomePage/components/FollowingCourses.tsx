@@ -1,8 +1,8 @@
-import { CourseCard, Flex, Link, NoData } from '@/components'
+import { CourseCard, Link, NoData } from '@/components'
 import { useAuth } from '@/hooks'
 import { coursesRegistrationKeys } from '@/services/coursesRegistration/coursesRegistration.query'
 import { ArrowForwardOutlined } from '@mui/icons-material'
-import { Box, Button, Stack, Typography } from '@mui/material'
+import { Box, Button, Grid, Stack, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 
 const DEFAULT_PAGE = 0
@@ -32,13 +32,14 @@ export function FollowingCourses() {
         )}
       </Box>
 
-      <Flex gap={4}>
+      <Grid container spacing={2}>
         {courses?.map((course) => (
-          <Box key={course.id} width={1 / 3}>
+          <Grid item xs={12} lg={4} key={course.id}>
             <CourseCard data={course.courseInfo} />
-          </Box>
+          </Grid>
         ))}
-      </Flex>
+      </Grid>
+
       {courses?.length === 0 && (
         <Stack gap={1} width='100%'>
           <NoData title="You don't have any course yet!" />

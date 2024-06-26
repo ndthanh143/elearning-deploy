@@ -3,10 +3,10 @@ import { Flex, IconContainer, NoData } from '@/components'
 import { EditRounded, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material'
 import { Box, Button, Card, CardContent, Collapse, Divider, Stack, Typography } from '@mui/material'
 import { useState } from 'react'
-import { Unit } from '@/services/unit/types'
+import { Unit, UnitType } from '@/services/unit/types'
 import { LessonPlan } from '@/services/lessonPlan/lessonPlan.dto'
 import { ContentItem } from '../components'
-import { handleCountItemInParent, handleMappedChildrenUnitByParent, handleMappedUnits } from '@/utils'
+import { handleCountItemInParen, handleMappedChildrenUnitByParent, handleMappedUnits } from '@/utils'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks'
 
@@ -47,6 +47,29 @@ export const BasicPlanStudent = ({ lessonPlan }: BasicPlanStudentProps) => {
 
   const mappedChildrenUnitByParent: Record<number, Unit & { children: Unit[] }> =
     handleMappedChildrenUnitByParent(mappedUnits) || {}
+
+  const labelCounts = [
+    {
+      label: 'lecture',
+      icon: actions.lecture,
+    },
+    {
+      label: 'assignment',
+      icon: actions.assignment,
+    },
+    {
+      label: 'quiz',
+      icon: actions.quiz,
+    },
+    {
+      label: 'resource',
+      icon: actions.resource,
+    },
+    {
+      label: 'video',
+      icon: actions.video,
+    },
+  ]
 
   return (
     units && (
@@ -95,27 +118,22 @@ export const BasicPlanStudent = ({ lessonPlan }: BasicPlanStudentProps) => {
                         <KeyboardArrowDown />
                         <Typography fontWeight={500}>{unit.name}</Typography>
                       </Box>
-                      <Stack direction='row' gap={3}>
-                        <Box display='flex' alignItems='center' gap={1}>
-                          <Box component='img' src={actions.lecture} alt='lecture' width={25} />
-
-                          <Typography>
-                            {handleCountItemInParent(mappedChildrenUnitByParent[unit.id]?.children).lecture}
-                          </Typography>
-                        </Box>
-                        <Box display='flex' alignItems='center' gap={1}>
-                          <Box component='img' src={actions.assignment} alt='assignment' width={25} />
-                          <Typography>
-                            {handleCountItemInParent(mappedChildrenUnitByParent[unit.id]?.children).assignment}
-                          </Typography>
-                        </Box>
-                        <Box display='flex' alignItems='center' gap={1}>
-                          <Box component='img' src={actions.quiz} alt='quiz' width={25} />
-                          <Typography>
-                            {handleCountItemInParent(mappedChildrenUnitByParent[unit.id]?.children).quiz}
-                          </Typography>
-                        </Box>
-                      </Stack>
+                      <Flex gap={3}>
+                        {labelCounts.map((item) => (
+                          <>
+                            <Box display='flex' alignItems='center' gap={1} key={item.label}>
+                              <Box component='img' src={item.icon} alt={item.label} width={25} />
+                              <Typography variant='body2'>
+                                {
+                                  handleCountItemInParen(mappedChildrenUnitByParent[unit.id]?.children)[
+                                    item.label as UnitType
+                                  ]
+                                }
+                              </Typography>
+                            </Box>
+                          </>
+                        ))}
+                      </Flex>
                     </Box>
                     <Collapse in={expandModuleList.includes(unit.id)} timeout='auto' unmountOnExit>
                       <Divider />

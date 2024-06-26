@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks'
 import { Unit } from '@/services/unit/types'
 
 import { TeacherChildNodeComponent } from './TeacherChildNodeComponent'
-import { StudentChildNodeComponent } from './StudentChildNodeComponent'
+import { CourseChildNodeComponent } from './StudentChildNodeComponent'
 
 import 'reactflow/dist/style.css'
 
@@ -15,6 +15,6 @@ export const ChildNodeComponent = (props: NodeProps<Unit>) => {
   if (isTeacher) {
     return <TeacherChildNodeComponent {...props} />
   } else {
-    return <StudentChildNodeComponent {...props} />
+    return <CourseChildNodeComponent {...props} />
   }
 }
