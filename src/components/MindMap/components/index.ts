@@ -1,3 +1,5 @@
 export * from './ActionSetting'
 export * from './DrawerNodeDetail'
 export * from './DrawerChildNodeDetail'
+export * from './RightActionStudent'
+export * from './RightAction'

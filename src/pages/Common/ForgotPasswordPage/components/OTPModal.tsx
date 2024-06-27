@@ -2,23 +2,39 @@ import { Modal, Box, Typography, Fade } from '@mui/material'
 import { useForm, Controller } from 'react-hook-form'
 import { OTPInput } from './OTPInput'
 import { useEffect } from 'react'
+import { useMutation } from '@tanstack/react-query'
+import authService from '@/services/auth/auth.service'
+import { useAlert } from '@/hooks'
 
 interface OTPModalProps {
   open: boolean
   handleClose: () => void
-  onSuccess: (otp: string) => void
+  resetHash: string
+  onSuccess: (verifiedToken: string) => void
 }
 
-export const OTPModal = ({ open, onSuccess }: OTPModalProps) => {
+export const OTPModal = ({ open, resetHash, onSuccess }: OTPModalProps) => {
+  const { triggerAlert } = useAlert()
   const {
     control,
     handleSubmit,
     formState: { isValid },
   } = useForm()
 
+  const { mutate: mutateVerifyOtp, isPending: isLoadingVerify } = useMutation({
+    mutationFn: authService.verifyOtp,
+    onSuccess: (data) => {
+      if (data.verified && data.verifiedToken) {
+        onSuccess(data.verifiedToken)
+      } else {
+        triggerAlert('OTP is invalid', 'error')
+      }
+    },
+  })
+
   const handleOTPComplete = (otp: string) => {
     if (otp.length === 6) {
-      onSuccess(otp)
+      mutateVerifyOtp({ otp, resetHash })
     }
   }
 
@@ -52,7 +68,13 @@ export const OTPModal = ({ open, onSuccess }: OTPModalProps) => {
               name='otp'
               control={control}
               render={({ field }) => (
-                <OTPInput control={control} length={6} onComplete={handleOTPComplete} {...field} />
+                <OTPInput
+                  control={control}
+                  length={6}
+                  disabled={isLoadingVerify}
+                  onComplete={handleOTPComplete}
+                  {...field}
+                />
               )}
             />
           </form>

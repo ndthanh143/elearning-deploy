@@ -32,3 +32,22 @@ export type LoginPayload = {
   email: string
   password: string
 }
+
+export type RequestForgotPasswordPayload = {
+  email: string
+  roleKind: number // Student: 3, Teacher: 2
+}
+
+export type VerifyOtpPayload = {
+  otp: string
+  resetHash: string
+}
+
+export type VerifyOtpResponse = BaseResponse<{ verified: boolean; verifiedToken: string }>
+
+export type RequestForgotPasswordResponse = BaseResponse<{ resetHash: string }>
+
+export type ResetPasswordPayload = {
+  newPassword: string
+  verifiedToken: string
+}

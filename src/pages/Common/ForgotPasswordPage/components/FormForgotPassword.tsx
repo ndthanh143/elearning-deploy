@@ -1,7 +1,7 @@
 import { icons } from '@/assets/icons'
 import { Button } from '@/components'
 import { gray } from '@/styles/theme'
-import { Box, Stack, TextField, Typography } from '@mui/material'
+import { Box, CircularProgress, Stack, TextField, Typography } from '@mui/material'
 import { UseFormReturn } from 'react-hook-form'
 
 interface IFormForgotPasswordProps {
@@ -13,13 +13,14 @@ interface IFormForgotPasswordProps {
     undefined
   >
   onSubmit: (data: { email: string }) => void
+  isLoading: boolean
 }
 
-export function FormForgotPassword({ form, onSubmit }: IFormForgotPasswordProps) {
+export function FormForgotPassword({ isLoading = false, form, onSubmit }: IFormForgotPasswordProps) {
   const {
     register,
     handleSubmit,
-    formState: { isValid },
+    formState: { errors },
   } = form
   return (
     <Box component='form' onSubmit={handleSubmit(onSubmit)}>
@@ -36,9 +37,16 @@ export function FormForgotPassword({ form, onSubmit }: IFormForgotPasswordProps)
             with Google.
           </Typography>
         </Stack>
-        <TextField fullWidth placeholder='Type your email to reset password' {...register('email')} />
-        <Button type='submit' variant='contained' size='large' disabled={!isValid}>
-          Reset Password
+        <Stack gap={0.5}>
+          <TextField fullWidth placeholder='Type your email to reset password' {...register('email')} />
+          {errors.email && (
+            <Typography color='error' variant='body2'>
+              {errors.email.message}
+            </Typography>
+          )}
+        </Stack>
+        <Button type='submit' variant='contained' size='large' disabled={isLoading} sx={{ height: 45 }}>
+          {isLoading ? <CircularProgress size={20} sx={{ my: 0.5 }} /> : 'Reset Password'}
         </Button>
       </Stack>
     </Box>

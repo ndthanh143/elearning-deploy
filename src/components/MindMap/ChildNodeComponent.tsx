@@ -8,7 +8,7 @@ import { CourseChildNodeComponent } from './StudentChildNodeComponent'
 
 import 'reactflow/dist/style.css'
 
-export const ChildNodeComponent = (props: NodeProps<Unit>) => {
+export const ChildNodeComponent = (props: NodeProps<Unit & { hidden: boolean }>) => {
   const { profile } = useAuth()
   const isTeacher = profile?.data.role === 'Teacher'
 

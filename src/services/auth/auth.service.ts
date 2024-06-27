@@ -1,6 +1,15 @@
 import Cookies from 'js-cookie'
 
-import { AuthLoginResponse, LoginAdminPayload, SignUpPayload } from './auth.dto'
+import {
+  AuthLoginResponse,
+  LoginAdminPayload,
+  RequestForgotPasswordPayload,
+  RequestForgotPasswordResponse,
+  ResetPasswordPayload,
+  SignUpPayload,
+  VerifyOtpPayload,
+  VerifyOtpResponse,
+} from './auth.dto'
 import axiosInstance from '../../axios'
 
 const BASE_AUTH_URL = 'auth'
@@ -42,6 +51,18 @@ const authService = {
     Cookies.set('access_token', data.data.access_token)
 
     return data
+  },
+  requestForgotPassword: async (payload: RequestForgotPasswordPayload) => {
+    const { data } = await axiosInstance.post<RequestForgotPasswordResponse>(`account/request-forgot-password`, payload)
+    return data.data
+  },
+  verifyOtp: async (payload: VerifyOtpPayload) => {
+    console.log('verifyOtp', payload)
+    const { data } = await axiosInstance.post<VerifyOtpResponse>(`account/verify-otp`, payload)
+    return data.data
+  },
+  resetPassword: async (payload: ResetPasswordPayload) => {
+    await axiosInstance.post(`account/forgot-password`, payload)
   },
 }
 

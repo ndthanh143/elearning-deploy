@@ -7,10 +7,11 @@ interface OTPInputProps {
   control: Control
   name: string
   length: number
+  disabled: boolean
   onComplete: (otp: string) => void
 }
 
-export const OTPInput = ({ control, name, length, onComplete }: OTPInputProps) => {
+export const OTPInput = ({ control, disabled, name, length, onComplete }: OTPInputProps) => {
   const { field } = useController({ name, control, defaultValue: '' })
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>(Array(length).fill(null))
@@ -68,6 +69,7 @@ export const OTPInput = ({ control, name, length, onComplete }: OTPInputProps) =
                 color: primary[600],
               },
             }}
+            disabled={disabled}
             value={field.value[index] || ''}
             onChange={(e) => handleChange(e, index)}
             onKeyDown={(e) => handleKeyDown(e, index)}

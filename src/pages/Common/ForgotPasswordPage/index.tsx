@@ -4,9 +4,12 @@ import { regexPattern } from '@/utils'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Box, Container, Stack, Typography } from '@mui/material'
 import { useForm } from 'react-hook-form'
-import { object, string } from 'yup'
-import { FormForgotPassword, FormResetPassword, OTPModal } from './components'
+import { object, ref, string } from 'yup'
+import { FormForgotPassword, FormResetPassword, OTPModal, ResetPasswordSuccess } from './components'
 import { useBoolean } from '@/hooks'
+import { useMutation } from '@tanstack/react-query'
+import authService from '@/services/auth/auth.service'
+import { useState } from 'react'
 
 const forgotPasswordSchema = object({
   email: string()
@@ -15,66 +18,92 @@ const forgotPasswordSchema = object({
 })
 
 const resetPasswordSchema = object({
-  password: string().required('Please fill in your password'),
-  confirmPassword: string().required('Please fill in your confirm password'),
-  otp: string().required('Please fill in your OTP'),
+  newPassword: string().required('Please fill in your new password'),
+  confirmPassword: string()
+    .oneOf([ref('newPassword')], 'Confirm password must match new password')
+    .required('Please fill in your confirm password'),
+  verifiedToken: string().required('Verified token is required'),
 })
 
 export function ForgotPasswordPage() {
   const forgotPasswordForm = useForm({ resolver: yupResolver(forgotPasswordSchema) })
   const resetPasswordForm = useForm({ resolver: yupResolver(resetPasswordSchema) })
 
-  const { value: isOpenOtpModal, setTrue: openOtpModal, setFalse: closeOtpModal } = useBoolean(false)
+  const { value: isOpenSuccess, setTrue: openSuccess } = useBoolean(false)
+
+  const [resetHash, setResetHash] = useState('')
+
+  const { mutate: mutateRequestForgotPassword, isPending: isLoadingRequest } = useMutation({
+    mutationFn: authService.requestForgotPassword,
+    onSuccess: (data) => {
+      setResetHash(data.resetHash)
+    },
+  })
+
+  const { mutate: mutateResetPassword } = useMutation({
+    mutationFn: authService.resetPassword,
+    onSuccess: () => {
+      openSuccess()
+    },
+  })
 
   const onSubmitHandler = (data: { email: string }) => {
-    console.log(data)
-    openOtpModal()
+    mutateRequestForgotPassword({ email: data.email, roleKind: 3 })
   }
 
-  const handleResetPassword = (data: { otp: string; password: string; confirmPassword: string }) => {
-    console.log('data', data)
+  const handleResetPassword = (data: { verifiedToken: string; newPassword: string; confirmPassword: string }) => {
+    mutateResetPassword({ newPassword: data.newPassword, verifiedToken: data.verifiedToken })
   }
 
-  const handleOtpSuccess = (otp: string) => {
-    resetPasswordForm.setValue('otp', otp)
-    closeOtpModal()
+  const handleCloseOtpModal = () => {
+    setResetHash('')
   }
 
-  return (
-    <>
-      <Container sx={{ my: 4 }}>
-        <Flex justifyContent='space-between'>
-          <Flex gap={2}>
-            <Box
-              component='img'
-              src={images.logo}
-              alt='logo'
-              width={40}
-              height={40}
-              style={{
-                objectFit: 'cover',
-              }}
-            />
-            <Link href='/' variant='body2' sx={{ textDecoration: 'none', color: 'inherit' }}>
-              Back to Brainstone
-            </Link>
-          </Flex>
-          <Flex gap={0.5}>
-            <Typography variant='body2'>Have an account?</Typography>
-            <Link href='/login' variant='body2' sx={{ textDecoration: 'none' }}>
-              Log in
-            </Link>
-          </Flex>
+  const handleOtpSuccess = (verifiedToken: string) => {
+    resetPasswordForm.setValue('verifiedToken', verifiedToken)
+    handleCloseOtpModal()
+  }
+
+  return isOpenSuccess ? (
+    <ResetPasswordSuccess />
+  ) : (
+    <Container sx={{ my: 4 }}>
+      <Flex justifyContent='space-between'>
+        <Flex gap={2}>
+          <Box
+            component='img'
+            src={images.logo}
+            alt='logo'
+            width={40}
+            height={40}
+            style={{
+              objectFit: 'cover',
+            }}
+          />
+          <Link href='/' variant='body2' sx={{ textDecoration: 'none', color: 'inherit' }}>
+            Back to Brainstone
+          </Link>
         </Flex>
-        <Stack width='100%' height='calc(100vh - 200px)' justifyContent='center' alignItems='center' gap={6}>
-          {resetPasswordForm.watch('otp') ? (
-            <FormResetPassword form={resetPasswordForm} onSubmit={handleResetPassword} />
-          ) : (
-            <FormForgotPassword form={forgotPasswordForm} onSubmit={onSubmitHandler} />
-          )}
-        </Stack>
-      </Container>
-      <OTPModal open={isOpenOtpModal} handleClose={closeOtpModal} onSuccess={handleOtpSuccess} />
-    </>
+        <Flex gap={0.5}>
+          <Typography variant='body2'>Have an account?</Typography>
+          <Link href='/login' variant='body2' sx={{ textDecoration: 'none' }}>
+            Log in
+          </Link>
+        </Flex>
+      </Flex>
+      <Stack width='100%' height='calc(100vh - 200px)' justifyContent='center' alignItems='center' gap={6}>
+        {resetPasswordForm.watch('verifiedToken') ? (
+          <FormResetPassword form={resetPasswordForm} onSubmit={handleResetPassword} />
+        ) : (
+          <FormForgotPassword isLoading={isLoadingRequest} form={forgotPasswordForm} onSubmit={onSubmitHandler} />
+        )}
+      </Stack>
+      <OTPModal
+        open={!!resetHash}
+        handleClose={handleCloseOtpModal}
+        onSuccess={handleOtpSuccess}
+        resetHash={resetHash || ''}
+      />
+    </Container>
   )
 }

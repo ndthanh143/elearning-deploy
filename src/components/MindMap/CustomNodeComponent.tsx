@@ -8,7 +8,7 @@ import { TeacherCustomNodeComponent } from './TeacherCustomNodeComponent'
 import { CourseCustomNodeComponent } from './StudentCustomNodeComponent'
 
 export const CustomNodeComponent = (
-  props: NodeProps<Unit & { parentRef: MutableRefObject<HTMLDivElement>; index: number }>,
+  props: NodeProps<Unit & { parentRef: MutableRefObject<HTMLDivElement>; childrens: Unit[] }>,
 ) => {
   const { isTeacher } = useAuth()
 

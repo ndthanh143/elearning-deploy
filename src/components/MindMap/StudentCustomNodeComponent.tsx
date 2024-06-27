@@ -9,7 +9,39 @@ import { icons } from '@/assets/icons'
 
 type StatusNodeType = 'lock' | 'done' | 'current'
 
-export const CourseCustomNodeComponent = (props: NodeProps<Unit & { parentRef: MutableRefObject<HTMLDivElement> }>) => {
+const calculateChildrenItems = (children: Unit[]) => {
+  let lecture = 0
+  let assignment = 0
+  let quiz = 0
+  let video = 0
+  let resource = 0
+
+  for (const child of children) {
+    if (child.lectureInfo) {
+      lecture++
+    }
+    if (child.assignmentInfo) {
+      assignment++
+    }
+    if (child.quizInfo) {
+      quiz++
+    }
+
+    if (child.resourceInfo) {
+      if (child.resourceInfo?.urlDocument.includes('VIDEO')) {
+        video++
+      } else {
+        resource++
+      }
+    }
+  }
+
+  return { lecture, assignment, quiz, video, resource }
+}
+
+export const CourseCustomNodeComponent = (
+  props: NodeProps<Unit & { parentRef: MutableRefObject<HTMLDivElement>; childrens: Unit[] }>,
+) => {
   const {
     data: { parentRef, ...unit },
     selected,
@@ -31,6 +63,16 @@ export const CourseCustomNodeComponent = (props: NodeProps<Unit & { parentRef: M
   if (!unit.unlock) {
     statusNodes = 'lock'
   }
+
+  const dataChildrens = calculateChildrenItems((unit.childrens || []) as Unit[])
+
+  const dataChildrenProps = [
+    { icon: icons['lecture'], name: 'lecture', value: dataChildrens.lecture },
+    { icon: icons['assignment'], name: 'assignment', value: dataChildrens.assignment },
+    { icon: icons['quiz'], name: 'quiz', value: dataChildrens.quiz },
+    { icon: icons['video'], name: 'video', value: dataChildrens.video },
+    { icon: icons['resource'], name: 'resource', value: dataChildrens.resource },
+  ]
 
   return (
     <>
@@ -64,30 +106,17 @@ export const CourseCustomNodeComponent = (props: NodeProps<Unit & { parentRef: M
         </Typography>
 
         <Flex gap={0.5} maxWidth={100} flexWrap='wrap'>
-          <Flex gap={0.5} bgcolor={primary[100]} py={0.2} px={1} borderRadius={4}>
-            {icons['lecture']}
-            <Typography variant='caption'>{1}</Typography>
-          </Flex>
-          <Flex gap={0.5} bgcolor={primary[100]} py={0.2} px={1} borderRadius={4}>
-            {icons['assignment']}
-            {0 > 0 && <Typography variant='caption'>{0}</Typography>}
-          </Flex>
-          <Flex gap={0.5} bgcolor={primary[100]} py={0.2} px={1} borderRadius={4}>
-            {icons['quiz']}
-            {0 > 0 && <Typography variant='caption'>{0}</Typography>}
-          </Flex>
-          <Flex gap={0.5} bgcolor={primary[100]} py={0.2} px={1} borderRadius={4}>
-            <Box width={20} height={20}>
-              {icons['video']}
-            </Box>
-            {0 > 0 && <Typography variant='caption'>{0}</Typography>}
-          </Flex>
-          <Flex gap={0.5} bgcolor={primary[100]} py={0.2} px={1} borderRadius={4}>
-            <Box width={20} height={20}>
-              {icons['resource']}
-            </Box>
-            {0 > 0 && <Typography variant='caption'>{0}</Typography>}
-          </Flex>
+          {dataChildrenProps.map(
+            (item) =>
+              item.value > 0 && (
+                <Flex gap={0.5} bgcolor={primary[100]} py={0.2} px={1} borderRadius={4}>
+                  <Box width={20} height={20}>
+                    {item.icon}
+                  </Box>
+                  {item.value > 1 && <Typography variant='caption'>{item.value}</Typography>}{' '}
+                </Flex>
+              ),
+          )}
         </Flex>
 
         <Handle

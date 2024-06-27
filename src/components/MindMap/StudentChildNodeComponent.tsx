@@ -60,7 +60,7 @@ const icons: Record<UnitType, string> = {
   video: actions.video,
 }
 
-export const CourseChildNodeComponent = (props: NodeProps<Unit>) => {
+export const CourseChildNodeComponent = (props: NodeProps<Unit & { hidden: boolean }>) => {
   const { data: unit, xPos, selected } = props
   const { parent, hidden } = unit
 

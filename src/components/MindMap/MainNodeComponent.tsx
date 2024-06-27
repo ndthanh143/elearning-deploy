@@ -17,9 +17,9 @@ export const MainNodeComponent = (
     <>
       <Stack
         sx={{
-          backgroundColor: '#fff',
-          color: '#000',
-          borderRadius: 6,
+          backgroundColor: primary[500],
+          color: '#fff',
+          borderRadius: '100%',
           width: 200,
           minHeight: 50,
           fontSize: 12,
@@ -36,7 +36,7 @@ export const MainNodeComponent = (
           border: `4px solid ${primary[500]}`,
         }}
       >
-        <Box width={30} height={30}>
+        <Box width={50} height={50} bgcolor='#fff' p={1} borderRadius='100%'>
           {icons['planMindmap']}
         </Box>
         <Typography textAlign={'center'} fontWeight={700}>

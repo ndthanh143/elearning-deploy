@@ -22,7 +22,7 @@ import { Box, IconButton, Stack, Typography } from '@mui/material'
 import { blue } from '@mui/material/colors'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
-import { Handle, NodeProps, Position, useReactFlow } from 'reactflow'
+import { Handle, NodeProps, Position } from 'reactflow'
 import { DrawerNodeDetail } from './components'
 import { MutableRefObject } from 'react'
 import { lectureService } from '@/services/lecture/lecture.service'
@@ -34,11 +34,9 @@ import dayjs from 'dayjs'
 import { CustomTooltip } from '..'
 
 export const TeacherCustomNodeComponent = (
-  props: NodeProps<Unit & { parentRef: MutableRefObject<HTMLDivElement>; index: number }>,
+  props: NodeProps<Unit & { parentRef: MutableRefObject<HTMLDivElement> }>,
 ) => {
   const queryClient = useQueryClient()
-
-  const { fitView } = useReactFlow()
 
   const { value: isOpenAddSection, setTrue: openAddSection, setFalse: closeAddSection } = useBoolean()
 
@@ -50,20 +48,11 @@ export const TeacherCustomNodeComponent = (
   // const { value: isOpenConfirm, setTrue: openConfirm, setFalse: closeConfirm } = useBoolean()
 
   const {
-    data: { parentRef, index, ...unit },
+    data: { parentRef, ...unit },
     xPos,
     yPos,
     selected,
   } = props
-
-  if (index === 0) {
-    fitView({
-      nodes: [{ id: unit.id.toString() }],
-      duration: 500,
-      minZoom: 1,
-      maxZoom: 1,
-    })
-  }
 
   const { value: isOpenDrawer, setFalse: closeDrawer } = useBoolean(true)
 

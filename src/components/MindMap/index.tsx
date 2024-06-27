@@ -111,10 +111,11 @@ export function MindMap({ lessonPlanId }: IMindMapProps) {
         position: item.position || { x: 0, y: 0 },
         data: item,
         type:
-          !item.lectureInfo && !item.assignmentInfo && !item.quizInfo && !item.resourceInfo
-            ? 'customNode'
-            : 'childNode',
-        index,
+          index === 0
+            ? 'mainNode'
+            : !item.lectureInfo && !item.assignmentInfo && !item.quizInfo && !item.resourceInfo
+              ? 'customNode'
+              : 'childNode',
       }))
 
       const initialEdges = units.content.map((item) => ({
@@ -136,14 +137,7 @@ export function MindMap({ lessonPlanId }: IMindMapProps) {
         },
       }))
 
-      const mainNode = {
-        id: '0',
-        position: { x: 0, y: 0 },
-        data: { name: 'OOP Language' },
-        type: 'mainNode',
-      }
-
-      setNodes([mainNode, ...initialNodes])
+      setNodes(initialNodes)
       setEdges(initialEdges)
     }
   }, [units])

@@ -1,5 +1,5 @@
 import { Box, IconButton } from '@mui/material'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect } from 'react'
 import ReactFlow, { useNodesState, useEdgesState, Node, Edge, MarkerType } from 'reactflow'
 import FullscreenIcon from '@mui/icons-material/Fullscreen'
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit'
@@ -15,10 +15,14 @@ import { CourseCustomNodeComponent } from './StudentCustomNodeComponent'
 import { CourseChildNodeComponent } from './StudentChildNodeComponent'
 import { useLocation } from 'react-router-dom'
 import 'reactflow/dist/style.css'
+import { Unit } from '@/services/unit/types'
+import { MainNodeComponent } from './MainNodeComponent'
+import { RightActionStudent } from './components'
 
 const nodeTypes = {
   customNode: CourseCustomNodeComponent, // Define your custom node type
   childNode: CourseChildNodeComponent, // Define your custom node type
+  mainNode: MainNodeComponent,
 }
 
 const edgeTypes = {
@@ -38,29 +42,52 @@ export function MindMapStudent({ lessonPlan, isLoading }: IMindMapProps) {
   const { hash } = useLocation()
   const hashId = hash.replace('#', '')
 
-  const [dataNodes, setDataNodes] = useState({})
-
   const units = lessonPlan.units
 
   useEffect(() => {
     const initialEdges: Edge[] = []
 
     const initialNodes: Node<any, string | undefined>[] = []
+    const dataNodesTemp: Record<string, Unit[]> = {}
 
+    for (const item of units || []) {
+      const parentNodeId = item.parent?.id.toString()
+
+      const isDefaultUnit = !Boolean(item.lectureInfo || item.assignmentInfo || item.quizInfo || item.resourceInfo)
+
+      if (!isDefaultUnit && parentNodeId) {
+        dataNodesTemp[parentNodeId] = dataNodesTemp[parentNodeId]
+          ? [...dataNodesTemp[parentNodeId || ''], item]
+          : [item]
+      }
+
+      if (!isDefaultUnit && parentNodeId) {
+        dataNodesTemp[parentNodeId] = dataNodesTemp[parentNodeId] ? [...dataNodesTemp[parentNodeId], item] : [item]
+      }
+    }
+
+    let index = 0
     for (const item of units || []) {
       const isDefaultUnit = !Boolean(item.lectureInfo || item.assignmentInfo || item.quizInfo || item.resourceInfo)
       const currentNodeId = item.id.toString()
       const parentNodeId = item.parent?.id.toString()
 
-      initialNodes.push({
+      const node = {
         id: currentNodeId,
         position: item.position || { x: 0, y: 0 },
-        data: { ...item, hidden: !isDefaultUnit },
-        type: isDefaultUnit ? 'customNode' : 'childNode',
+        data: {
+          index,
+          ...item,
+          hidden: !isDefaultUnit,
+          childrens: dataNodesTemp[currentNodeId || ''] || [],
+        },
+        type: index === 0 ? 'mainNode' : isDefaultUnit ? 'customNode' : 'childNode',
         ...(parentNodeId && {
           parentNodeId,
         }),
-      })
+      }
+
+      initialNodes.push(node)
       initialEdges.push({
         id: `e${parentNodeId}-${currentNodeId}`,
         source: parentNodeId || '',
@@ -73,16 +100,11 @@ export function MindMapStudent({ lessonPlan, isLoading }: IMindMapProps) {
           color: isDefaultUnit ? primary[500] : '#7EB6C0',
         },
       })
-
-      if (!isDefaultUnit) {
-        setDataNodes({
-          ...dataNodes,
-          [currentNodeId]: dataNodes[currentNodeId] ? [item, ...dataNodes[currentNodeId]] : [item],
-        })
-      }
+      index++
     }
 
     setNodes(initialNodes)
+
     setEdges(initialEdges)
   }, [units])
 
@@ -90,8 +112,6 @@ export function MindMapStudent({ lessonPlan, isLoading }: IMindMapProps) {
     const isFullscreen = hashId === 'fullscreen'
     window.location.hash = isFullscreen ? '' : 'fullscreen'
   }
-
-  console.log('data', dataNodes)
 
   const onNodeClick = useCallback(
     (_: React.MouseEvent, node: Node) => {
@@ -111,12 +131,32 @@ export function MindMapStudent({ lessonPlan, isLoading }: IMindMapProps) {
 
   const isFullscreen = hashId === 'fullscreen'
 
+  const handleToggleLessons = (type: 'on' | 'off') => {
+    const updateNodes = nodes.map((n) => ({
+      ...n,
+      data: {
+        ...n.data,
+        hidden: type === 'on' ? false : true,
+      },
+    }))
+    setNodes(updateNodes)
+  }
+
   return (
     <Box display='flex' flexDirection='column' position='relative' boxShadow={2} borderRadius={3} overflow='hidden'>
       <CustomTooltip title={isFullscreen ? 'Exist full screen' : 'View full screen'}>
         <IconButton
           onClick={toggleFullscreen}
-          sx={{ position: isFullscreen ? 'fixed' : 'absolute', top: 16, left: 16, zIndex: isFullscreen ? 10000 : 1 }}
+          sx={{
+            position: isFullscreen ? 'fixed' : 'absolute',
+            ...(!isFullscreen
+              ? {
+                  top: 16,
+                  left: 16,
+                }
+              : { bottom: 16, left: 16 }),
+            zIndex: isFullscreen ? 10000 : 1,
+          }}
         >
           {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
         </IconButton>
@@ -163,6 +203,7 @@ export function MindMapStudent({ lessonPlan, isLoading }: IMindMapProps) {
           />
         )}
       </Box>
+      <RightActionStudent toggleViewLessons={handleToggleLessons} />
     </Box>
   )
 }
