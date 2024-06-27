@@ -4,8 +4,8 @@ import { useAuth } from '../../../hooks'
 import { Activity, FollowingCourses, BannerHeading, Overview } from './components'
 import { RoleEnum } from '@/services/auth/auth.dto'
 import { useEffect } from 'react'
-import dayjs from 'dayjs'
 import { icons } from '@/assets/icons'
+import dayjs from 'dayjs'
 
 export const StudentHomePage = () => {
   const navigate = useNavigate()

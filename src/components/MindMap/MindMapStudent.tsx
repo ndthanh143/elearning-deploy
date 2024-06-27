@@ -203,7 +203,7 @@ export function MindMapStudent({ lessonPlan, isLoading }: IMindMapProps) {
           />
         )}
       </Box>
-      <RightActionStudent toggleViewLessons={handleToggleLessons} />
+      {isFullscreen && <RightActionStudent toggleViewLessons={handleToggleLessons} />}
     </Box>
   )
 }

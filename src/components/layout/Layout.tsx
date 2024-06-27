@@ -1,9 +1,8 @@
 import { Flex, Header, SideBar } from '..'
 import { Box } from '@mui/material'
 import { Outlet, useNavigate } from 'react-router-dom'
-import { useAuth } from '../../hooks'
 import { PropsWithChildren, useEffect } from 'react'
-import { useWebSocket } from '@/hooks/useWebSocket'
+import { useWebSocket, useAuth } from '@/hooks'
 
 import 'reactflow/dist/style.css'
 

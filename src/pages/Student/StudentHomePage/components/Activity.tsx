@@ -1,47 +1,68 @@
 import { Flex } from '@/components'
+import { activityKeys } from '@/services/activity/query'
 import { MoreHorizRounded, ShowChartOutlined } from '@mui/icons-material'
 import { Box, Card, CardContent, IconButton, Typography } from '@mui/material'
+import { useQuery } from '@tanstack/react-query'
 import { ChartData, ChartOptions } from 'chart.js'
+import dayjs from 'dayjs'
 import { Bar } from 'react-chartjs-2'
 
 export function Activity() {
-  const mockData = [
-    {
-      day: 'Monday',
-      totalHours: 5,
-    },
-    {
-      day: 'Tuesday',
-      totalHours: 7,
-    },
-    {
-      day: 'Wednesday',
-      totalHours: 3,
-    },
-    {
-      day: 'Thursday',
-      totalHours: 8,
-    },
-    {
-      day: 'Friday',
-      totalHours: 2,
-    },
-    {
-      day: 'Saturday',
-      totalHours: 6,
-    },
-    {
-      day: 'Sunday',
-      totalHours: 10,
-    },
-  ]
+  const fromDate = dayjs().startOf('week').toISOString()
+  const toDate = dayjs().endOf('week').toISOString()
+
+  const activityInstance = activityKeys.myActivity({ fromDate, toDate })
+  const { data: activityData } = useQuery({ ...activityInstance })
+
+  const mappingData =
+    activityData?.reduce(
+      (acc, item) => {
+        const day = dayjs(item.day).format('dddd')
+        const totalHours = item.totalHours
+        const index = acc.findIndex((accItem) => accItem.day === day)
+        if (index !== -1) {
+          acc[index].totalHours = totalHours
+        }
+        return acc
+      },
+      [
+        {
+          day: 'Monday',
+          totalHours: 0,
+        },
+        {
+          day: 'Tuesday',
+          totalHours: 0,
+        },
+        {
+          day: 'Wednesday',
+          totalHours: 0,
+        },
+        {
+          day: 'Thursday',
+          totalHours: 0,
+        },
+        {
+          day: 'Friday',
+          totalHours: 0,
+        },
+        {
+          day: 'Saturday',
+          totalHours: 0,
+        },
+        {
+          day: 'Sunday',
+          totalHours: 0,
+        },
+      ],
+    ) || []
 
   const data: ChartData<'bar'> = {
-    labels: mockData.map((item) => item.day),
+    labels: mappingData.map((item) => item.day),
     datasets: [
       {
         label: 'Total hours',
-        data: mockData.map((item) => item.totalHours),
+        data: mappingData.map((item) => item.totalHours),
         backgroundColor: 'rgba(54, 162, 235, 1)',
         borderColor: 'rgba(54, 162, 235, 1)',
         borderWidth: 1,
@@ -91,7 +112,7 @@ export function Activity() {
     },
   }
 
-  const isNodata = mockData.every((item) => item.totalHours === 0)
+  const isNodata = mappingData.every((item) => item.totalHours === 0)
 
   return (
     <Card variant='elevation' elevation={1}>

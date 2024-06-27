@@ -4,10 +4,11 @@ import Cookies from 'js-cookie'
 import authService from '../services/auth/auth.service'
 import { userKeys } from '../services/user/user.query'
 import { useState } from 'react'
-import { useBoolean } from '.'
+import { useActivityTracking, useBoolean } from '.'
 
 export const useAuth = () => {
   const queryClient = useQueryClient()
+  const { handleOptOut } = useActivityTracking()
 
   const [accessToken, _] = useState(Cookies.get('access_token'))
   const { value: isAuthenticated, setTrue: setAuthenticated, setFalse: disableAuthenticated } = useBoolean()
@@ -16,6 +17,7 @@ export const useAuth = () => {
   const { data: profile, isLoading, refetch, isFetched } = useQuery({ ...userInstance, enabled: Boolean(accessToken) })
 
   const logout = () => {
+    handleOptOut()
     authService.logout()
     disableAuthenticated()
     queryClient.setQueryData(userInstance.queryKey, null)

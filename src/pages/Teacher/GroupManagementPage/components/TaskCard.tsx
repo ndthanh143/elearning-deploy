@@ -1,12 +1,14 @@
 import { CustomMenu, Flex } from '@/components'
 import { primary } from '@/styles/theme'
 import { DeleteRounded, EditRounded, MoreVertRounded } from '@mui/icons-material'
-import { Box, Chip, IconButton, ListItemIcon, MenuItem, Stack, Typography } from '@mui/material'
+import { Box, IconButton, ListItemIcon, MenuItem, Stack, Typography } from '@mui/material'
 import { useDrag, useDrop, DragSourceMonitor } from 'react-dnd'
 import { icons } from '@/assets/icons'
 import { GroupTaskInfo } from '@/services/group/dto'
 import { formatDate } from '@/utils'
-import { useMenu } from '@/hooks'
+import { useBoolean, useMenu } from '@/hooks'
+import { green } from '@mui/material/colors'
+import { ModalGroupTaskDetail } from '.'
 
 interface TaskCardProps {
   index: number
@@ -24,6 +26,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   onDelete = () => {},
 }) => {
   const { anchorEl, onClose, onOpen, isOpen } = useMenu()
+  const { value: isOpenGroupTaskDetail, setTrue: openGroupTaskDetail, setFalse: closeGroupTaskDetail } = useBoolean()
   const [{ isDragging }, drag] = useDrag({
     type: 'TASK',
     item: { index },
@@ -49,20 +52,20 @@ export const TaskCard: React.FC<TaskCardProps> = ({
         gap={1}
         p={2}
         borderRadius={3}
-        bgcolor={primary[50]}
-        sx={{ opacity: isDragging ? 0.5 : 1, height: '100%' }}
+        bgcolor={data.isSubmitted ? green[100] : primary[50]}
+        sx={{ opacity: isDragging ? 0.5 : 1, height: '100%', cursor: 'pointer' }}
+        onClick={openGroupTaskDetail}
       >
-        <Chip
-          label={data.isSubmitted ? 'Submited' : 'Unsubmit'}
-          color={data.isSubmitted ? 'success' : 'default'}
-          sx={{ width: 'fit-content' }}
-          size='small'
-        />
         <Flex justifyContent='space-between'>
           <Typography variant='body2' fontWeight={700}>
             {data.taskName}
           </Typography>
-          <IconButton onClick={onOpen}>
+          <IconButton
+            onClick={(e) => {
+              e.stopPropagation()
+              onOpen(e)
+            }}
+          >
             <MoreVertRounded fontSize='small' />
           </IconButton>
         </Flex>
@@ -110,6 +113,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           <Typography variant='body2'>Remove</Typography>
         </MenuItem>
       </CustomMenu>
+      <ModalGroupTaskDetail data={data} isOpen={isOpenGroupTaskDetail} onClose={closeGroupTaskDetail} />
     </>
   )
 }

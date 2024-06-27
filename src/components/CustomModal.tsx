@@ -1,7 +1,8 @@
-import { BoxProps, Modal, Typography } from '@mui/material'
+import { BoxProps, IconButton, Modal, Typography } from '@mui/material'
 import { BoxContent } from './BoxContent'
 import { PropsWithChildren } from 'react'
 import { Flex, LoadingContainer } from '.'
+import { CloseRounded } from '@mui/icons-material'
 
 export type CustomModalProps = {
   title: string
@@ -24,6 +25,9 @@ export const CustomModal = ({
         <BoxContent width='80vw' {...props}>
           <Flex justifyContent='space-between' mb={2}>
             <Typography variant='body1'>{title}</Typography>
+            <IconButton onClick={onClose}>
+              <CloseRounded fontSize='small' />
+            </IconButton>
           </Flex>
           {children}
         </BoxContent>

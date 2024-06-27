@@ -18,11 +18,11 @@ import {
   LibraryAddOutlined,
   QuizOutlined,
 } from '@mui/icons-material'
-import { Box, IconButton, Stack, Typography } from '@mui/material'
-import { blue } from '@mui/material/colors'
+import { Box, IconButton, Stack, Typography, styled } from '@mui/material'
+import { blue, orange } from '@mui/material/colors'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
-import { Handle, NodeProps, Position } from 'reactflow'
+import { Handle, NodeProps, Position, useStore } from 'reactflow'
 import { DrawerNodeDetail } from './components'
 import { MutableRefObject } from 'react'
 import { lectureService } from '@/services/lecture/lecture.service'
@@ -32,11 +32,81 @@ import { primary } from '@/styles/theme'
 import { quizService } from '@/services/quiz/quiz.service'
 import dayjs from 'dayjs'
 import { CustomTooltip } from '..'
+import { icons } from '@/assets/icons'
+
+const StyledHandle = styled(Handle)(() => ({
+  background: primary[100],
+  border: 1,
+  position: 'absolute',
+  zIndex: 1,
+  width: '100%',
+  height: '100%',
+  top: 0,
+  left: 0,
+  borderRadius: 0,
+  transform: 'none',
+  opacity: 0,
+  ':before': {
+    content: '""',
+    position: 'absolute',
+    top: '-10px',
+    left: '50%',
+    height: '20px',
+    width: '40px',
+    transform: 'translate(-50%, 0)',
+    background: ' #d6d5e6',
+    zIndex: '1000',
+    lineHeight: 1,
+    color: '#fff',
+    fontSize: '9px',
+    border: '2px solid #222138',
+  },
+}))
+
+// const CustomNode = styled(Stack)(() => ({
+//   width: '150px',
+//   height: '80px',
+//   border: '3px solid black',
+//   position: 'relative',
+//   overflow: 'hidden',
+//   borderRadius: '10px',
+//   display: 'flex',
+//   justifyContent: 'center',
+//   alignItems: 'center',
+//   fontWeight: 'bold',
+//   ':before': {
+//     content: '""',
+//     position: 'absolute',
+//     top: '-10px',
+//     left: '50%',
+//     height: '20px',
+//     width: '40px',
+//     transform: 'translate(-50%, 0)',
+//     background: '#d6d5e6',
+//     zIndex: '1000',
+//     lineHeight: 1,
+//     borderRadius: '4px',
+//     color: '#fff',
+//     fontSize: '9px',
+//     border: '2px solid #222138',
+//   },
+// }))
 
 export const TeacherCustomNodeComponent = (
-  props: NodeProps<Unit & { parentRef: MutableRefObject<HTMLDivElement> }>,
+  props: NodeProps<Unit & { parentRef: MutableRefObject<HTMLDivElement>; type: 'common' | 'main' }>,
 ) => {
   const queryClient = useQueryClient()
+
+  const {
+    data: { parentRef, type, ...unit },
+    xPos,
+    yPos,
+    selected,
+  } = props
+
+  const connectionNodeId = useStore((state) => state.connectionNodeId)
+  const isConnecting = !!connectionNodeId
+  const isTarget = connectionNodeId && connectionNodeId !== unit.id.toString()
 
   const { value: isOpenAddSection, setTrue: openAddSection, setFalse: closeAddSection } = useBoolean()
 
@@ -46,13 +116,6 @@ export const TeacherCustomNodeComponent = (
 
   // const { value: isOpenSectionModal, setTrue: openSectionModal, setFalse: closeSectionModal } = useBoolean()
   // const { value: isOpenConfirm, setTrue: openConfirm, setFalse: closeConfirm } = useBoolean()
-
-  const {
-    data: { parentRef, ...unit },
-    xPos,
-    yPos,
-    selected,
-  } = props
 
   const { value: isOpenDrawer, setFalse: closeDrawer } = useBoolean(true)
 
@@ -213,47 +276,58 @@ export const TeacherCustomNodeComponent = (
 
   return (
     <>
-      <Box
+      <Stack
         sx={{
-          backgroundColor: '#fff',
-          color: '#000',
-          borderRadius: 4,
           width: 200,
-          border: '1px solid',
-          borderColor: blue[500],
           minHeight: 50,
           fontSize: 12,
-          px: 4,
-          py: 1,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          transition: 'all 0.2s ease-in-out',
+          gap: 1,
+          transition: isTarget ? 'all 0.05s ease-in-out' : 'all 0.2s ease-in-out',
+          ':hover': {
+            borderColor: blue[500],
+          },
           zIndex: 10,
-          filter: selected ? `drop-shadow(0 0 0.75rem ${primary[500]})` : 'none',
+          ...(type === 'main'
+            ? {
+                backgroundColor: primary[500],
+                color: '#fff',
+                borderRadius: '100%',
+                border: `4px solid ${primary[500]}`,
+                px: 4,
+                py: 3,
+                justifyContent: 'center',
+                alignItems: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+              }
+            : {
+                backgroundColor: isTarget ? orange[200] : '#fff',
+                color: '#000',
+                borderRadius: 4,
+                border: '1px solid',
+                borderColor: blue[500],
+                minHeight: 50,
+                fontSize: 12,
+                px: 4,
+                py: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                display: 'flex',
+              }),
         }}
       >
-        <Typography variant='body2' textAlign={'center'}>
+        {type === 'main' && (
+          <Box width={50} height={50} bgcolor='#fff' p={1} borderRadius='100%'>
+            {icons['planMindmap']}
+          </Box>
+        )}
+        <Typography variant='body2' textAlign={'center'} fontWeight={type === 'main' ? 700 : 400}>
           {unit.name}
         </Typography>
 
-        <Handle
-          type='source'
-          id='a'
-          position={Position.Bottom}
-          style={{
-            background: primary[100],
-            border: 1,
-            position: 'absolute',
-            zIndex: 1,
-          }}
-        />
+        {!isConnecting && <StyledHandle className='customHandle' position={Position.Right} type='source' />}
 
-        <Handle
-          type='target'
-          position={Position.Top}
-          style={{ background: primary[100], border: 1, position: 'absolute', zIndex: 1 }}
-        />
+        <StyledHandle isConnectableStart={false} className='customHandle' type='target' position={Position.Top} />
 
         {selected && (
           <Box
@@ -296,7 +370,7 @@ export const TeacherCustomNodeComponent = (
             </Box>
           </Box>
         )}
-      </Box>
+      </Stack>
       <ResourceActions isOpen={isOpenResource} onClose={closeResource} onCreate={mutateCreateResource} />
       <AssignmentActions isOpen={isOpenAssignment} onClose={closeAssignment} onCreate={mutateCreateAssignment} />
       <LectureActions isOpen={isOpenLecture} onClose={closeLecture} onCreate={mutateCreateLecture} />

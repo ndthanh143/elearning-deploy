@@ -109,13 +109,11 @@ export function MindMap({ lessonPlanId }: IMindMapProps) {
       const initialNodes = units.content.map((item, index) => ({
         id: item.id.toString(),
         position: item.position || { x: 0, y: 0 },
-        data: item,
+        data: { ...item, type: index === 0 ? 'main' : 'common' },
         type:
-          index === 0
-            ? 'mainNode'
-            : !item.lectureInfo && !item.assignmentInfo && !item.quizInfo && !item.resourceInfo
-              ? 'customNode'
-              : 'childNode',
+          !item.lectureInfo && !item.assignmentInfo && !item.quizInfo && !item.resourceInfo
+            ? 'customNode'
+            : 'childNode',
       }))
 
       const initialEdges = units.content.map((item) => ({
