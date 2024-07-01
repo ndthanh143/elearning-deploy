@@ -16,6 +16,8 @@ const calculateChildrenItems = (children: Unit[]) => {
   let video = 0
   let resource = 0
 
+  console.log('children', children)
+
   for (const child of children) {
     if (child.lectureInfo) {
       lecture++

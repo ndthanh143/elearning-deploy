@@ -12,8 +12,6 @@ export const coursesRegistrationService = {
     return data.data
   },
   enroll: async (payload: EnrollPayload) => {
-    const { data } = await axiosInstance.post('course-registration/enroll', payload)
-
-    return data
+    await axiosInstance.post('course-registration/enroll', payload)
   },
 }

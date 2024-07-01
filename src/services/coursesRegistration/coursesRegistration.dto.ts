@@ -17,5 +17,4 @@ export type GetListStudentCourseQuery = {
 
 export type EnrollPayload = {
   courseId: number
-  studentId: number
 }

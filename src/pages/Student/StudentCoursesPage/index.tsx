@@ -2,9 +2,9 @@ import { Box, Card, CardContent, Container, Grid, Pagination, Skeleton, Typograp
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useAuth } from '@/hooks'
-import { coursesRegistrationKeys } from '@/services/coursesRegistration/coursesRegistration.query'
 import { CourseCard, NoData } from '@/components'
 import { BannerHeading } from '../StudentHomePage/components'
+import { courseKeys } from '@/services/course/course.query'
 
 const DEFAULT_PAGE_SIZE = 10
 export const StudentCoursesPage = () => {
@@ -12,8 +12,7 @@ export const StudentCoursesPage = () => {
 
   const [page, setPage] = useState(0)
 
-  const coursesInstance = coursesRegistrationKeys.list({
-    studentId: Number(profile?.data.id),
+  const coursesInstance = courseKeys.myCourse({
     page,
     size: DEFAULT_PAGE_SIZE,
   })
@@ -45,13 +44,13 @@ export const StudentCoursesPage = () => {
         <Grid container spacing={4}>
           {courses &&
             courses.content.map((course) => (
-              <Grid item xs={3} key={course.id}>
-                <CourseCard key={course.id} data={course.courseInfo} />
+              <Grid item xs={12} md={6} lg={3} key={course.id}>
+                <CourseCard key={course.id} data={course} />
               </Grid>
             ))}
           {isLoadingCourses &&
             Array.from({ length: 4 }).map((_, index) => (
-              <Grid item xs={3} key={index}>
+              <Grid item xs={12} md={6} lg={3} key={index}>
                 <Card variant='outlined'>
                   <Skeleton variant='rectangular' height={200} width='100%' />
                   <CardContent>

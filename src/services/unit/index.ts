@@ -5,6 +5,7 @@ import {
   GetListUnitQuery,
   GetListUnitResponse,
   SearchUnitQuery,
+  TrackingUnitPayload,
   UpdateUnitPayload,
 } from './types'
 
@@ -36,5 +37,9 @@ export const unitService = {
   },
   delete: async (id: number) => {
     return axiosInstance.delete(`unit/delete/${id}`)
+  },
+
+  tracking: async (payload: TrackingUnitPayload) => {
+    return axiosInstance.post('unit/tracking', payload)
   },
 }

@@ -1,6 +1,5 @@
 import { Box, Container, Grid, Stack, Typography } from '@mui/material'
 
-import { NavHeader } from '.'
 import { gray } from '@/styles/theme'
 import { Flex, IconContainer, Link } from '@/components'
 import { CustomButton } from './CustomButton'
@@ -47,10 +46,7 @@ const HintCard = ({
 
 export function Branding() {
   return (
-    <Stack justifyContent='center' position='relative' height='100vh' bgcolor='#fff3e4' overflow={'hidden'}>
-      <Container maxWidth='lg' sx={{ position: 'absolute', top: 30, left: '50%', transform: 'translateX(-50%)' }}>
-        <NavHeader />
-      </Container>
+    <Stack position='relative' bgcolor='#fff3e4' overflow={'hidden'} pt={10}>
       <Container maxWidth='lg'>
         <Grid container>
           <Grid item xs={6}>
@@ -63,7 +59,7 @@ export function Branding() {
                 Skilline is an interesting platform that will teach you in more an interactive way
               </Typography>
               <Flex>
-                <Link href='/login'>
+                <Link href='/search'>
                   <CustomButton variant='contained' size='large'>
                     Join for free
                   </CustomButton>

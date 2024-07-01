@@ -70,7 +70,7 @@ const cardProps = [
 
 export function OutStanding() {
   return (
-    <Container maxWidth='lg' sx={{ my: 8 }}>
+    <Container maxWidth='lg' sx={{ my: 2 }}>
       <Stack gap={8}>
         <Stack alignItems='center'>
           <Typography variant='h2' fontWeight={700} textAlign='center'>

@@ -29,6 +29,8 @@ import {
   ResourcePage,
   LandingPage,
   CourseCertificatePage,
+  SearchPage,
+  CoursePublicPage,
 } from './pages'
 
 import 'react-big-calendar/lib/css/react-big-calendar.css'
@@ -51,7 +53,7 @@ import { AdminLayout } from './components/layout/AdminLayout'
 import { Dashboard, UserManagement } from './pages/Admin'
 import { ReactFlowProvider } from 'reactflow'
 import { PlanningDetailPage } from './pages/Teacher/PlanningDetailPage'
-import { AuthLayout, CoursesPageLayout } from './components/layout'
+import { AuthLayout, CoursesPageLayout, PublicLayout } from './components/layout'
 import { GlobalWorkerOptions, version } from 'pdfjs-dist'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
@@ -103,7 +105,18 @@ const router = createBrowserRouter([
       },
     ],
   },
-  { path: '/', element: <LandingPage /> },
+  {
+    path: '/',
+    element: <PublicLayout />,
+    children: [
+      {
+        index: true,
+        element: <LandingPage />,
+      },
+      { path: '/search', element: <SearchPage /> },
+      { path: '/search/:courseId', element: <CoursePublicPage /> },
+    ],
+  },
 
   {
     path: '/home',

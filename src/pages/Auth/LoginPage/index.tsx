@@ -19,8 +19,7 @@ import {
   Typography,
 } from '@mui/material'
 
-import { images } from '@/assets/images'
-import { Flex, Link } from '@/components'
+import { Flex, Link, Logo } from '@/components'
 import authService from '@/services/auth/auth.service'
 import { LoginPayload, SignUpPayload } from '@/services/auth/auth.dto'
 
@@ -142,16 +141,7 @@ export const LoginPage = () => {
     <Container sx={{ my: 4 }}>
       <Flex justifyContent='space-between'>
         <Flex gap={2}>
-          <Box
-            component='img'
-            src={images.logo}
-            alt='logo'
-            width={40}
-            height={40}
-            style={{
-              objectFit: 'cover',
-            }}
-          />
+          <Logo type='short' />
           <Link href='/' variant='body2' sx={{ textDecoration: 'none', color: 'inherit' }}>
             Back to Brainstone
           </Link>

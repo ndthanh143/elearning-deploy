@@ -1,11 +1,11 @@
 import { Box } from '@mui/material'
-import { About, Branding, ColabSlide, Features, Footer, OutStanding } from './components'
+import { About, Branding, Features, Footer, OutStanding } from './components'
 
 export function LandingPage() {
   return (
     <Box>
       <Branding />
-      <ColabSlide />
+      {/* <ColabSlide /> */}
       <OutStanding />
       <About />
       <Features />

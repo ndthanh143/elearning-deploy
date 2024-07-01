@@ -24,19 +24,28 @@ interface IVideoPlayerProps {
   }
   title: string
   onReady?: (player: any) => void
+  onProgress?: () => void
+}
+
+const formatTime = (time: number) => {
+  const hours = Math.floor(time / 3600)
+  const minutes = Math.floor((time % 3600) / 60)
+  const seconds = Math.floor(time % 60)
+  return `${hours > 0 ? `${hours}:` : ''}${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
 }
 
 export const VideoPlayer = (props: IVideoPlayerProps) => {
   const videoRef = useRef<HTMLDivElement | null>(null)
   const playerRef = useRef<any | null>(null)
-  const { options, title, onReady } = props
-  const [_, setHovered] = useState(false)
+  const { options, title, onReady, onProgress } = props
+  const [hovered, setHovered] = useState(false)
   const [playing, setPlaying] = useState(false)
   const [volume, setVolume] = useState(1)
   const [muted, setMuted] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [fullscreen, setFullscreen] = useState(false)
+  const [tracked, setTracked] = useState(false)
 
   useEffect(() => {
     if (videoRef.current && !playerRef.current) {
@@ -52,18 +61,28 @@ export const VideoPlayer = (props: IVideoPlayerProps) => {
       }))
 
       player.on('timeupdate', () => {
-        setCurrentTime(player.currentTime() || 0)
+        const currentTime = player.currentTime() || 0
+        setCurrentTime(currentTime)
+
+        if (onProgress && !tracked && currentTime >= (player.duration() || 0 * 1) / 10) {
+          onProgress()
+          setTracked(true)
+        }
       })
 
       player.on('durationchange', () => {
         setDuration(player.duration() || 0)
+      })
+
+      player.on('fullscreenchange', () => {
+        setFullscreen(!!player.isFullscreen())
       })
     } else if (playerRef.current) {
       const player = playerRef.current
       player.autoplay(options.autoplay)
       player.src(options.sources)
     }
-  }, [options, onReady])
+  }, [options, onReady, onProgress])
 
   useEffect(() => {
     const player = playerRef.current
@@ -122,7 +141,6 @@ export const VideoPlayer = (props: IVideoPlayerProps) => {
       } else {
         player.requestFullscreen()
       }
-      setFullscreen(!fullscreen)
     }
   }
 
@@ -166,48 +184,53 @@ export const VideoPlayer = (props: IVideoPlayerProps) => {
           position: 'absolute',
           inset: 0,
           color: 'white',
-          opacity: 0,
+          opacity: hovered || fullscreen ? 1 : 0,
           justifyContent: 'space-between',
           transition: 'opacity 0.3s ease-in-out',
+          zIndex: fullscreen ? 1 : 'auto',
         }}
       >
         <Box px={4} pt={2}>
           <Typography variant='h6'>{title}</Typography>
         </Box>
-        <Stack px={4}>
+        <Box px={4} pb={2}>
           <Slider
             value={currentTime}
-            min={0}
+            onChange={handleTimeChange}
             max={duration}
             step={1}
-            onChange={handleTimeChange}
-            sx={{ width: '100%', color: 'white' }}
+            sx={{ width: '100%', py: 1 }}
+            color='primary'
           />
-          <Flex justifyContent='space-between'>
-            <Flex justifyContent='start' alignItems='center'>
-              <IconButton onClick={handlePlayPause} size='small' sx={{ ml: -2 }}>
-                {playing ? <PauseIcon sx={{ color: 'white' }} /> : <PlayArrowIcon sx={{ color: 'white' }} />}
+          <Stack direction='row' justifyContent='space-between' alignItems='center' gap={4}>
+            <Stack direction='row' spacing={2} alignItems='center'>
+              <IconButton onClick={handlePlayPause} color='inherit' sx={{ padding: 0 }}>
+                {playing ? <PauseIcon /> : <PlayArrowIcon />}
               </IconButton>
-              <IconButton onClick={handleMuteToggle}>
-                {muted ? <VolumeOffIcon sx={{ color: 'white' }} /> : <VolumeUpIcon sx={{ color: 'white' }} />}
+              <IconButton onClick={handleMuteToggle} color='inherit'>
+                {muted ? <VolumeOffIcon /> : <VolumeUpIcon />}
               </IconButton>
-              <Slider
-                value={volume}
-                min={0}
-                max={1}
-                step={0.01}
-                onChange={handleVolumeChange}
-                sx={{ width: '100px', color: 'white', ml: 2 }}
-              />
-            </Flex>
-            <IconButton onClick={handleToggleZoom} sx={{ mr: -1 }} size='small'>
-              {fullscreen ? <FullscreenExitIcon sx={{ color: 'white' }} /> : <FullscreenIcon sx={{ color: 'white' }} />}
+              <Box width={60}>
+                <Slider
+                  value={volume}
+                  onChange={handleVolumeChange}
+                  step={0.1}
+                  min={0}
+                  max={1}
+                  color='primary'
+                  sx={{ py: 0.5 }}
+                />
+              </Box>
+              <Typography variant='body2' whiteSpace='nowrap'>
+                {formatTime(currentTime)} / {formatTime(duration)}
+              </Typography>
+            </Stack>
+            <IconButton onClick={handleToggleZoom} color='inherit'>
+              {fullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
             </IconButton>
-          </Flex>
-        </Stack>
+          </Stack>
+        </Box>
       </Stack>
     </Flex>
   )
 }
-
-export default VideoPlayer

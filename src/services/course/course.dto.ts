@@ -17,6 +17,9 @@ export type Course = {
   lessonPlanInfo: LessonPlan
   objectives: string[]
   requirements: string[]
+  totalUnitDone?: number
+  totalUnit?: number
+  amountOfStudent?: number
   forumInfo?: Forum
   unit?: Unit[]
   currency?: string
@@ -61,3 +64,10 @@ export type UpdateCoursePayload = {
   teacherId?: number
   thumbnail?: string
 }
+
+export type AutoCompleteCourseQuery = {
+  q?: string
+  categoryId?: number
+} & PaginationQuery
+
+export type GetMyCoursesQuery = {} & PaginationQuery

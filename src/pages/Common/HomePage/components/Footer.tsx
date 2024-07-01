@@ -1,4 +1,4 @@
-import { Flex } from '@/components'
+import { Flex, Logo } from '@/components'
 import { gray, primary } from '@/styles/theme'
 import { Box, Container, Divider, Stack, Typography } from '@mui/material'
 
@@ -8,7 +8,7 @@ export function Footer() {
       <Container maxWidth='sm'>
         <Stack gap={4}>
           <Flex gap={4} justifyContent={'center'}>
-            <Box component='img' src={'/logo.ico'} width={80} height={80} />
+            <Logo size='large' variant='light' />
             <Divider orientation='vertical' flexItem sx={{ bgcolor: gray[300] }} />
             <Typography variant='h3' color='white' fontWeight={400}>
               Online Learning

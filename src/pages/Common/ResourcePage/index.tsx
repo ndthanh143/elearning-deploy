@@ -3,15 +3,15 @@ import { Flex, Loading, NoData, PDFViewer } from '@/components'
 import { configs } from '@/configs'
 import { useAlert } from '@/hooks'
 import { resourceKey } from '@/services/resource/query'
-import { resourceService } from '@/services/resource/resource.service'
 import { ArrowBackRounded } from '@mui/icons-material'
 import { Button, Card, CardContent, Container, Typography } from '@mui/material'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useRef } from 'react'
 import { useParams } from 'react-router-dom'
-import VideoPlayer from './VideoPlayer'
+import { VideoPlayer } from './VideoPlayer'
 import videojs from 'video.js'
 import { getAbsolutePathFile } from '@/utils'
+import { unitService } from '@/services/unit'
 
 const trackingUrl = (url: string) => {
   return `${configs.API_URL}/api/file/download${url}`
@@ -28,17 +28,12 @@ export function ResourcePage() {
     isLoading: isLoadingResource,
   } = useQuery({ ...resourceInstance })
 
-  const { mutate: mutateTrackingResource } = useMutation({
-    mutationFn: resourceService.createTracking,
-    onSuccess: () => {
-      triggerAlert('You have reached the last page of the document')
-    },
+  const { mutate: mutateTracking } = useMutation({
+    mutationFn: unitService.tracking,
   })
 
   const handleLastPage = () => {
-    if (!resource?.resourceTrackingInfo) {
-      mutateTrackingResource({ resourceId: Number(resourceId), unitId: Number(unitId), courseId: Number(courseId) })
-    }
+    mutateTracking({ unitId: Number(unitId), courseId: Number(courseId) })
   }
 
   const handleBackPage = () => {
@@ -75,6 +70,11 @@ export function ResourcePage() {
     })
   }
 
+  const handleTracking = () => {
+    mutateTracking({ unitId: Number(unitId), courseId: Number(courseId) })
+    triggerAlert('tracking')
+  }
+
   if (isLoadingResource)
     return (
       <Flex height='80vh'>
@@ -104,7 +104,12 @@ export function ResourcePage() {
         {resource.urlDocument.includes('VIDEO') && (
           <>
             {resource.state === 'PROCESSING' && <Typography>Video Processing...</Typography>}
-            <VideoPlayer options={videoJsOptions} onReady={handlePlayerReady} title={resource.title} />
+            <VideoPlayer
+              options={videoJsOptions}
+              onReady={handlePlayerReady}
+              title={resource.title}
+              onProgress={handleTracking}
+            />
           </>
         )}
       </Container>

@@ -71,3 +71,8 @@ export type SearchUnitQuery = {
 }
 
 export type UnitType = 'assignment' | 'lecture' | 'resource' | 'quiz' | 'video'
+
+export type TrackingUnitPayload = {
+  courseId: number
+  unitId: number
+}

@@ -5,10 +5,6 @@ import { useNavigate } from 'react-router-dom'
 import { Course } from '../services/course/course.dto'
 import { getAbsolutePathFile } from '@/utils'
 import common from '@/assets/images/icons/common'
-import { assignmentKeys } from '@/services/assignment/assignment.query'
-import { useQuery } from '@tanstack/react-query'
-import { assignmentSubmissionKeys } from '@/services/assignmentSubmission/assignmentSubmission.query'
-import { useAuth } from '@/hooks'
 import { Flex } from '.'
 import { primary } from '@/styles/theme'
 
@@ -17,21 +13,11 @@ export type CourseCardProps = {
 }
 
 export const CourseCard = ({ data }: CourseCardProps) => {
-  const { profile } = useAuth()
-
   const navigate = useNavigate()
-
-  const assignmentInstance = assignmentKeys.list({ courseId: data.id })
-  const { data: assignments } = useQuery({ ...assignmentInstance, select: (data) => data.content.length })
-
-  const submissionInstance = assignmentSubmissionKeys.list({ courseId: data.id, studentId: profile?.data.id })
-  const { data: submissions } = useQuery({ ...submissionInstance, select: (data) => data.content.length })
 
   const handleOpenCourse = useCallback(() => {
     navigate(`/courses/${data.id}`)
   }, [])
-
-  const progress = (submissions && assignments && assignments > 0 && (submissions / assignments) * 100) || 0
 
   return (
     <Card
@@ -67,7 +53,7 @@ export const CourseCard = ({ data }: CourseCardProps) => {
             {data.courseName}
           </Typography>
           <Slider
-            value={progress || 1}
+            value={data.totalUnitDone && data.totalUnit ? (data.totalUnitDone / data.totalUnit) * 100 : 0}
             sx={{
               py: 1,
               '.MuiSlider-thumb': {
@@ -89,7 +75,7 @@ export const CourseCard = ({ data }: CourseCardProps) => {
             <Box display='flex' alignItems='center' gap={1}>
               <CastForEducationOutlined />
               <Typography variant='body2' fontWeight={700}>
-                {data.unit?.length || 0}
+                {data.totalUnit || 0}
               </Typography>
             </Box>
           </Flex>

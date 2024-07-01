@@ -13,6 +13,7 @@ import { courseKeys } from '@/services/course/course.query'
 import { commentService } from '@/services'
 import { groupCommentKeys } from '@/services/groupComment/query'
 import { primary } from '@/styles/theme'
+import { unitService } from '@/services/unit'
 
 export const LecturePage = () => {
   const queryClient = useQueryClient()
@@ -67,8 +68,8 @@ export const LecturePage = () => {
     },
   })
 
-  const { mutate: mutateCreateTracking } = useMutation({
-    mutationFn: lectureService.createTracking,
+  const { mutate: mutateTracking } = useMutation({
+    mutationFn: unitService.tracking,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: courseKeys.details() })
     },
@@ -138,9 +139,8 @@ export const LecturePage = () => {
 
   useEffect(() => {
     if (isIntersecting && profile?.data.role === RoleEnum.Student) {
-      mutateCreateTracking({
+      mutateTracking({
         courseId: Number(courseId),
-        lectureId: Number(lectureId),
         unitId: Number(unitId),
       })
     }

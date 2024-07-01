@@ -7,6 +7,7 @@ import { DescriptionIcon } from './DescriptionIcon'
 import { EducationIcon } from './EducationIcon'
 import { ExcelIcon } from './Excel'
 import { GroupIcon } from './GroupIcon'
+import { InstructorIcon } from './InstructorIcon'
 import { LectureIcon } from './LectureIcon'
 import { LockIcon } from './LockIcon'
 import { NoDataIcon } from './Nodata'
@@ -48,4 +49,5 @@ export const icons = {
   otp: <OTPIcon />,
   video: <VideoIcon />,
   cert: <CertIcon />,
+  instructor: <InstructorIcon />,
 } as const
