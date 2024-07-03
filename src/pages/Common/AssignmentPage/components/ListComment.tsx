@@ -110,7 +110,7 @@ export function ListComment({
   )
 
   return (
-    <Card>
+    <Card variant='outlined'>
       <CardContent>
         <Flex gap={1} alignItems='center'>
           <PeopleAltRounded />

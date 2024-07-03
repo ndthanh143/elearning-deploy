@@ -1,7 +1,11 @@
 import axiosInstance from '@/axios'
-import { CategoriesResponse } from './category.dto'
+import { CategoriesResponse, CategoriesSearchResponse } from './category.dto'
 
 export const categoryService = {
+  autoComplete: async () => {
+    const { data } = await axiosInstance.get<CategoriesSearchResponse>('/category/auto-complete')
+    return data.data
+  },
   getAllCategory: async () => {
     const { data } = await axiosInstance.get<CategoriesResponse>('/category/list')
 

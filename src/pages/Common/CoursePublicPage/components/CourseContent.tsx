@@ -13,7 +13,7 @@ export function CourseContent({ data }: { data: Course }) {
             {data.objectives ? (
               <Grid container spacing={2}>
                 {data.objectives.map((objective) => (
-                  <Grid item xs={6} key={objective}>
+                  <Grid item xs={12} lg={6} key={objective}>
                     <Box key={objective} display='flex' alignItems='start' gap={3}>
                       <Check color='primary' />
                       <Typography>{objective}</Typography>

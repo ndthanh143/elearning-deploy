@@ -67,7 +67,7 @@ export type UpdateCoursePayload = {
 
 export type AutoCompleteCourseQuery = {
   q?: string
-  categoryId?: number
+  categoryIds?: string
 } & PaginationQuery
 
 export type GetMyCoursesQuery = {} & PaginationQuery

@@ -9,9 +9,9 @@ interface ILogoProps {
 
 export function Logo({ size = 'medium', variant = 'dark', type = 'full' }: ILogoProps) {
   const sizeProps = {
-    small: { width: 50, height: 40 },
-    medium: { width: 200, height: 50 },
-    large: { width: 250, height: 60 },
+    small: { width: 150, height: 30 },
+    medium: { width: 200, height: 40 },
+    large: { width: 250, height: 50 },
   }
 
   const logoSrc = {
@@ -20,7 +20,7 @@ export function Logo({ size = 'medium', variant = 'dark', type = 'full' }: ILogo
   }
 
   return (
-    <Link href='/' sx={{ textDecoration: 'none', cursor: 'pointer' }}>
+    <Link href='/' sx={{ textDecoration: 'none', cursor: 'pointer', display: 'flex' }}>
       <Box
         component='img'
         src={logoSrc[variant]}

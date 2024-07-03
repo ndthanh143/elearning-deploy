@@ -1,6 +1,6 @@
 import { CourseCard, Link, NoData } from '@/components'
 import { useAuth } from '@/hooks'
-import { coursesRegistrationKeys } from '@/services/coursesRegistration/coursesRegistration.query'
+import { courseKeys } from '@/services/course/course.query'
 import { ArrowForwardOutlined } from '@mui/icons-material'
 import { Box, Button, Grid, Stack, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
@@ -10,8 +10,7 @@ const DEFAULT_PAGE_SIZE = 3
 export function FollowingCourses() {
   const { profile } = useAuth()
 
-  const coursesInstance = coursesRegistrationKeys.list({
-    studentId: profile?.data.id as number,
+  const coursesInstance = courseKeys.myCourse({
     page: DEFAULT_PAGE,
     size: DEFAULT_PAGE_SIZE,
   })
@@ -35,7 +34,7 @@ export function FollowingCourses() {
       <Grid container spacing={2}>
         {courses?.map((course) => (
           <Grid item xs={12} lg={4} key={course.id}>
-            <CourseCard data={course.courseInfo} />
+            <CourseCard data={course} />
           </Grid>
         ))}
       </Grid>

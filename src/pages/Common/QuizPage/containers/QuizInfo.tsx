@@ -4,14 +4,12 @@ import { quizKey } from '@/services/quiz/quiz.query'
 import { gray } from '@/styles/theme'
 import { formatDate } from '@/utils'
 import { ArrowBack } from '@mui/icons-material'
-import { Button, Divider, Stack, Typography } from '@mui/material'
+import { Button, Container, Divider, Stack, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { ModalAttempts } from '../components'
 
 export const QuizInfo = () => {
-  const navigate = useNavigate()
-
   const { quizId, courseId } = useParams()
 
   const { setValue } = useLocalStorage<boolean>('quizStarted', false)
@@ -29,9 +27,7 @@ export const QuizInfo = () => {
     }
   }
 
-  const handleBack = () => {
-    navigate(`/courses/${courseId}`)
-  }
+  const handleBack = () => window.history.back()
 
   const highestScore = quiz?.quizSubmissionInfo.reduce((maxScore, submission) => {
     return submission.score > maxScore ? submission.score : maxScore
@@ -39,7 +35,7 @@ export const QuizInfo = () => {
 
   return (
     quiz && (
-      <>
+      <Container>
         <Button sx={{ gap: 1, mb: 1 }} color='secondary' onClick={handleBack}>
           <ArrowBack />
           Back
@@ -117,7 +113,7 @@ export const QuizInfo = () => {
           )}
         </BoxContent>
         <ModalAttempts data={quiz.quizSubmissionInfo} onClose={closeAttempts} isOpen={isOpenAttempts} />
-      </>
+      </Container>
     )
   )
 }

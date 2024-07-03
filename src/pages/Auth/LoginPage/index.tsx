@@ -27,7 +27,6 @@ import { configs } from '../../../configs'
 import { SignUpForm } from './_components'
 import { useAlert, useAuth } from '../../../hooks'
 import { AxiosError } from 'axios'
-import { useLocation, useNavigate } from 'react-router-dom'
 import { icons } from '@/assets/icons'
 
 const schema = object({
@@ -37,8 +36,6 @@ const schema = object({
 
 const clientId = configs.GOOGLE_CLIENT_ID
 export const LoginPage = () => {
-  const navigate = useNavigate()
-  const { state } = useLocation()
   const { triggerAlert } = useAlert()
 
   const [defaultSignUpValues, setDefaultSignUpValues] = useState<SignUpPayload>({
@@ -67,9 +64,6 @@ export const LoginPage = () => {
     mutationFn: authService.loginGoogle,
     onSuccess: () => {
       setAuthenticated()
-      const url = state && state.from ? state.form : mode === 'teacher' ? '/courses' : '/home'
-
-      navigate(url)
       triggerAlert('Login successfully!')
       refetch()
     },
@@ -141,7 +135,7 @@ export const LoginPage = () => {
     <Container sx={{ my: 4 }}>
       <Flex justifyContent='space-between'>
         <Flex gap={2}>
-          <Logo type='short' />
+          <Logo type='short' size='small' />
           <Link href='/' variant='body2' sx={{ textDecoration: 'none', color: 'inherit' }}>
             Back to Brainstone
           </Link>

@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { lectureKeys } from '../../../services/lecture/lecture.query'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Box, Button, Container, IconButton, Stack, Typography } from '@mui/material'
@@ -18,7 +18,6 @@ import { unitService } from '@/services/unit'
 export const LecturePage = () => {
   const queryClient = useQueryClient()
   const { profile } = useAuth()
-  const navigate = useNavigate()
   const { value: isOpenCreateComment, setTrue: openCreateComment, setFalse: closeCreateComment } = useBoolean()
   const { lectureId, courseId, unitId } = useParams()
   const [buttonPosition, setButtonPosition] = useState<{ top: number; left: number; element: HTMLElement | null }>({
@@ -51,7 +50,7 @@ export const LecturePage = () => {
     enabled: Boolean(lectureId),
   })
 
-  const goBack = () => navigate(`/courses/${courseId}`)
+  const goBack = () => window.history.back()
 
   const { mutate: mutateUpdateLecture } = useMutation({
     mutationFn: lectureService.update,

@@ -8,8 +8,8 @@ import { Flex } from '@/components'
 import { categoryKeys } from '@/services/category/category.query'
 
 export function Filter() {
-  const categoryInstance = categoryKeys.list()
-  const { data: categories } = useQuery({ ...categoryInstance })
+  const categoryInstance = categoryKeys.autoComplete()
+  const { data: categories } = useQuery({ ...categoryInstance, select: (data) => data.content })
 
   const [selectedCategories, setSelectedCategories] = useState<number[]>([])
   const [searchParams, setSearchParams] = useSearchParams()
@@ -51,7 +51,7 @@ export function Filter() {
                 }
                 label={
                   <Typography variant='body2' fontWeight={400}>
-                    {category.name}
+                    {category.categoryName}
                   </Typography>
                 }
               />

@@ -44,7 +44,7 @@ export const ModalActionsTopic = ({
   return (
     <Modal
       open={isOpen}
-      sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 }}
       onClose={handleCancel}
     >
       <LoadingContainer loading={isLoading}>

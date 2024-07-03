@@ -113,7 +113,7 @@ export function TaskPage() {
                       <Stack gap={4}>
                         {tasks?.content.map((task, index) => (
                           <Box key={task.id} onClick={() => setSelectedTask(task)}>
-                            <TaskCardStudent key={index} data={task} />
+                            <TaskCardStudent key={index} data={task} index={index} />
                           </Box>
                         ))}
                       </Stack>

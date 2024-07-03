@@ -1,8 +1,7 @@
-import { images } from '@/assets/images'
-import { Flex, Link } from '@/components'
+import { Flex, Link, Logo } from '@/components'
 import { regexPattern } from '@/utils'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Box, Container, Stack, Typography } from '@mui/material'
+import { Container, Stack, Typography } from '@mui/material'
 import { useForm } from 'react-hook-form'
 import { object, ref, string } from 'yup'
 import { FormForgotPassword, FormResetPassword, OTPModal, ResetPasswordSuccess } from './components'
@@ -70,16 +69,7 @@ export function ForgotPasswordPage() {
     <Container sx={{ my: 4 }}>
       <Flex justifyContent='space-between'>
         <Flex gap={2}>
-          <Box
-            component='img'
-            src={images.logo}
-            alt='logo'
-            width={40}
-            height={40}
-            style={{
-              objectFit: 'cover',
-            }}
-          />
+          <Logo size='small' type='short' />
           <Link href='/' variant='body2' sx={{ textDecoration: 'none', color: 'inherit' }}>
             Back to Brainstone
           </Link>

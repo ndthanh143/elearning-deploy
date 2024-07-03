@@ -42,6 +42,8 @@ const authService = {
     const routePath = type === 'teacher' ? 'teacher/signup' : 'student/signup'
     const { data } = await axiosInstance.post<AuthLoginResponse>(routePath, payload)
 
+    Cookies.set('access_token', data.data.access_token)
+
     return data.data
   },
   login: async ({ type, payload }: { type: 'teacher' | 'student'; payload: LoginAdminPayload }) => {

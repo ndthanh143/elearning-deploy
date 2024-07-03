@@ -51,7 +51,7 @@ export const TopicList = ({ forumId, isOpen, onClose }: TopicList) => {
           width: isOpen ? 600 : 0,
           position: 'absolute',
           overflow: 'hidden',
-          zIndex: 100,
+          zIndex: 9999,
           overflowY: 'scroll',
           bgcolor: 'white',
           borderColor: '#ccc',

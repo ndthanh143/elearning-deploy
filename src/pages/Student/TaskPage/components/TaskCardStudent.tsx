@@ -5,10 +5,10 @@ import { Badge, Box, Card, CardContent, Divider, Stack, Typography } from '@mui/
 import { TaskStatus } from '.'
 import { GroupTask } from '@/services/groupTask/dto'
 
-export function TaskCardStudent({ data }: { data: GroupTask }) {
+export function TaskCardStudent({ data, index }: { data: GroupTask; index: number }) {
   return (
     <Badge
-      badgeContent={'1'}
+      badgeContent={index + 1}
       color='primary'
       anchorOrigin={{
         vertical: 'top',

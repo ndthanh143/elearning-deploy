@@ -143,7 +143,7 @@ export const SubmissionContent = ({ assignment, courseId, unitId }: SubmissionCo
   }
 
   return (
-    <Card>
+    <Card variant='outlined'>
       <CardContent>
         <Stack gap={2}>
           <Stack direction='row' justifyContent='space-between'>

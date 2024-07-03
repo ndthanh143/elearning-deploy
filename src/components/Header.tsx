@@ -22,7 +22,7 @@ import {
   Typography,
 } from '@mui/material'
 
-import { CustomMenu, DangerouseLyRender, Flex, IconContainer } from '.'
+import { CustomMenu, DangerouseLyRender, Flex, IconContainer, Logo } from '.'
 import { useAuth, useBoolean, useMenu, useOnClickOutside } from '../hooks'
 import { Link, useNavigate } from 'react-router-dom'
 import { notificationKey } from '@/services/notification/notification.query'
@@ -30,7 +30,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { notificationService } from '@/services/notification/notification.service'
 import { useRef } from 'react'
 import { blue, gray, primary } from '@/styles/theme'
-import { images } from '@/assets/images'
 import { motion } from 'framer-motion'
 import { Account } from '@/services/user/user.dto'
 import { icons } from '@/assets/icons'
@@ -309,17 +308,8 @@ export const Header = () => {
       <Box sx={{ px: 4, boxShadow: '0 1px 2px 0 rgba(0,0,0,.05)' }} position='relative' bgcolor={'#FEF8FF'}>
         <Grid container>
           <Grid item xs={6}>
-            <Flex alignItems='center' height='100%' gap={10}>
-              <Box
-                component='img'
-                src={images.logo}
-                alt='logo'
-                width={30}
-                height={30}
-                style={{
-                  objectFit: 'cover',
-                }}
-              />
+            <Flex height='100%' gap={10}>
+              <Logo size='small' type='short' />
               <Typography variant='body1' fontWeight={700}>
                 Hi, {profile?.data.fullName}
               </Typography>

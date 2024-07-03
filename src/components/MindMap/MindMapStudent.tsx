@@ -14,10 +14,11 @@ import { primary } from '@/styles/theme'
 import { CourseCustomNodeComponent } from './StudentCustomNodeComponent'
 import { CourseChildNodeComponent } from './StudentChildNodeComponent'
 import { useLocation } from 'react-router-dom'
-import 'reactflow/dist/style.css'
 import { Unit } from '@/services/unit/types'
 import { MainNodeComponent } from './MainNodeComponent'
 import { RightActionStudent } from './components'
+
+import 'reactflow/dist/style.css'
 
 const nodeTypes = {
   customNode: CourseCustomNodeComponent, // Define your custom node type
@@ -54,12 +55,6 @@ export function MindMapStudent({ lessonPlan, isLoading }: IMindMapProps) {
       const parentNodeId = item.parent?.id.toString()
 
       const isDefaultUnit = !Boolean(item.lectureInfo || item.assignmentInfo || item.quizInfo || item.resourceInfo)
-
-      if (!isDefaultUnit && parentNodeId) {
-        dataNodesTemp[parentNodeId] = dataNodesTemp[parentNodeId]
-          ? [...dataNodesTemp[parentNodeId || ''], item]
-          : [item]
-      }
 
       if (!isDefaultUnit && parentNodeId) {
         dataNodesTemp[parentNodeId] = dataNodesTemp[parentNodeId] ? [...dataNodesTemp[parentNodeId], item] : [item]

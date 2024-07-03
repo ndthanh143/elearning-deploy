@@ -1,4 +1,4 @@
-import { BoxContent, CustomMenu, DangerouseLyRender, YoutubeCard } from '@/components'
+import { CustomMenu, DangerouseLyRender, YoutubeCard } from '@/components'
 import { configs } from '@/configs'
 import { useBoolean, useMenu } from '@/hooks'
 import { Assignment } from '@/services/assignment/assignment.dto'
@@ -8,6 +8,8 @@ import { CopyAllRounded, MoreVert } from '@mui/icons-material'
 import {
   Alert,
   Box,
+  Card,
+  CardContent,
   Divider,
   Grid,
   IconButton,
@@ -65,49 +67,51 @@ export const AssignmentContent = ({ assignment }: AssignmentContentProps) => {
 
   return (
     <Stack gap={4}>
-      <BoxContent>
-        <Stack direction='row' justifyContent='space-between' gap={2}>
-          <Typography variant='h5'>{assignment.assignmentTitle}</Typography>
-          <IconButton onClick={openMenuMore}>
-            <MoreVert />
-          </IconButton>
-        </Stack>
-        <Box display='flex' gap={1}>
-          {icons['calendar']}
-          <Typography variant='body2' fontWeight={500}>
-            {formatDate.toDateTime(assignment.startDate)}
-          </Typography>
-        </Box>
-        <Box display='flex' gap={1} mt={1}>
-          {icons['deadline']}
-          <Typography variant='body2' fontWeight={500}>
-            {assignment.endDate ? formatDate.toDateTime(assignment.endDate) : 'Unlimited'}
-          </Typography>
-        </Box>
-        {!(assignment.createDate === assignment.modifiedDate) && (
-          <Typography variant='body2' color={gray[500]} fontStyle='italic'>
-            Modified: {formatDate.toDateTime(assignment.modifiedDate)}
-          </Typography>
-        )}
-        <Divider sx={{ my: 2 }} />
-        <DangerouseLyRender content={assignment.assignmentContent} />
-        <Grid container spacing={4} mt={2}>
-          {assignment.urlDocument &&
-            (assignment.urlDocument.includes('youtube.com') ? (
-              <Grid item xs={12} md={6}>
-                <YoutubeCard videoUrl={assignment.urlDocument} height={250} />
-              </Grid>
-            ) : (
-              <Grid item xs={12} md={6}>
-                <FileCard
-                  filePath={getAbsolutePathFile(assignment.urlDocument) || ''}
-                  onClick={() => downloadFileByLink(assignment.urlDocument)}
-                />
-              </Grid>
-            ))}
-        </Grid>
-        <Divider sx={{ marginY: 2 }} />
-      </BoxContent>
+      <Card variant='outlined'>
+        <CardContent>
+          <Stack direction='row' justifyContent='space-between' gap={2}>
+            <Typography variant='h5'>{assignment.assignmentTitle}</Typography>
+            <IconButton onClick={openMenuMore}>
+              <MoreVert />
+            </IconButton>
+          </Stack>
+          <Box display='flex' gap={1}>
+            {icons['calendar']}
+            <Typography variant='body2' fontWeight={500}>
+              {formatDate.toDateTime(assignment.startDate)}
+            </Typography>
+          </Box>
+          <Box display='flex' gap={1} mt={1}>
+            {icons['deadline']}
+            <Typography variant='body2' fontWeight={500}>
+              {assignment.endDate ? formatDate.toDateTime(assignment.endDate) : 'Unlimited'}
+            </Typography>
+          </Box>
+          {!(assignment.createDate === assignment.modifiedDate) && (
+            <Typography variant='body2' color={gray[500]} fontStyle='italic'>
+              Modified: {formatDate.toDateTime(assignment.modifiedDate)}
+            </Typography>
+          )}
+          <Divider sx={{ my: 2 }} />
+          <DangerouseLyRender content={assignment.assignmentContent} />
+          <Grid container spacing={4} mt={2}>
+            {assignment.urlDocument &&
+              (assignment.urlDocument.includes('youtube.com') ? (
+                <Grid item xs={12} md={6}>
+                  <YoutubeCard videoUrl={assignment.urlDocument} height={250} />
+                </Grid>
+              ) : (
+                <Grid item xs={12} md={6}>
+                  <FileCard
+                    filePath={getAbsolutePathFile(assignment.urlDocument) || ''}
+                    onClick={() => downloadFileByLink(assignment.urlDocument)}
+                  />
+                </Grid>
+              ))}
+          </Grid>
+          <Divider sx={{ marginY: 2 }} />
+        </CardContent>
+      </Card>
       <ListComment courseId={courseId || ''} unitId={unitId || ''} assignmentId={assignmentId || ''} />
       {genMenuMoreHeading()}
     </Stack>

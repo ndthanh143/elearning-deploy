@@ -2,8 +2,7 @@ import { useState } from 'react'
 import { ArrowBackOutlined, ArrowForwardOutlined } from '@mui/icons-material'
 import { Box, Button, Container, IconButton, Stack, Typography } from '@mui/material'
 
-import { images } from '@/assets/images'
-import { Flex, Link } from '@/components'
+import { Flex, Link, Logo } from '@/components'
 import { SignUpForm } from './components'
 import { icons } from '@/assets/icons'
 
@@ -18,16 +17,7 @@ export const SignUpPage = () => {
     <Container sx={{ my: 4 }}>
       <Flex justifyContent='space-between'>
         <Flex gap={2}>
-          <Box
-            component='img'
-            src={images.logo}
-            alt='logo'
-            width={40}
-            height={40}
-            style={{
-              objectFit: 'cover',
-            }}
-          />
+          <Logo size='small' type='short' />
           <Link href='/' variant='body2' sx={{ textDecoration: 'none', color: 'inherit' }}>
             Back to Brainstone
           </Link>

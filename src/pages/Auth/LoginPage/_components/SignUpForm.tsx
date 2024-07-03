@@ -8,7 +8,7 @@ import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import authService from '@/services/auth/auth.service'
 import { userKeys } from '@/services/user/user.query'
-import { useAlert } from '@/hooks'
+import { useAlert, useAuth } from '@/hooks'
 
 const schema = object({
   email: string().required('Please fill in your email'),
@@ -21,6 +21,8 @@ export function SignUpForm({ type, defaultValues }: { type: 'student' | 'teacher
   const { triggerAlert } = useAlert()
   const queryClient = useQueryClient()
   const [showPassword, setShowPassword] = useState(false)
+
+  const { setAuthenticated } = useAuth()
 
   const {
     register,
@@ -41,6 +43,7 @@ export function SignUpForm({ type, defaultValues }: { type: 'student' | 'teacher
   const { mutate: mutateSignUp } = useMutation({
     mutationFn: authService.signUp,
     onSuccess: () => {
+      setAuthenticated()
       queryClient.invalidateQueries({ queryKey: userKeys.profiles() })
       triggerAlert('Sign up successfully!')
     },

@@ -13,10 +13,10 @@ import {
 } from '@mui/material'
 import { CustomButton } from './CustomButton'
 import { gray, primary } from '@/styles/theme'
-import { useAuth, useMenu } from '@/hooks'
+import { useAuth, useMenu, useOnClickOutside } from '@/hooks'
 import { Account } from '@/services/user/user.dto'
 import { LogoutRounded, SearchRounded } from '@mui/icons-material'
-import { ChangeEvent, FormEvent, useCallback, useState } from 'react'
+import { ChangeEvent, FormEvent, useCallback, useRef, useState } from 'react'
 import { debounce } from 'lodash'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { courseKeys } from '@/services/course/course.query'
@@ -71,8 +71,14 @@ const ProfileRender = ({ data }: { data: Account }) => {
 
 const CourseItem = ({ data }: { data: Course }) => {
   return (
-    <Flex gap={2}>
-      <Box component='img' src={getAbsolutePathFile(data.thumbnail)} width={40} height={40} />
+    <Flex gap={2} py={1}>
+      <Box
+        component='img'
+        src={getAbsolutePathFile(data.thumbnail)}
+        width={60}
+        height={40}
+        sx={{ objectFit: 'cover' }}
+      />
       <Stack>
         <Typography variant='body2' fontWeight={600}>
           {data.courseName}
@@ -85,24 +91,28 @@ const CourseItem = ({ data }: { data: Course }) => {
   )
 }
 
-const SearchResultPopup = ({ query, isOpen }: { query: string; isOpen: boolean }) => {
+const SearchResultPopup = ({ query, isOpen, onClose }: { query: string; isOpen: boolean; onClose: () => void }) => {
   const courseSearchInstance = courseKeys.autoComplete({ q: query })
   const { data: courseSearchData } = useQuery({ ...courseSearchInstance, enabled: !!query })
+
+  const ref = useRef<HTMLDivElement>(null)
+  useOnClickOutside(ref, onClose)
 
   return (
     isOpen &&
     !!courseSearchData?.content.length && (
       <Box
+        ref={ref}
         border={1}
         borderColor='#ccc'
-        py={2}
+        py={0.5}
         width='100%'
         bgcolor='#fff'
         top={'110%'}
         sx={{ zIndex: 999, position: 'absolute', borderRadius: 2 }}
       >
         {courseSearchData?.content.map((course) => (
-          <MenuItem key={course.id} component={Link} href={`/search/${course.id}`}>
+          <MenuItem key={course.id} component={Link} href={`/search/${course.id}`} onClick={onClose}>
             <CourseItem data={course} />
           </MenuItem>
         ))}
@@ -170,14 +180,12 @@ export function NavHeader() {
       <Container sx={{ my: 2 }}>
         <Flex component='form' onSubmit={handleSubmit} justifyContent='space-between' alignItems='center' gap={4}>
           <Logo />
-          <Box position='relative' width='100%'>
+          <Box position='relative' width='100%' onFocus={() => setIsFocused(true)}>
             <TextField
               fullWidth
               onChange={handleChange}
               value={searchValue}
               placeholder='Search any courses..'
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position='start'>
@@ -188,7 +196,7 @@ export function NavHeader() {
               }}
               size='medium'
             />
-            <SearchResultPopup query={query} isOpen={isFocused && !!query} />
+            <SearchResultPopup query={query} isOpen={isFocused && !!query} onClose={() => setIsFocused(false)} />
           </Box>
           {menuItems().map((item) => (
             <Link

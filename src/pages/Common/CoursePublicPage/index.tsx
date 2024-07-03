@@ -62,7 +62,7 @@ export function CoursePublicPage() {
         <Box bgcolor={primary[900]} width='100vw'>
           <Container maxWidth='lg'>
             <Grid container>
-              <Grid item xs={8}>
+              <Grid item xs={12} lg={8}>
                 <Stack gap={2} py={4} mr={5}>
                   <Typography variant='h2' fontWeight={700} color='#fff'>
                     {course.courseName}
@@ -76,8 +76,24 @@ export function CoursePublicPage() {
                   </Typography>
                 </Stack>
               </Grid>
-              <Grid item xs={4} position='relative'>
-                <Card sx={{ position: 'absolute', top: 50, width: '100%' }}>
+              <Grid item xs={12} lg={4} position='relative'>
+                <Card
+                  sx={{
+                    position: {
+                      lg: 'absolute',
+                      xs: 'relative',
+                    },
+                    top: {
+                      lg: 50,
+                      xs: 0,
+                    },
+                    mb: {
+                      lg: 0,
+                      xs: 4,
+                    },
+                    width: '100%',
+                  }}
+                >
                   <CardMedia
                     image={getAbsolutePathFile(course.thumbnail) || common.course}
                     sx={{ width: '100%', height: 250, objectFit: 'cover' }}
@@ -109,8 +125,13 @@ export function CoursePublicPage() {
         </Box>
         <Container maxWidth='lg' sx={{ mt: 4 }}>
           <Grid container>
-            <Grid item xs={8}>
-              <Box mr={5}>
+            <Grid item xs={12} lg={8}>
+              <Box
+                mr={{
+                  xs: 0,
+                  lg: 5,
+                }}
+              >
                 <CourseContent data={course} />
               </Box>
             </Grid>

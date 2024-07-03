@@ -3,21 +3,21 @@ import {
   EditCalendarRounded,
   EventNoteRounded,
   GridViewRounded,
+  GroupRounded,
   GroupsRounded,
   LibraryBooksRounded,
   PeopleRounded,
-  TaskRounded,
 } from '@mui/icons-material'
 import { ReactNode } from 'react'
 import { startsWith } from 'lodash'
-import { Stack } from '@mui/material'
+import { Stack, Typography } from '@mui/material'
 import { useLocation } from 'react-router-dom'
 
 import { useAuth } from '@/hooks'
 import { gray, primary } from '@/styles/theme'
 import { RoleEnum } from '@/services/auth/auth.dto'
 
-import { CustomTooltip, Flex, Link } from '.'
+import { Flex, Link } from '.'
 
 type MenuItemProps = {
   title: string
@@ -36,8 +36,7 @@ export const SideBar = () => {
         title: 'Courses',
         icon: (
           <LibraryBooksRounded
-            color={startsWith(pathname, '/course') ? 'primary' : 'inherit'}
-            sx={{ width: 30, height: 30 }}
+            sx={{ width: 20, height: 20, color: startsWith(pathname, '/course') ? 'primary.main' : '#404040' }}
           />
         ),
         href: '/courses',
@@ -46,8 +45,7 @@ export const SideBar = () => {
         title: 'Group',
         icon: (
           <GroupsRounded
-            color={startsWith(pathname, '/group') ? 'primary' : 'inherit'}
-            sx={{ width: 30, height: 30 }}
+            sx={{ width: 20, height: 20, color: startsWith(pathname, '/group') ? 'primary.main' : '#404040' }}
           />
         ),
         href: '/group',
@@ -56,8 +54,11 @@ export const SideBar = () => {
         title: 'Submission',
         icon: (
           <AssignmentRounded
-            color={startsWith(pathname, '/submission-management') ? 'primary' : 'inherit'}
-            sx={{ width: 30, height: 30 }}
+            sx={{
+              width: 20,
+              height: 20,
+              color: startsWith(pathname, '/submission-management') ? 'primary.main' : '#404040',
+            }}
           />
         ),
         href: '/submission-management',
@@ -67,8 +68,11 @@ export const SideBar = () => {
         icon: (
           <EditCalendarRounded
             fontSize='small'
-            color={startsWith(pathname, '/planning') ? 'primary' : 'inherit'}
-            sx={{ width: 30, height: 30 }}
+            sx={{
+              width: 20,
+              height: 20,
+              color: startsWith(pathname, '/planning') ? 'primary.main' : '#404040',
+            }}
           />
         ),
         href: '/planning',
@@ -79,7 +83,7 @@ export const SideBar = () => {
           <PeopleRounded
             fontSize='small'
             color={startsWith(pathname, '/student-manage') ? 'primary' : 'inherit'}
-            sx={{ width: 30, height: 30 }}
+            sx={{ width: 20, height: 20 }}
           />
         ),
         href: '/student-manage',
@@ -87,16 +91,17 @@ export const SideBar = () => {
     ],
     Student: [
       {
-        title: 'Home Page',
-        icon: <GridViewRounded color={pathname === '/' ? 'primary' : 'inherit'} sx={{ width: 30, height: 30 }} />,
+        title: 'Home',
+        icon: (
+          <GridViewRounded sx={{ width: 20, height: 20, color: pathname === '/home' ? 'primary.main' : '#404040' }} />
+        ),
         href: '/home',
       },
       {
         title: 'Courses',
         icon: (
           <LibraryBooksRounded
-            color={startsWith(pathname, '/course') ? 'primary' : 'inherit'}
-            sx={{ width: 30, height: 30 }}
+            sx={{ width: 20, height: 20, color: startsWith(pathname, '/course') ? 'primary.main' : '#404040' }}
           />
         ),
         href: '/courses',
@@ -104,7 +109,9 @@ export const SideBar = () => {
       {
         title: 'Tasks',
         icon: (
-          <TaskRounded color={startsWith(pathname, '/tasks') ? 'primary' : 'inherit'} sx={{ width: 30, height: 30 }} />
+          <GroupRounded
+            sx={{ width: 20, height: 20, color: startsWith(pathname, '/tasks') ? 'primary.main' : '#404040' }}
+          />
         ),
         href: '/tasks',
       },
@@ -112,8 +119,7 @@ export const SideBar = () => {
         title: 'Schedule',
         icon: (
           <EventNoteRounded
-            color={startsWith(pathname, '/schedule') ? 'primary' : 'inherit'}
-            sx={{ width: 30, height: 30 }}
+            sx={{ width: 20, height: 20, color: startsWith(pathname, '/schedule') ? 'primary.main' : '#404040' }}
           />
         ),
         href: '/schedule',
@@ -127,31 +133,35 @@ export const SideBar = () => {
       <Flex justifyContent='center' pt={6} width={100} overflow='hidden' sx={{ transition: 'all ease 0.2s' }}>
         <Stack gap={5} justifyContent='start' alignItems='start'>
           {listMenu[profile.data.role].map((item) => (
-            <CustomTooltip title={item.title} key={item.href} placement='right'>
-              <Link
-                width='fit-content'
-                display='flex'
-                mx='auto'
-                href={item.href}
-                justifyContent='center'
-                alignItems='center'
-                color={gray[900]}
-                sx={{
-                  p: 1,
-                  borderRadius: 3,
-                  bgcolor:
-                    (startsWith(pathname, item.href) && item.href !== '/') || item.href === pathname
-                      ? primary[100]
-                      : 'transparent',
-                  ':hover': {
-                    bgcolor: primary[100],
-                  },
-                  transition: 'all 0.2s ease-in-out',
-                }}
+            <Link
+              width='fit-content'
+              display='flex'
+              flexDirection='column'
+              mx='auto'
+              href={item.href}
+              justifyContent='center'
+              alignItems='center'
+              color={gray[900]}
+              sx={{
+                width: 70,
+                height: 70,
+                borderRadius: 3,
+                bgcolor: startsWith(pathname, item.href) ? primary[100] : 'transparent',
+                ':hover': {
+                  bgcolor: primary[100],
+                },
+                transition: 'all 0.2s ease-in-out',
+              }}
+            >
+              {item.icon}
+              <Typography
+                variant='caption'
+                fontWeight={600}
+                color={startsWith(pathname, item.href) ? 'primary' : 'secondary'}
               >
-                {item.icon}
-              </Link>
-            </CustomTooltip>
+                {item.title}
+              </Typography>
+            </Link>
           ))}
         </Stack>
       </Flex>
