@@ -19,11 +19,11 @@ const listStep = [
     description: 'Select the course plan that suits your needs',
     icon: <PlayLessonRounded color='primary' />,
   },
-  {
-    title: 'Price Configuration',
-    description: 'Set the price for your course',
-    icon: <PriceChangeRounded color='primary' />,
-  },
+  // {
+  //   title: 'Price Configuration',
+  //   description: 'Set the price for your course',
+  //   icon: <PriceChangeRounded color='primary' />,
+  // },
   {
     title: 'Newsletter',
     description: 'Create a welcome and congratulation message for your students',

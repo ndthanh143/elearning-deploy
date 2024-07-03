@@ -25,8 +25,8 @@ export function FollowingCourses() {
       <Box display='flex' justifyContent='space-between' alignItems='center' mb={2}>
         <Typography fontWeight={700}>Following courses</Typography>
         {!!courses?.length && (
-          <Link fontWeight={700} color='primary' href='/courses' sx={{ textDecoration: 'none' }}>
-            View all
+          <Link fontWeight={700} href='/courses' sx={{ textDecoration: 'none', color: 'primary.main' }}>
+            View more
           </Link>
         )}
       </Box>

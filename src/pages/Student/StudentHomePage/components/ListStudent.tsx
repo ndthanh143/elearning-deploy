@@ -14,7 +14,7 @@ export const ListStudent = () => {
       <CardContent>
         <Flex justifyContent='space-between' mb={1}>
           <Typography fontWeight={700}>Online student</Typography>
-          <Typography fontWeight={700} color='primary.main'>
+          <Typography fontWeight={700} color='primary'>
             View more
           </Typography>
         </Flex>

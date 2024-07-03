@@ -34,7 +34,7 @@ export function EditCoursePage() {
 
   return (
     <>
-      <Container maxWidth='lg'>
+      <Container>
         <FormCourseHandle handleSubmit={handleSubmit} defaultValues={courseData} />
       </Container>
       <LoadingOverlay isOpen={isLoadingUpdate} title='Updating your class...' />

@@ -69,7 +69,7 @@ export function TableDataStudent() {
 
   useEffect(() => {
     if (courses) {
-      setSelectedCourseId(courses.content[0].id)
+      setSelectedCourseId(courses.content?.[0]?.id)
     }
   }, [courses])
 

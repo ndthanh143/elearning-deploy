@@ -3,7 +3,7 @@ import { Button, Grid, Stack } from '@mui/material'
 import { useState } from 'react'
 import { type UseFormReturn, useForm } from 'react-hook-form'
 import { array, number, object, string } from 'yup'
-import { BasicInformation, CoursePlanSelection, NewsLetterSetting, PriceConfig, TableStep } from '.'
+import { BasicInformation, CoursePlanSelection, NewsLetterSetting, TableStep } from '.'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Flex } from '@/components'
 import { Course, CreateCoursePayload } from '@/services/course/course.dto'
@@ -98,7 +98,7 @@ export function FormCourseHandle({ handleSubmit, defaultValues }: IFormCourseHan
   const steps = [
     <BasicInformation form={form} />,
     <CoursePlanSelection form={form} />,
-    <PriceConfig form={form} />,
+    // <PriceConfig form={form} />,
     <NewsLetterSetting form={form} />,
   ]
 

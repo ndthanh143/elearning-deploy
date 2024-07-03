@@ -37,30 +37,32 @@ import { icons } from '@/assets/icons'
 const StyledHandle = styled(Handle)(() => ({
   background: primary[100],
   border: 1,
-  position: 'absolute',
-  zIndex: 1,
-  width: '100%',
-  height: '100%',
-  top: 0,
-  left: 0,
-  borderRadius: 0,
-  transform: 'none',
-  opacity: 0,
-  ':before': {
-    content: '""',
-    position: 'absolute',
-    top: '-10px',
-    left: '50%',
-    height: '20px',
-    width: '40px',
-    transform: 'translate(-50%, 0)',
-    background: ' #d6d5e6',
-    zIndex: '1000',
-    lineHeight: 1,
-    color: '#fff',
-    fontSize: '9px',
-    border: '2px solid #222138',
-  },
+  // position: 'absolute',
+  // zIndex: 1,
+  // width: '100%',
+  // height: '100%',
+  width: 10,
+  height: 10,
+  // top: 0,
+  // left: 0,
+  // borderRadius: 0,
+  // transform: 'none',
+  // opacity: 0,
+  // ':before': {
+  //   content: '""',
+  //   position: 'absolute',
+  //   top: '-10px',
+  //   left: '50%',
+  //   height: '20px',
+  //   width: '40px',
+  //   transform: 'translate(-50%, 0)',
+  //   background: ' #d6d5e6',
+  //   zIndex: '1000',
+  //   lineHeight: 1,
+  //   color: '#fff',
+  //   fontSize: '9px',
+  //   border: '2px solid #222138',
+  // },
 }))
 
 // const CustomNode = styled(Stack)(() => ({
@@ -106,7 +108,8 @@ export const TeacherCustomNodeComponent = (
 
   const connectionNodeId = useStore((state) => state.connectionNodeId)
   const isConnecting = !!connectionNodeId
-  const isTarget = connectionNodeId && connectionNodeId !== unit.id.toString()
+  const isTarget =
+    connectionNodeId && connectionNodeId !== unit.id.toString() && connectionNodeId !== unit.parent?.id.toString()
 
   const { value: isOpenAddSection, setTrue: openAddSection, setFalse: closeAddSection } = useBoolean()
 
@@ -325,9 +328,42 @@ export const TeacherCustomNodeComponent = (
           {unit.name}
         </Typography>
 
-        {!isConnecting && <StyledHandle className='customHandle' position={Position.Right} type='source' />}
+        {!isConnecting && <Handle position={Position.Right} type='source' />}
 
-        <StyledHandle isConnectableStart={false} className='customHandle' type='target' position={Position.Top} />
+        <StyledHandle
+          type='target'
+          position={Position.Top}
+          sx={{
+            ...(isConnecting && {
+              background: primary[100],
+              border: 1,
+              position: 'absolute',
+              zIndex: 1,
+              width: '100%',
+              height: '100%',
+              top: 0,
+              left: 0,
+              borderRadius: 0,
+              transform: 'none',
+              opacity: 0,
+              ':before': {
+                content: '""',
+                position: 'absolute',
+                top: '-10px',
+                left: '50%',
+                height: '20px',
+                width: '40px',
+                transform: 'translate(-50%, 0)',
+                background: ' #d6d5e6',
+                zIndex: '1000',
+                lineHeight: 1,
+                color: '#fff',
+                fontSize: '9px',
+                border: '2px solid #222138',
+              },
+            }),
+          }}
+        />
 
         {selected && (
           <Box

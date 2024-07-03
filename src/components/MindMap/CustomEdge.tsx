@@ -1,76 +1,7 @@
-// import { primary } from '@/styles/theme'
-// import { Box } from '@mui/material'
-// import { BaseEdge, EdgeProps, getBezierPath } from 'reactflow'
-
-// export function CustomEdge({
-//   sourceX,
-//   sourceY,
-//   targetX,
-//   targetY,
-//   sourcePosition,
-//   targetPosition,
-//   markerEnd,
-// }: EdgeProps) {
-//   const [edgePath] = getBezierPath({
-//     sourceX,
-//     sourceY,
-//     sourcePosition,
-//     targetX,
-//     targetY,
-//     targetPosition,
-//   })
-
-//   return (
-//     <>
-//       <Box
-//         component={BaseEdge}
-//         path={edgePath}
-//         markerEnd={markerEnd}
-//         style={{ stroke: primary[500], strokeWidth: 4 }}
-//       />
-//     </>
-//   )
-// }
-
-// import { Box } from '@mui/material'
-// import { BaseEdge, EdgeProps, getBezierPath, useReactFlow } from 'reactflow'
-
-// export function ChildEdge({
-//   id,
-//   sourceX,
-//   sourceY,
-//   targetX,
-//   targetY,
-//   sourcePosition,
-//   targetPosition,
-//   markerEnd,
-// }: EdgeProps) {
-//   const { setEdges } = useReactFlow()
-//   const [edgePath, labelX, labelY] = getBezierPath({
-//     sourceX,
-//     sourceY,
-//     sourcePosition,
-//     targetX,
-//     targetY,
-//     targetPosition,
-//   })
-
-//   const onEdgeClick = () => {
-//     setEdges((edges) => edges.filter((edge) => edge.id !== id))
-//   }
-
-//   return (
-//     <>
-//       <Box component={BaseEdge} path={edgePath} markerEnd={markerEnd} style={{ stroke: '#7EB6C0', strokeWidth: 4 }} />
-//     </>
-//   )
-// }
-
 import { primary } from '@/styles/theme'
 import { Box } from '@mui/material'
 import { useCallback } from 'react'
-import { useStore, getStraightPath, EdgeProps, BaseEdge } from 'reactflow'
-
+import { useStore, getBezierPath, EdgeProps, BaseEdge } from 'reactflow'
 import { Position, MarkerType, Node } from 'reactflow'
 
 interface IntersectionNode extends Node {
@@ -90,7 +21,6 @@ interface IntersectionPoint {
 // this helper function returns the intersection point
 // of the line between the center of the intersectionNode and the target node
 function getNodeIntersection(intersectionNode: IntersectionNode, targetNode: IntersectionNode) {
-  // https://math.stackexchange.com/questions/1724792/an-algorithm-for-finding-the-intersection-point-between-a-center-of-vision-and-a
   const {
     width: intersectionNodeWidth,
     height: intersectionNodeHeight,
@@ -196,20 +126,25 @@ export function CustomEdge({ id, source, target, markerEnd }: EdgeProps) {
     return null
   }
 
-  const { sx, sy, tx, ty } = getEdgeParams(sourceNode as IntersectionNode, targetNode as IntersectionNode)
+  const { sx, sy, tx, ty, sourcePos, targetPos } = getEdgeParams(
+    sourceNode as IntersectionNode,
+    targetNode as IntersectionNode,
+  )
 
-  const [edgePath] = getStraightPath({
+  const edgePath = getBezierPath({
     sourceX: sx,
     sourceY: sy,
+    sourcePosition: sourcePos,
     targetX: tx,
     targetY: ty,
+    targetPosition: targetPos,
   })
 
   return (
     <Box
       component={BaseEdge}
       id={id}
-      path={edgePath}
+      path={edgePath as any}
       markerEnd={markerEnd}
       style={{ stroke: primary[500], strokeWidth: 3 }}
     />

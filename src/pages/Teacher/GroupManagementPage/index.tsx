@@ -1,7 +1,18 @@
-import { Button, ConfirmPopup, CustomModal, CustomSelect, Flex, Loading } from '@/components'
+import { Button, ConfirmPopup, CustomModal, CustomSelect, Flex, Link, Loading } from '@/components'
 import { useAlert, useBoolean } from '@/hooks'
 import { AddRounded, AutoModeRounded } from '@mui/icons-material'
-import { Card, CardContent, Chip, Container, Divider, Grid, Button as MuiButton, Stack, TextField } from '@mui/material'
+import {
+  Card,
+  CardContent,
+  Chip,
+  Container,
+  Divider,
+  Grid,
+  Button as MuiButton,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material'
 import { Fragment, useEffect, useState } from 'react'
 import { GroupCard, ModalAutoGenerateGroup, ModalListStudentToAdd } from './components'
 import { courseKeys } from '@/services/course/course.query'
@@ -114,8 +125,8 @@ export const GroupManagementPage: React.FC = () => {
   const { value: isOpenCreateGroup, setTrue: openModalCreateGroup, setFalse: closeModalCreateGroup } = useBoolean()
   const { value: isOpenGenerateGroup, setTrue: openModalGenerate, setFalse: closeModalGenerate } = useBoolean()
 
-  const coursesInstance = courseKeys.list()
-  const { data: courses, isFetched } = useQuery({
+  const coursesInstance = courseKeys.myCourse({})
+  const { data: courses, isFetched: isFetchedCourses } = useQuery({
     ...coursesInstance,
   })
 
@@ -227,12 +238,30 @@ export const GroupManagementPage: React.FC = () => {
   }
 
   useEffect(() => {
-    if (courses && isFetched && courses.content.length > 0) {
+    if (courses && isFetchedCourses && courses.content.length > 0) {
       setSelectedCourseId(courses.content[0].id)
     }
-  }, [isFetched, courses])
+  }, [isFetchedCourses, courses])
 
   const listStudent = groups?.content.map((group) => group.studentInfo.map((student) => student.id)).flat() || []
+
+  if (isFetchedCourses && courses?.totalElements === 0) {
+    return (
+      <Container>
+        <Flex height='100%' justifyContent='center' alignItems='center' minHeight='60vh'>
+          <Stack gap={2} alignItems='center'>
+            {icons['noData']}
+            <Typography variant='body1'>
+              You haven't any course yet. Please create a course to using this features
+            </Typography>
+            <Link href='/courses/create'>
+              <MuiButton variant='contained'>Create your first course</MuiButton>
+            </Link>
+          </Stack>
+        </Flex>
+      </Container>
+    )
+  }
 
   return (
     <>

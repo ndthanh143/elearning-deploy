@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 
 export const SubmissionManagementPage = () => {
   const { profile } = useAuth()
-  const coursesInstance = courseKeys.list({ teacherId: profile?.data.id })
+  const coursesInstance = courseKeys.myCourse({})
   const { data: courses } = useQuery({
     ...coursesInstance,
     enabled: Boolean(profile?.data.role === 'Teacher'),

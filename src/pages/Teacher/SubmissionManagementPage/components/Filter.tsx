@@ -24,7 +24,7 @@ export function Filter({ courses }: { courses: Course[] }) {
           label: course.courseName,
           value: course.id,
         }))}
-        // defaultValue={selectedCourseId}
+        defaultValue={''}
         size='small'
       />
       <CustomSelect data={selectDataTypeSubmit} defaultValue={selectDataTypeSubmit[0].value} size='small' />

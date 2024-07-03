@@ -10,7 +10,7 @@ export const NoData = ({ title = 'No results found' }: NoDataProps) => {
     <Box display='flex' justifyContent='center' width='100%' m='auto'>
       <Stack gap={1} alignItems='center'>
         {icons['noData']}
-        <Typography textAlign='center' fontWeight={500}>
+        <Typography textAlign='center' fontWeight={400}>
           {title}
         </Typography>
       </Stack>

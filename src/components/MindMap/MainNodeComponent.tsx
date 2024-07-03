@@ -1,7 +1,7 @@
 import { Unit } from '@/services/unit/types'
 import { Box, Stack, Typography } from '@mui/material'
 import { blue } from '@mui/material/colors'
-import { Handle, NodeProps, Position } from 'reactflow'
+import { Handle, NodeProps, Position, useReactFlow } from 'reactflow'
 import { MutableRefObject } from 'react'
 import { primary } from '@/styles/theme'
 import { icons } from '@/assets/icons'

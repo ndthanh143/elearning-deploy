@@ -153,8 +153,9 @@ export function ActionSetting() {
             },
           },
         }}
+        sx={{ py: 0 }}
       >
-        <MenuList>
+        <MenuList sx={{ py: 0 }}>
           <MenuItem
             onClick={() => {
               setEditLessonPlan()
@@ -170,7 +171,7 @@ export function ActionSetting() {
           </MenuItem>
         </MenuList>
         <Divider />
-        <MenuList>
+        <MenuList sx={{ py: 0 }}>
           <MenuItem
             sx={{ color: 'error.main' }}
             onClick={() => {

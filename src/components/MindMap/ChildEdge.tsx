@@ -1,37 +1,3 @@
-// import { Box } from '@mui/material'
-// import { BaseEdge, EdgeProps, getBezierPath, useReactFlow } from 'reactflow'
-
-// export function ChildEdge({
-//   id,
-//   sourceX,
-//   sourceY,
-//   targetX,
-//   targetY,
-//   sourcePosition,
-//   targetPosition,
-//   markerEnd,
-// }: EdgeProps) {
-//   const { setEdges } = useReactFlow()
-//   const [edgePath, labelX, labelY] = getBezierPath({
-//     sourceX,
-//     sourceY,
-//     sourcePosition,
-//     targetX,
-//     targetY,
-//     targetPosition,
-//   })
-
-//   const onEdgeClick = () => {
-//     setEdges((edges) => edges.filter((edge) => edge.id !== id))
-//   }
-
-//   return (
-//     <>
-//       <Box component={BaseEdge} path={edgePath} markerEnd={markerEnd} style={{ stroke: '#7EB6C0', strokeWidth: 4 }} />
-//     </>
-//   )
-// }
-
 import { Box } from '@mui/material'
 import { useCallback } from 'react'
 import { useStore, getStraightPath, EdgeProps, BaseEdge } from 'reactflow'
