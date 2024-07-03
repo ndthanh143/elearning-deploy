@@ -10,6 +10,7 @@ import {
   Divider,
   Grid,
   InputAdornment,
+  Modal,
   Stack,
   Switch,
   TextField,
@@ -161,140 +162,142 @@ export const QuizActions = ({ isOpen = true, onClose, defaultData }: AddQuizProp
   }
 
   return (
-    <Box
-      sx={{
-        height: '100vh',
-        width: isOpen ? '100vw' : 0,
-        position: 'fixed',
-        opacity: isOpen ? 1 : 0,
-        overflowY: 'scroll',
-        zIndex: 10,
-        bgcolor: 'white',
-        borderColor: '#ccc',
-        boxShadow: 1,
-        inset: 0,
-        transition: 'all 0.3s ease-in-out',
-      }}
-    >
-      <Container maxWidth='md' sx={{ my: 2 }}>
-        <Button sx={{ display: 'flex', gap: 1 }} color='secondary' onClick={onClose}>
-          <ArrowBackOutlined fontSize='small' /> Back
-        </Button>
-        <Box component='form' onSubmit={handleSubmit(onSubmitHandler)}>
-          <Grid container spacing={4} my={1}>
-            <Grid item xs={12}>
-              <Typography fontWeight={500}>Title</Typography>
-              <TextField size='small' fullWidth {...register('quizTitle')} />
-              <ErrorField isShow={Boolean(errors.quizTitle)} message={errors.quizTitle?.message} />
+    <Modal open={isOpen}>
+      <Box
+        sx={{
+          height: '100vh',
+          width: isOpen ? '100vw' : 0,
+          position: 'fixed',
+          opacity: isOpen ? 1 : 0,
+          overflowY: 'scroll',
+          zIndex: 10,
+          bgcolor: 'white',
+          borderColor: '#ccc',
+          boxShadow: 1,
+          inset: 0,
+          transition: 'all 0.3s ease-in-out',
+        }}
+      >
+        <Container maxWidth='md' sx={{ my: 2 }}>
+          <Button sx={{ display: 'flex', gap: 1 }} color='secondary' onClick={onClose}>
+            <ArrowBackOutlined fontSize='small' /> Back
+          </Button>
+          <Box component='form' onSubmit={handleSubmit(onSubmitHandler)}>
+            <Grid container spacing={4} my={1}>
+              <Grid item xs={12}>
+                <Typography fontWeight={500}>Title</Typography>
+                <TextField size='small' fullWidth {...register('quizTitle')} />
+                <ErrorField isShow={Boolean(errors.quizTitle)} message={errors.quizTitle?.message} />
+              </Grid>
+              <Grid item xs={12}>
+                <Flex>
+                  <Typography fontWeight={500}>Answer Reviewable</Typography>
+                  <Switch defaultChecked {...register('isPublicAnswer')} />
+                </Flex>
+              </Grid>
+              <Grid item xs={12}>
+                <Stack>
+                  <Typography fontWeight={500}>Description</Typography>
+                  <TextField
+                    size='small'
+                    fullWidth
+                    placeholder='Description'
+                    {...register('description')}
+                    minRows={3}
+                    multiline
+                  />
+                  <ErrorField isShow={Boolean(errors.description)} message={errors.description?.message} />
+                </Stack>
+              </Grid>
+              <Grid item xs={6}>
+                <Stack>
+                  <Typography fontWeight={500}>Start time</Typography>
+                  <DateTimePicker
+                    {...(getValues('startDate') && {
+                      defaultValue: dayjs(getValues('startDate')),
+                    })}
+                    slotProps={{ textField: { size: 'small' } }}
+                    onChange={(value) => {
+                      setValue('startDate', dayjs(value).toISOString())
+                    }}
+                  />
+                </Stack>
+              </Grid>
+              <Grid item xs={6}>
+                <Stack>
+                  <Typography fontWeight={500}>End time</Typography>
+                  <DateTimePicker
+                    {...(getValues('endDate') && {
+                      defaultValue: dayjs(getValues('endDate')),
+                    })}
+                    slotProps={{ textField: { size: 'small' } }}
+                    onChange={(value) => {
+                      setValue('endDate', dayjs(value).toISOString())
+                    }}
+                  />
+                </Stack>
+              </Grid>
+              <Grid item xs={3}>
+                <Stack>
+                  <Typography fontWeight={500}>Number attempt</Typography>
+                  <TextField
+                    size='small'
+                    type='number'
+                    placeholder='Description'
+                    {...register('attemptNumber')}
+                    InputProps={{ inputProps: { min: 0 }, sx: { width: 'fit-content' } }}
+                  />
+                </Stack>
+              </Grid>
+              <Grid item xs={3}>
+                <Stack>
+                  <Typography fontWeight={500}>Time limit</Typography>
+                  <TextField
+                    size='small'
+                    type='number'
+                    placeholder='Description'
+                    {...register('quizTimeLimit')}
+                    InputProps={{
+                      inputProps: { min: 0 },
+                      endAdornment: <InputAdornment position='end'>Mins</InputAdornment>,
+                    }}
+                  />
+                </Stack>
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <Flex>
-                <Typography fontWeight={500}>Answer Reviewable</Typography>
-                <Switch defaultChecked {...register('isPublicAnswer')} />
-              </Flex>
-            </Grid>
-            <Grid item xs={12}>
-              <Stack>
-                <Typography fontWeight={500}>Description</Typography>
-                <TextField
-                  size='small'
-                  fullWidth
-                  placeholder='Description'
-                  {...register('description')}
-                  minRows={3}
-                  multiline
-                />
-                <ErrorField isShow={Boolean(errors.description)} message={errors.description?.message} />
-              </Stack>
-            </Grid>
-            <Grid item xs={6}>
-              <Stack>
-                <Typography fontWeight={500}>Start time</Typography>
-                <DateTimePicker
-                  {...(getValues('startDate') && {
-                    defaultValue: dayjs(getValues('startDate')),
-                  })}
-                  slotProps={{ textField: { size: 'small' } }}
-                  onChange={(value) => {
-                    setValue('startDate', dayjs(value).toISOString())
-                  }}
-                />
-              </Stack>
-            </Grid>
-            <Grid item xs={6}>
-              <Stack>
-                <Typography fontWeight={500}>End time</Typography>
-                <DateTimePicker
-                  {...(getValues('endDate') && {
-                    defaultValue: dayjs(getValues('endDate')),
-                  })}
-                  slotProps={{ textField: { size: 'small' } }}
-                  onChange={(value) => {
-                    setValue('endDate', dayjs(value).toISOString())
-                  }}
-                />
-              </Stack>
-            </Grid>
-            <Grid item xs={3}>
-              <Stack>
-                <Typography fontWeight={500}>Number attempt</Typography>
-                <TextField
-                  size='small'
-                  type='number'
-                  placeholder='Description'
-                  {...register('attemptNumber')}
-                  InputProps={{ inputProps: { min: 0 }, sx: { width: 'fit-content' } }}
-                />
-              </Stack>
-            </Grid>
-            <Grid item xs={3}>
-              <Stack>
-                <Typography fontWeight={500}>Time limit</Typography>
-                <TextField
-                  size='small'
-                  type='number'
-                  placeholder='Description'
-                  {...register('quizTimeLimit')}
-                  InputProps={{
-                    inputProps: { min: 0 },
-                    endAdornment: <InputAdornment position='end'>Mins</InputAdornment>,
-                  }}
-                />
-              </Stack>
-            </Grid>
-          </Grid>
 
-          <Divider sx={{ my: 4 }} />
-          <Stack width='100%' gap={4}>
-            {isLoadingQuestions && <Loading />}
-            {questions &&
-              questions?.map((question) => (
-                <QuestionBox
-                  quizId={id}
-                  defaultQuestion={question}
-                  onClose={() => setSelectedQuestion(null)}
-                  onUpdate={handleUpdateQuestion}
-                  key={question.id}
-                  status='view'
-                />
-              ))}
-          </Stack>
-          <Box my={4}>
-            {isOpenAddQuestion && (
-              <QuestionBox status='create' quizId={id} onClose={closeAddQuestion} onSave={handleSaveQuestion} />
-            )}
+            <Divider sx={{ my: 4 }} />
+            <Stack width='100%' gap={4}>
+              {isLoadingQuestions && <Loading />}
+              {questions &&
+                questions?.map((question) => (
+                  <QuestionBox
+                    quizId={id}
+                    defaultQuestion={question}
+                    onClose={() => setSelectedQuestion(null)}
+                    onUpdate={handleUpdateQuestion}
+                    key={question.id}
+                    status='view'
+                  />
+                ))}
+            </Stack>
+            <Box my={4}>
+              {isOpenAddQuestion && (
+                <QuestionBox status='create' quizId={id} onClose={closeAddQuestion} onSave={handleSaveQuestion} />
+              )}
+            </Box>
+            <Button variant='outlined' onClick={openAddQuestion} fullWidth>
+              <AddOutlined />
+              Add Question
+            </Button>
+            <Divider sx={{ my: 4 }} />
+            <Button variant='contained' type='submit' sx={{ my: 2 }} fullWidth>
+              Save
+            </Button>
+            <Divider sx={{ my: 4 }} />
           </Box>
-          <Button variant='outlined' onClick={openAddQuestion} fullWidth>
-            <AddOutlined />
-            Add Question
-          </Button>
-          <Divider sx={{ my: 4 }} />
-          <Button variant='contained' type='submit' sx={{ my: 2 }} fullWidth>
-            Save
-          </Button>
-          <Divider sx={{ my: 4 }} />
-        </Box>
-      </Container>
-    </Box>
+        </Container>
+      </Box>
+    </Modal>
   )
 }

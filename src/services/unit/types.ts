@@ -39,6 +39,7 @@ export type Unit = {
   resourceInfo?: Resource
   unlock: boolean
   isDone: boolean
+  labelConnection?: string
 }
 
 export type GetListUnitQuery = {

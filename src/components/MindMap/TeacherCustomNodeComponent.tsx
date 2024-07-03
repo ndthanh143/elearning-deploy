@@ -11,14 +11,15 @@ import { unitService } from '@/services/unit'
 import { unitKey } from '@/services/unit/query'
 import { CreateUnitPayload, Unit } from '@/services/unit/types'
 import {
-  AddCircleOutlineOutlined,
   ArticleOutlined,
   AssignmentOutlined,
   FileUploadOutlined,
+  InfoOutlined,
   LibraryAddOutlined,
+  MovingOutlined,
   QuizOutlined,
 } from '@mui/icons-material'
-import { Box, IconButton, Stack, Typography, styled } from '@mui/material'
+import { Box, Grid, Stack, Typography, styled } from '@mui/material'
 import { blue, orange } from '@mui/material/colors'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
@@ -31,7 +32,6 @@ import { resourceService } from '@/services/resource/resource.service'
 import { primary } from '@/styles/theme'
 import { quizService } from '@/services/quiz/quiz.service'
 import dayjs from 'dayjs'
-import { CustomTooltip } from '..'
 import { icons } from '@/assets/icons'
 
 const StyledHandle = styled(Handle)(() => ({
@@ -116,11 +116,12 @@ export const TeacherCustomNodeComponent = (
   const { value: isOpenLecture, setTrue: openLecture, setFalse: closeLecture } = useBoolean()
   const { value: isOpenAssignment, setTrue: openAssignment, setFalse: closeAssignment } = useBoolean()
   const { value: isOpenResource, setTrue: openResource, setFalse: closeResource } = useBoolean()
+  const { value: isConnectSource, setTrue: setConnectSource } = useBoolean(selected)
 
   // const { value: isOpenSectionModal, setTrue: openSectionModal, setFalse: closeSectionModal } = useBoolean()
   // const { value: isOpenConfirm, setTrue: openConfirm, setFalse: closeConfirm } = useBoolean()
 
-  const { value: isOpenDrawer, setFalse: closeDrawer } = useBoolean(true)
+  const { value: isOpenDrawer, setTrue: openDrawer, setFalse: closeDrawer } = useBoolean(false)
 
   const { mutate: mutateCreateUnit } = useMutation({
     mutationFn: unitService.create,
@@ -250,91 +251,146 @@ export const TeacherCustomNodeComponent = (
   }
 
   const listButtons = {
+    connection: {
+      icon: <MovingOutlined fontSize='small' color='secondary' />,
+      onClick: setConnectSource,
+      tooltip: 'Connect',
+    },
     section: {
-      icon: <LibraryAddOutlined />,
+      icon: <LibraryAddOutlined fontSize='small' color='secondary' />,
       onClick: openAddSection,
-      tooltip: 'Add new Section',
+      tooltip: 'Section',
     },
     lecture: {
-      icon: <ArticleOutlined />,
+      icon: <ArticleOutlined fontSize='small' color='secondary' />,
       onClick: openLecture,
-      tooltip: 'Add new lecture',
+      tooltip: 'Lecture',
     },
     resource: {
-      icon: <FileUploadOutlined />,
+      icon: <FileUploadOutlined fontSize='small' color='secondary' />,
       onClick: openResource,
-      tooltip: 'Upload new File',
+      tooltip: 'File',
     },
     quiz: {
-      icon: <QuizOutlined />,
+      icon: <QuizOutlined fontSize='small' color='secondary' />,
       onClick: handleAddQuiz,
-      tooltip: 'Add new quiz',
+      tooltip: 'Quiz',
     },
     assignment: {
-      icon: <AssignmentOutlined />,
+      icon: <AssignmentOutlined fontSize='small' color='secondary' />,
       onClick: openAssignment,
-      tooltip: 'Add new assignment',
+      tooltip: 'Assignment',
+    },
+    info: {
+      icon: <InfoOutlined fontSize='small' color='secondary' />,
+      onClick: openDrawer,
+      tooltip: 'Info',
     },
   }
 
   return (
     <>
-      <Stack
-        sx={{
-          width: 200,
-          minHeight: 50,
-          fontSize: 12,
-          gap: 1,
-          transition: isTarget ? 'all 0.05s ease-in-out' : 'all 0.2s ease-in-out',
-          ':hover': {
-            borderColor: blue[500],
-          },
-          zIndex: 10,
-          ...(type === 'main'
-            ? {
-                backgroundColor: primary[500],
-                color: '#fff',
-                borderRadius: '100%',
-                border: `4px solid ${primary[500]}`,
-                px: 4,
-                py: 3,
-                justifyContent: 'center',
-                alignItems: 'center',
-                display: 'flex',
-                flexDirection: 'column',
-              }
-            : {
-                backgroundColor: isTarget ? orange[200] : '#fff',
-                color: '#000',
-                borderRadius: 4,
-                border: '1px solid',
-                borderColor: blue[500],
-                minHeight: 50,
-                fontSize: 12,
-                px: 4,
-                py: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-                display: 'flex',
-              }),
-        }}
-      >
-        {type === 'main' && (
-          <Box width={50} height={50} bgcolor='#fff' p={1} borderRadius='100%'>
-            {icons['planMindmap']}
-          </Box>
-        )}
-        <Typography variant='body2' textAlign={'center'} fontWeight={type === 'main' ? 700 : 400}>
-          {unit.name}
-        </Typography>
-
-        {!isConnecting && <Handle position={Position.Right} type='source' />}
-
-        <StyledHandle
-          type='target'
-          position={Position.Top}
+      <Box>
+        <Stack
           sx={{
-            ...(isConnecting && {
+            width: 200,
+            minHeight: 50,
+            fontSize: 12,
+            gap: 1,
+
+            transition: isTarget ? 'all 0.05s ease-in-out' : 'all 0.2s ease-in-out',
+            ':hover': {
+              borderColor: blue[500],
+            },
+            zIndex: 10,
+            ...(type === 'main'
+              ? {
+                  backgroundColor: primary[500],
+                  color: '#fff',
+                  borderRadius: '100%',
+                  border: `4px solid ${primary[500]}`,
+                  px: 4,
+                  py: 3,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }
+              : {
+                  backgroundColor: isTarget ? orange[200] : '#fff',
+                  color: '#000',
+                  borderRadius: 4,
+                  border: '1px solid',
+                  borderColor: blue[500],
+                  minHeight: 50,
+                  fontSize: 12,
+                  px: 4,
+                  py: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  display: 'flex',
+                }),
+
+            ...(isConnectSource &&
+              selected && {
+                border: '4px solid',
+                borderColor: primary[500],
+              }),
+          }}
+        >
+          {type === 'main' && (
+            <Box width={50} height={50} bgcolor='#fff' p={1} borderRadius='100%'>
+              {icons['planMindmap']}
+            </Box>
+          )}
+          <Typography variant='body2' textAlign={'center'} fontWeight={type === 'main' ? 700 : 400}>
+            {unit.name}
+          </Typography>
+
+          {!isConnecting && (
+            <StyledHandle
+              position={Position.Right}
+              type='source'
+              sx={{
+                ...(isConnectSource && selected
+                  ? {
+                      background: primary[100],
+                      border: 1,
+                      position: 'absolute',
+                      zIndex: 1,
+                      width: '100%',
+                      height: '100%',
+                      top: 0,
+                      left: 0,
+                      borderRadius: 0,
+                      transform: 'none',
+                      opacity: 0,
+                      ':before': {
+                        content: '""',
+                        position: 'absolute',
+                        top: '-10px',
+                        left: '50%',
+                        height: '20px',
+                        width: '40px',
+                        transform: 'translate(-50%, 0)',
+                        background: ' #d6d5e6',
+                        zIndex: '1000',
+                        lineHeight: 1,
+                        color: '#fff',
+                        fontSize: '9px',
+                        border: '2px solid #222138',
+                      },
+                    }
+                  : { position: 'absolute', bgcolor: 'transparent' }),
+              }}
+            />
+          )}
+
+          <StyledHandle
+            type='target'
+            position={Position.Top}
+            isConnectableStart={false}
+            sx={{
               background: primary[100],
               border: 1,
               position: 'absolute',
@@ -361,11 +417,9 @@ export const TeacherCustomNodeComponent = (
                 fontSize: '9px',
                 border: '2px solid #222138',
               },
-            }),
-          }}
-        />
+            }}
+          />
 
-        {selected && (
           <Box
             className='add-node'
             sx={{
@@ -377,42 +431,53 @@ export const TeacherCustomNodeComponent = (
               justifyContent: 'center',
               alignItems: 'center',
               zIndex: 2,
+              visibility: selected ? 'visible' : 'hidden',
+              opacity: selected ? 1 : 0,
+              transition: 'all 0.2s ease-in-out',
+              width: 300,
             }}
           >
-            <Box width={4} height={40} bgcolor='#F79B8D' />
-            <AddCircleOutlineOutlined sx={{ color: '#F79B8D' }} />
-            <Box p={4} border={1} borderRadius={4} borderColor='primary.main' bgcolor='white'>
+            {/* <Box width={4} height={40} bgcolor='#F79B8D' /> */}
+            {/* <AddCircleOutlineOutlined sx={{ color: '#F79B8D' }} /> */}
+            <Stack py={2} px={2} border={1} borderRadius={4} borderColor='primary.main' bgcolor='white'>
               <Typography textAlign='center' color='#000' fontWeight={700} mb={2}>
-                Add new Subject
+                Operations
               </Typography>
-              <Stack direction='row' gap={2}>
+              <Grid container spacing={1}>
                 {Object.entries(listButtons).map(([key, button]) => (
-                  <CustomTooltip title={button.tooltip} key={key}>
-                    <IconButton
-                      onClick={button.onClick}
+                  <Grid item xs={4} key={key}>
+                    <Stack
+                      alignItems='center'
                       sx={{
-                        border: 1,
+                        bgcolor: primary[50],
+                        borderRadius: 4,
+                        cursor: 'pointer',
+                        p: 1.5,
+                        transition: 'all 0.1s ease-in-out',
                         ':hover': {
-                          color: 'primary.main',
+                          bgcolor: primary[100],
                         },
-                        borderRadius: '50%',
                       }}
+                      onClick={button.onClick}
                     >
                       {button.icon}
-                    </IconButton>
-                  </CustomTooltip>
+                      <Typography variant='caption' fontWeight={400} color='secondary'>
+                        {button.tooltip}
+                      </Typography>
+                    </Stack>
+                  </Grid>
                 ))}
-              </Stack>
-            </Box>
+              </Grid>
+            </Stack>
           </Box>
-        )}
-      </Stack>
-      <ResourceActions isOpen={isOpenResource} onClose={closeResource} onCreate={mutateCreateResource} />
-      <AssignmentActions isOpen={isOpenAssignment} onClose={closeAssignment} onCreate={mutateCreateAssignment} />
-      <LectureActions isOpen={isOpenLecture} onClose={closeLecture} onCreate={mutateCreateLecture} />
-      <ModalSection isOpen={isOpenAddSection} onClose={closeAddSection} onSubmit={handleCreateSection} />
-      {quiz && <QuizActions isOpen onClose={reset} defaultData={quiz} />}
-      <DrawerNodeDetail isOpen={isOpenDrawer && selected} onClose={closeDrawer} unit={unit} />
+        </Stack>
+        <ResourceActions isOpen={isOpenResource} onClose={closeResource} onCreate={mutateCreateResource} />
+        <AssignmentActions isOpen={isOpenAssignment} onClose={closeAssignment} onCreate={mutateCreateAssignment} />
+        <LectureActions isOpen={isOpenLecture} onClose={closeLecture} onCreate={mutateCreateLecture} />
+        <ModalSection isOpen={isOpenAddSection} onClose={closeAddSection} onSubmit={handleCreateSection} />
+        {quiz && <QuizActions isOpen onClose={reset} defaultData={quiz} />}
+        <DrawerNodeDetail isOpen={isOpenDrawer && selected} onClose={closeDrawer} unit={unit} />
+      </Box>
     </>
   )
 }

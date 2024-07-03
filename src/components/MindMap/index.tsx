@@ -11,7 +11,6 @@ import ReactFlow, {
   applyNodeChanges,
   Edge,
   OnNodesChange,
-  useReactFlow,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 import { CustomEdge } from './CustomEdge'
@@ -56,8 +55,6 @@ export function MindMap({ lessonPlanId }: IMindMapProps) {
   const [nodes, setNodes] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const scrollContainerRef = useRef(null)
-
-  const { setCenter } = useReactFlow()
 
   const unitInstance = unitKey.list({ lessonPlanId, unpaged: true })
   const { data: units, isLoading: isLoadingUnits } = useQuery({

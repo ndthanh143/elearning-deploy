@@ -1,6 +1,6 @@
 import { Flex } from '@/components'
 import { primary } from '@/styles/theme'
-import { InfoRounded, NewspaperRounded, PlayLessonRounded, PriceChangeRounded } from '@mui/icons-material'
+import { InfoRounded, NewspaperRounded, PlayLessonRounded } from '@mui/icons-material'
 import { Box, Stack, Typography } from '@mui/material'
 
 interface ITableStepProps {

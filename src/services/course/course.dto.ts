@@ -45,6 +45,7 @@ export type CreateCoursePayload = {
   state?: number
   lessonPlanId?: number
   congratulation?: string
+  isPublic?: boolean
 }
 
 export type GetListCoursesQuery = {
@@ -63,6 +64,7 @@ export type UpdateCoursePayload = {
   state: number
   teacherId?: number
   thumbnail?: string
+  isPublic?: boolean
 }
 
 export type AutoCompleteCourseQuery = {

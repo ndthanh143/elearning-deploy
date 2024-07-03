@@ -38,7 +38,7 @@ export function TaskPage() {
   const taskInstance = groupTaskKeys.list({ groupId: studentGroup?.id })
   const { data: tasks } = useQuery({ ...taskInstance, enabled: Boolean(studentGroup) })
 
-  const coursesInstance = courseKeys.list()
+  const coursesInstance = courseKeys.myCourse({})
   const { data: courses, isFetched } = useQuery({
     ...coursesInstance,
   })

@@ -1,5 +1,5 @@
 import { Box, Card, CardContent, Container, Stack, Typography } from '@mui/material'
-import { useLocation, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { courseKeys } from '../../../services/course/course.query'
 import { useQuery } from '@tanstack/react-query'
 import { BasicPlanStudent, CourseIntro, TopicFab } from './containers'

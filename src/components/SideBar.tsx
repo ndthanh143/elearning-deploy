@@ -14,7 +14,7 @@ import { Stack, Typography } from '@mui/material'
 import { useLocation } from 'react-router-dom'
 
 import { useAuth } from '@/hooks'
-import { gray, primary } from '@/styles/theme'
+import { gray } from '@/styles/theme'
 import { RoleEnum } from '@/services/auth/auth.dto'
 
 import { Flex, Link } from '.'

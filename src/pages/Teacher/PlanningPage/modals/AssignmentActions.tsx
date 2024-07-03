@@ -9,7 +9,7 @@ import { UploadFileData } from '@/services/file/file.dto'
 import { getAbsolutePathFile, parseYoutubeUrlToEmbed } from '@/utils'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { ArrowBackRounded, FileUploadRounded } from '@mui/icons-material'
-import { Box, Button, Container, IconButton, Stack, TextField, Tooltip, Typography } from '@mui/material'
+import { Box, Button, Container, IconButton, Modal, Stack, TextField, Tooltip, Typography } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers'
 import dayjs from 'dayjs'
 import { useForm } from 'react-hook-form'
@@ -89,115 +89,117 @@ export const AssignmentActions = ({
   }
 
   return (
-    <Box
-      sx={{
-        height: '100vh',
-        width: isOpen ? '100vw' : 0,
-        position: 'fixed',
-        overflowY: 'scroll',
-        opacity: isOpen ? 1 : 0,
-        zIndex: 10,
-        bgcolor: 'white',
-        borderColor: '#ccc',
-        boxShadow: 1,
-        inset: 0,
-        transition: 'all 0.3s ease-in',
-      }}
-      // ref={notiRef}
-    >
-      <Container maxWidth='lg' sx={{ py: 4 }}>
-        <Flex>
-          <Button startIcon={<ArrowBackRounded />} variant='text' onClick={handleClose}>
-            Back
-          </Button>
-        </Flex>
-        <Box component='form' onSubmit={handleSubmit(onSubmitHandler)} sx={{ overflowY: 'scroll' }}>
-          <Stack gap={3} my={3}>
-            <Stack gap={0.5}>
-              <Typography variant='body1' fontWeight={600}>
-                Assignment title
-              </Typography>
-              <TextField size='small' placeholder='Title' fullWidth {...register('assignmentTitle')} />
-            </Stack>
-            <Stack direction='row' gap={3}>
+    <Modal open={isOpen}>
+      <Box
+        sx={{
+          height: '100vh',
+          width: isOpen ? '100vw' : 0,
+          position: 'fixed',
+          overflowY: 'scroll',
+          opacity: isOpen ? 1 : 0,
+          zIndex: 10,
+          bgcolor: 'white',
+          borderColor: '#ccc',
+          boxShadow: 1,
+          inset: 0,
+          transition: 'all 0.3s ease-in',
+        }}
+        // ref={notiRef}
+      >
+        <Container maxWidth='lg' sx={{ py: 4 }}>
+          <Flex>
+            <Button startIcon={<ArrowBackRounded />} variant='text' onClick={handleClose}>
+              Back
+            </Button>
+          </Flex>
+          <Box component='form' onSubmit={handleSubmit(onSubmitHandler)} sx={{ overflowY: 'scroll' }}>
+            <Stack gap={3} my={3}>
               <Stack gap={0.5}>
                 <Typography variant='body1' fontWeight={600}>
-                  Start date
+                  Assignment title
                 </Typography>
-                <DatePicker
-                  defaultValue={defaultData?.startDate && dayjs(getValues('startDate'))}
-                  slotProps={{
-                    textField: {
-                      size: 'small',
-                      placeholder: 'Start date',
-                    },
-                  }}
-                  disablePast
-                  onChange={(value: any) => setValue('startDate', dayjs(value).toISOString())}
-                />
+                <TextField size='small' placeholder='Title' fullWidth {...register('assignmentTitle')} />
               </Stack>
+              <Stack direction='row' gap={3}>
+                <Stack gap={0.5}>
+                  <Typography variant='body1' fontWeight={600}>
+                    Start date
+                  </Typography>
+                  <DatePicker
+                    defaultValue={defaultData?.startDate && dayjs(getValues('startDate'))}
+                    slotProps={{
+                      textField: {
+                        size: 'small',
+                        placeholder: 'Start date',
+                      },
+                    }}
+                    disablePast
+                    onChange={(value: any) => setValue('startDate', dayjs(value).toISOString())}
+                  />
+                </Stack>
+                <Stack gap={0.5}>
+                  <Typography variant='body1' fontWeight={600}>
+                    End date
+                  </Typography>
+                  <DatePicker
+                    disablePast
+                    defaultValue={defaultData?.endDate && dayjs(getValues('endDate'))}
+                    slotProps={{
+                      textField: {
+                        size: 'small',
+                        placeholder: 'End date',
+                      },
+                    }}
+                    onChange={(value: any) => setValue('endDate', dayjs(value).toISOString())}
+                  />
+                </Stack>
+              </Stack>
+              <Stack gap={1}>
+                <Typography fontWeight={600}>Resource</Typography>
+                {renderReviewResource()}
+                <Flex gap={2}>
+                  <Tooltip title='Add video on Youtube' onClick={openYoutube}>
+                    <IconButton size='large' sx={{ border: 1 }}>
+                      {icons['youtube']}
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title='Upload your file' onClick={openUpload}>
+                    <IconButton size='large' sx={{ border: 1 }}>
+                      <FileUploadRounded fontSize='large' color='primary' />
+                    </IconButton>
+                  </Tooltip>
+                </Flex>
+              </Stack>
+
               <Stack gap={0.5}>
-                <Typography variant='body1' fontWeight={600}>
-                  End date
-                </Typography>
-                <DatePicker
-                  disablePast
-                  defaultValue={defaultData?.endDate && dayjs(getValues('endDate'))}
-                  slotProps={{
-                    textField: {
-                      size: 'small',
-                      placeholder: 'End date',
-                    },
+                <Typography fontWeight={600}>Content</Typography>
+                <Editor
+                  value={watch('assignmentContent')}
+                  onChange={(value) => {
+                    setValue('assignmentContent', value)
                   }}
-                  onChange={(value: any) => setValue('endDate', dayjs(value).toISOString())}
                 />
               </Stack>
             </Stack>
-            <Stack gap={1}>
-              <Typography fontWeight={600}>Resource</Typography>
-              {renderReviewResource()}
-              <Flex gap={2}>
-                <Tooltip title='Add video on Youtube' onClick={openYoutube}>
-                  <IconButton size='large' sx={{ border: 1 }}>
-                    {icons['youtube']}
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title='Upload your file' onClick={openUpload}>
-                  <IconButton size='large' sx={{ border: 1 }}>
-                    <FileUploadRounded fontSize='large' color='primary' />
-                  </IconButton>
-                </Tooltip>
-              </Flex>
+            <Stack direction='row' gap={2} pb={2}>
+              <Button variant='outlined' fullWidth onClick={onClose}>
+                Cancel
+              </Button>
+              <Button variant='contained' fullWidth type='submit'>
+                {status === 'update' ? 'Update' : 'Create'}
+              </Button>
             </Stack>
+          </Box>
+        </Container>
 
-            <Stack gap={0.5}>
-              <Typography fontWeight={600}>Content</Typography>
-              <Editor
-                value={watch('assignmentContent')}
-                onChange={(value) => {
-                  setValue('assignmentContent', value)
-                }}
-              />
-            </Stack>
-          </Stack>
-          <Stack direction='row' gap={2} pb={2}>
-            <Button variant='outlined' fullWidth onClick={onClose}>
-              Cancel
-            </Button>
-            <Button variant='contained' fullWidth type='submit'>
-              {status === 'update' ? 'Update' : 'Create'}
-            </Button>
-          </Stack>
-        </Box>
-      </Container>
-
-      <UrlPopup
-        placeholder='Fill your youtube URL'
-        onClose={closeYoutube}
-        isOpen={isOpenYoutube}
-        onSubmit={handleSubmitYoutube}
-      />
-      <UploadPopup isOpen={isOpenUpload} onClose={closeUpload} onSubmit={handleSubmitUpload} />
-    </Box>
+        <UrlPopup
+          placeholder='Fill your youtube URL'
+          onClose={closeYoutube}
+          isOpen={isOpenYoutube}
+          onSubmit={handleSubmitYoutube}
+        />
+        <UploadPopup isOpen={isOpenUpload} onClose={closeUpload} onSubmit={handleSubmitUpload} />
+      </Box>
+    </Modal>
   )
 }

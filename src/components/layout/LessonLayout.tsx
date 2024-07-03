@@ -1,16 +1,18 @@
 import { useEffect } from 'react'
-import { Outlet, useLocation, useParams } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Flex, Header, IconContainer } from '..'
 import { useQuery } from '@tanstack/react-query'
 import { courseKeys } from '@/services/course/course.query'
 import { Box, Drawer, Grid, Stack } from '@mui/material'
 import { BasicPlanStudent } from '@/pages/Common/CourseDetailPage/containers'
-import { useBoolean } from '@/hooks'
+import { useAuth, useBoolean } from '@/hooks'
 import { ArrowBackRounded, ArrowForwardRounded } from '@mui/icons-material'
 import { primary } from '@/styles/theme'
 
 export function LessonLayout() {
+  const navigate = useNavigate()
   const { courseId } = useParams()
+  const { accessToken, profile, isFetched } = useAuth()
 
   const courseInstance = courseKeys.detail(Number(courseId))
   const { data: course } = useQuery(courseInstance)
@@ -24,6 +26,24 @@ export function LessonLayout() {
       closeDrawer()
     }
   }, [pathname])
+
+  useEffect(() => {
+    const pathname = window.location.href.replace(window.location.origin, '')
+    if (!accessToken) {
+      navigate('/login', {
+        state: {
+          from: pathname,
+        },
+      })
+    }
+    if (!profile && isFetched) {
+      navigate('/login', {
+        state: {
+          from: pathname,
+        },
+      })
+    }
+  }, [profile])
 
   return (
     <Box bgcolor='#F8F4FE' minHeight='100vh'>

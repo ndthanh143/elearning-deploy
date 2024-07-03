@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Flex, Loading } from '..'
 
 export function AuthLayout({ children }: PropsWithChildren) {
-  const { profile, isFetched, accessToken } = useAuth()
+  const { profile, isFetched, accessToken, isAuthenticated } = useAuth()
   const navigate = useNavigate()
 
   const { state } = useLocation()
@@ -14,7 +14,7 @@ export function AuthLayout({ children }: PropsWithChildren) {
       const url = state && state.from ? state.from : profile.data.role === 'Student' ? '/home' : '/courses'
       navigate(url)
     }
-  }, [profile])
+  }, [profile, isAuthenticated])
 
   return (isFetched && !profile) || !accessToken ? (
     children

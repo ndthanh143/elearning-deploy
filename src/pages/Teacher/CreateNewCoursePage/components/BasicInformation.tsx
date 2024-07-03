@@ -55,15 +55,35 @@ export function BasicInformation({ form }: IBasicInformationProps) {
               information so that students can easily understand what your course is about.
             </Typography>
           </Stack>
-          <Stack>
-            <Typography variant='body1' fontWeight={700} color='secondary.main' mb={1}>
-              Course Name
-            </Typography>
-            <TextField size='small' placeholder='Insert your course name...' {...register('courseName')} />
-            <Typography variant='caption' color={gray[500]}>
-              Your title must not only be attention-grabbing and informative, but also optimized for searchability
-            </Typography>
-          </Stack>
+          <Flex gap={2} alignItems='start'>
+            <Stack>
+              <Typography variant='body1' fontWeight={700} color='secondary.main' mb={1}>
+                Course Name
+              </Typography>
+              <TextField size='small' placeholder='Insert your course name...' {...register('courseName')} />
+              <Typography variant='caption' color={gray[500]}>
+                Your title must not only be attention-grabbing and informative, but also optimized for searchability
+              </Typography>
+            </Stack>
+            <Stack>
+              <Typography variant='body1' fontWeight={700} color='secondary.main' mb={1}>
+                Status
+              </Typography>
+              <Flex gap={1}>
+                <Chip
+                  label='Private'
+                  color={!watch('isPublic') ? 'primary' : 'default'}
+                  onClick={() => setValue('isPublic', false)}
+                />
+                <Chip
+                  label='Public'
+                  color={watch('isPublic') ? 'primary' : 'default'}
+                  onClick={() => setValue('isPublic', true)}
+                />
+              </Flex>
+            </Stack>
+          </Flex>
+
           <Stack>
             <Typography variant='body1' fontWeight={700} color='secondary.main' mb={1}>
               Course Description

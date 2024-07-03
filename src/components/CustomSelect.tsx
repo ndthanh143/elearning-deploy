@@ -1,5 +1,5 @@
 import { primary } from '@/styles/theme'
-import { FormControl, FormHelperText, InputLabel, MenuItem, Select } from '@mui/material'
+import { FormControl, MenuItem, Select } from '@mui/material'
 import { BaseSelectProps } from '@mui/material/Select'
 
 interface ICustomSelectProps extends BaseSelectProps {
@@ -53,7 +53,7 @@ export function CustomSelect({ data, sx, ...props }: ICustomSelectProps) {
         displayEmpty
         {...props}
       >
-        <MenuItem value=''>None</MenuItem>
+        {data.length === 0 && <MenuItem value=''>None</MenuItem>}
         {data.map((item) => (
           <MenuItem value={item.value} key={item.value}>
             {item.label}

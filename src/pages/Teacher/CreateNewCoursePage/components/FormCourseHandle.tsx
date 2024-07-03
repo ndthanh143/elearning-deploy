@@ -2,7 +2,7 @@ import { useAuth } from '@/hooks'
 import { Button, Grid, Stack } from '@mui/material'
 import { useState } from 'react'
 import { type UseFormReturn, useForm } from 'react-hook-form'
-import { array, number, object, string } from 'yup'
+import { array, boolean, number, object, string } from 'yup'
 import { BasicInformation, CoursePlanSelection, NewsLetterSetting, TableStep } from '.'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Flex } from '@/components'
@@ -30,6 +30,7 @@ const schema = object({
   lessonPlanId: number().required(),
   currency: string(),
   price: number(),
+  isPublic: boolean(),
 })
 
 export type CreateCourseForm = UseFormReturn<
@@ -48,6 +49,7 @@ export type CreateCourseForm = UseFormReturn<
     price?: number
     categoryId: number
     lessonPlanId: number
+    isPublic?: boolean
   },
   any,
   undefined
@@ -77,6 +79,7 @@ export function FormCourseHandle({ handleSubmit, defaultValues }: IFormCourseHan
             categoryId: defaultValues.categoryInfo?.id,
             thumbnail: defaultValues.thumbnail || '',
             lessonPlanId: defaultValues.lessonPlanInfo?.id,
+            isPublic: defaultValues.isPublic,
           }
         : {
             ...(profile && {
@@ -86,6 +89,7 @@ export function FormCourseHandle({ handleSubmit, defaultValues }: IFormCourseHan
             objectives: [],
             requirements: [],
             currency: 'USD',
+            isPublic: false,
           }),
     },
   })

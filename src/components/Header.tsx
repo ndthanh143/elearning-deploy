@@ -22,9 +22,9 @@ import {
   Typography,
 } from '@mui/material'
 
-import { CustomMenu, DangerouseLyRender, Flex, IconContainer, Logo } from '.'
+import { CustomMenu, Flex, IconContainer, Logo } from '.'
 import { useAuth, useBoolean, useMenu, useOnClickOutside } from '../hooks'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { notificationKey } from '@/services/notification/notification.query'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { notificationService } from '@/services/notification/notification.service'
@@ -48,9 +48,11 @@ const Message = ({
   const navigate = useNavigate()
   const parseData = JSON.parse(data)
 
+  console.log(parseData)
+
   const navigateObj = {
     TOPIC: `/courses/${parseData.forumId}#${refId}`,
-    COMMENT: `/courses/${parseData.forumId}`,
+    COMMENT: `/courses/${parseData.courseId}/u/${parseData.unitId}/lecture/${parseData.lectureId}#${parseData.blockId}`,
   }
 
   const renderContent = {
@@ -70,18 +72,7 @@ const Message = ({
       content: parseData.topicContent,
     },
     COMMENT: {
-      label: (
-        <>
-          commented in{' '}
-          <Box
-            component={Link}
-            to={`/courses/${parseData.forumId}`}
-            sx={{ color: 'primary.main', textDecoration: 'none', fontWeight: 500 }}
-          >
-            {parseData.forumTitle}
-          </Box>
-        </>
-      ),
+      label: <>commented in</>,
       content: parseData.content,
     },
   }
@@ -115,7 +106,7 @@ const Message = ({
           >
             {author?.fullName.charAt(0)}
           </Avatar>
-          <Typography variant='body2' fontWeight={700}>
+          <Typography variant='body2' fontWeight={500}>
             {author?.fullName}
           </Typography>
           <Typography variant='body2'>{renderContent[type].label}</Typography>
@@ -123,12 +114,18 @@ const Message = ({
         <Box ml={4}>
           {type === 'TOPIC' ? (
             <Box border={1} borderRadius={3} p={1} borderColor='primary.main' bgcolor='primary.main'>
-              <Typography variant='body2' fontWeight={700} color='primary.contrastText'>
+              <Typography variant='body2' fontWeight={500} color='primary.contrastText'>
                 {parseData.forumTitle}
               </Typography>
             </Box>
           ) : (
-            <DangerouseLyRender content={renderContent[type].content} maxHeight={120} overflow='hidden' />
+            <Stack gap={2}>
+              <Flex gap={1}>
+                {icons['lecture']}
+                <Typography variant='body2'>{parseData.courseName}</Typography>
+              </Flex>
+              <Typography>{renderContent[type].content}</Typography>
+            </Stack>
           )}
         </Box>
       </Box>
