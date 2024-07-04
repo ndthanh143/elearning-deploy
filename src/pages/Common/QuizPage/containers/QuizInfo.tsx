@@ -3,7 +3,6 @@ import { useBoolean, useLocalStorage } from '@/hooks'
 import { quizKey } from '@/services/quiz/quiz.query'
 import { gray } from '@/styles/theme'
 import { formatDate } from '@/utils'
-import { ArrowBack } from '@mui/icons-material'
 import { Button, Container, Divider, Stack, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
@@ -27,19 +26,13 @@ export const QuizInfo = () => {
     }
   }
 
-  const handleBack = () => window.history.back()
-
   const highestScore = quiz?.quizSubmissionInfo.reduce((maxScore, submission) => {
     return submission.score > maxScore ? submission.score : maxScore
   }, 0)
 
   return (
     quiz && (
-      <Container>
-        <Button sx={{ gap: 1, mb: 1 }} color='secondary' onClick={handleBack}>
-          <ArrowBack />
-          Back
-        </Button>
+      <Container sx={{ py: 3 }}>
         <BoxContent display='flex' flexDirection='column' gap={2}>
           <Stack alignItems='center' gap={1}>
             <Typography variant='h5'>{quiz.quizTitle}</Typography>

@@ -1,9 +1,9 @@
 import { useParams } from 'react-router-dom'
 import { lectureKeys } from '../../../services/lecture/lecture.query'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Box, Button, Container, IconButton, Stack, Typography } from '@mui/material'
+import { Box, Container, IconButton, Stack, Typography } from '@mui/material'
 import { CustomTooltip, DangerouseLyRenderLecture, Flex, NotFound } from '../../../components'
-import { ArrowBack, CommentRounded } from '@mui/icons-material'
+import { CommentRounded } from '@mui/icons-material'
 import { useAuth, useBoolean, useIntersectionObserver } from '@/hooks'
 import { useEffect, useRef, useState } from 'react'
 import { lectureService } from '@/services/lecture/lecture.service'
@@ -49,8 +49,6 @@ export const LecturePage = () => {
     ...lectureInstance,
     enabled: Boolean(lectureId),
   })
-
-  const goBack = () => window.history.back()
 
   const { mutate: mutateUpdateLecture } = useMutation({
     mutationFn: lectureService.update,
@@ -152,14 +150,10 @@ export const LecturePage = () => {
   return (
     lectureData && (
       <>
-        <Container maxWidth='lg'>
+        <Container sx={{ py: 3 }}>
           <Flex gap={8} alignItems='start'>
             <Stack gap={2} flex={1}>
               <Stack direction='row' justifyContent='space-between'>
-                <Button sx={{ gap: 1 }} onClick={goBack} color='secondary'>
-                  <ArrowBack fontSize='small' />
-                  Back
-                </Button>
                 <Typography variant='body1' fontWeight={500} sx={{ textDecoration: 'underline' }}>
                   {lectureData.lectureName}
                 </Typography>

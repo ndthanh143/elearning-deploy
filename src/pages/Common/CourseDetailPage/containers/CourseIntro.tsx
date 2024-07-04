@@ -1,7 +1,7 @@
 import { Course } from '@/services/course/course.dto'
 import { ArrowBack, Check, FiberManualRecord } from '@mui/icons-material'
 import { Avatar, Box, Button, Card, CardContent, Grid, Stack, Typography } from '@mui/material'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { CircularProgressWithLabel, CustomMenu, CustomTooltip, Flex, NoData } from '@/components'
 import { icons } from '@/assets/icons'
 import { useMenu } from '@/hooks'
@@ -10,18 +10,55 @@ export type CourseIntroProps = {
   data: Course
 }
 
+export const ProgressCourse = () => {
+  const { courseId } = useParams()
+  const navigate = useNavigate()
+
+  const { anchorEl, isOpen, onClose, onOpen } = useMenu()
+  const handleGetCertificate = () => {
+    navigate(`/courses/${courseId}/certificate`)
+  }
+
+  return (
+    <Box display='flex' alignItems='center' gap={3}>
+      <CustomTooltip title='Bạn đã hoàn thành 7/15'>
+        <Flex gap={1} sx={{ cursor: 'pointer' }} onClick={PROGRESS > 50 ? handleGetCertificate : onOpen}>
+          <CircularProgressWithLabel variant='determinate' value={PROGRESS}>
+            <Box width={18} height={18}>
+              {icons['cert']}
+            </Box>
+          </CircularProgressWithLabel>
+          <Typography variant='body2'>{PROGRESS > 50 ? 'Get certificates' : 'Your progress'}</Typography>
+        </Flex>
+      </CustomTooltip>
+
+      <CustomMenu
+        open={isOpen}
+        anchorEl={anchorEl}
+        onClose={onClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+      >
+        <Stack p={2} gap={1}>
+          <Typography variant='body2' fontWeight={500}>
+            You have done 1/10.
+          </Typography>
+          <Typography variant='body2'>Finish your course to get certificate</Typography>
+        </Stack>
+      </CustomMenu>
+    </Box>
+  )
+}
+
 const PROGRESS = Math.random() * 100
 
 export const CourseIntro = ({ data }: CourseIntroProps) => {
-  const { anchorEl, isOpen, onClose, onOpen } = useMenu()
   const navigate = useNavigate()
 
   const handleBackToCourses = () => {
     navigate('/courses')
-  }
-
-  const handleGetCertificate = () => {
-    navigate('certificate')
   }
 
   return (
@@ -34,16 +71,7 @@ export const CourseIntro = ({ data }: CourseIntroProps) => {
               Courses
             </Button>
           </Stack>
-          <CustomTooltip title='Bạn đã hoàn thành 7/15'>
-            <Flex gap={1} sx={{ cursor: 'pointer' }} onClick={PROGRESS > 50 ? handleGetCertificate : onOpen}>
-              <CircularProgressWithLabel variant='determinate' value={PROGRESS}>
-                <Box width={25} height={25}>
-                  {icons['cert']}
-                </Box>
-              </CircularProgressWithLabel>
-              <Typography variant='body2'>{PROGRESS > 50 ? 'Get certificates' : 'Your progress'}</Typography>
-            </Flex>
-          </CustomTooltip>
+          <ProgressCourse />
         </Flex>
         <Card>
           <CardContent>
@@ -95,22 +123,6 @@ export const CourseIntro = ({ data }: CourseIntroProps) => {
           </CardContent>
         </Card>
       </Stack>
-      <CustomMenu
-        open={isOpen}
-        anchorEl={anchorEl}
-        onClose={onClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-      >
-        <Stack p={2} gap={1}>
-          <Typography variant='body2' fontWeight={500}>
-            You have done 1/10.
-          </Typography>
-          <Typography variant='body2'>Finish your course to get certificate</Typography>
-        </Stack>
-      </CustomMenu>
     </>
   )
 }

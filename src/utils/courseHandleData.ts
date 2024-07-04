@@ -37,7 +37,7 @@ export const handleMappedChildrenUnitByParent = ({ group, children }: { group: U
   }, {})
 }
 
-export const handleCountItemInParen = (children: Unit[]): Record<UnitType, number> => {
+export const handleCountItemInParent = (children: Unit[]): Record<UnitType, number> => {
   return children.reduce(
     (acc, cur) => {
       if (cur.lectureInfo) {

@@ -39,7 +39,7 @@ export function TaskCardStudent({ data, index }: { data: GroupTask; index: numbe
                 {data.taskInfo.name}
               </Typography>
             </Flex>
-            <TaskStatus status={'done'} />
+            <TaskStatus status={data.taskSubmissionInfo ? 'done' : 'undone'} />
           </Flex>
           <Divider sx={{ my: 2 }} />
           <Stack gap={0.5}>

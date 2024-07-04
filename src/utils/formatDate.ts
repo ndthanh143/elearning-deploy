@@ -11,4 +11,7 @@ export const formatDate = {
   toRelative: (date: Date) => {
     return formatDistance(date, new Date(), { addSuffix: true })
   },
+  toText: (date: Date) => {
+    return dayjs(date).format('MMMM YYYY')
+  },
 }

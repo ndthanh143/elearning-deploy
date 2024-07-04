@@ -9,7 +9,32 @@ body {
   font-size: 62.5%;
 }
 
-/* h1 {
+/* WebKit browsers (Chrome, Safari, newer versions of Edge) */
+::-webkit-scrollbar {
+  width: 8px; /* Width of the entire scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color of the scrollbar track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ededed; /* Color of the scrollbar handle */
+  border-radius: 10px; /* Rounded corners of the scrollbar handle */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ededed; /* Color when hovering over the scrollbar handle */
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin; /* Makes scrollbar thinner */
+  scrollbar-color: #ededed #f1f1f1; /* Scrollbar handle and track color */
+}
+
+/* Uncomment the following block if needed
+h1 {
   font-size: 2.3rem;
 }
 

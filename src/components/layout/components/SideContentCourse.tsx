@@ -1,24 +1,23 @@
-import actions from '@/assets/images/icons/actions'
-import { Flex, IconContainer, NoData } from '@/components'
-import { EditRounded, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material'
+import { Flex, NoData } from '@/components'
+import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material'
 import { Box, Button, Card, CardContent, Collapse, Divider, Stack, Typography } from '@mui/material'
 import { useState } from 'react'
 import { Unit, UnitType } from '@/services/unit/types'
 import { LessonPlan } from '@/services/lessonPlan/lessonPlan.dto'
-import { ContentItem } from '../components'
 import { handleCountItemInParent, handleMappedChildrenUnitByParent, handleMappedUnits } from '@/utils'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '@/hooks'
+import { ContentItem } from '@/pages/Common/CourseDetailPage/components'
+import { useParams } from 'react-router-dom'
+import { primary } from '@/styles/theme'
+import actions from '@/assets/images/icons/actions'
 
 export type BasicPlanStudentProps = {
   lessonPlan: LessonPlan
 }
 
-export const BasicPlanStudent = ({ lessonPlan }: BasicPlanStudentProps) => {
-  const { isTeacher } = useAuth()
-
-  const navigate = useNavigate()
+export const SideContentCourse = ({ lessonPlan }: BasicPlanStudentProps) => {
   const units = lessonPlan.units
+
+  const { unitId } = useParams()
 
   const [expandModuleList, setExpandModuleList] = useState<number[]>(units?.map((module) => module.id) || [])
 
@@ -38,15 +37,6 @@ export const BasicPlanStudent = ({ lessonPlan }: BasicPlanStudentProps) => {
       setExpandModuleList(moduleIdList)
     }
   }
-
-  const handleNavigateEditLessonPlan = () => {
-    navigate(`/planning/${lessonPlan.id}`)
-  }
-
-  const mappedUnits = handleMappedUnits(units)
-
-  const mappedChildrenUnitByParent: Record<number, Unit & { children: Unit[] }> =
-    handleMappedChildrenUnitByParent(mappedUnits) || {}
 
   const labelCounts = [
     {
@@ -71,18 +61,16 @@ export const BasicPlanStudent = ({ lessonPlan }: BasicPlanStudentProps) => {
     },
   ]
 
+  const mappedUnits = handleMappedUnits(units)
+
+  const mappedChildrenUnitByParent: Record<number, Unit & { children: Unit[] }> =
+    handleMappedChildrenUnitByParent(mappedUnits) || {}
+
   return (
     units && (
-      <Stack gap={1}>
+      <Stack gap={1} height='100%' width='100%'>
         <Flex alignItems='center' justifyContent='space-between'>
-          <Flex gap={2}>
-            <Typography fontWeight={700}>Content</Typography>
-            {isTeacher && (
-              <IconContainer isActive sx={{ cursor: 'pointer' }} onClick={handleNavigateEditLessonPlan}>
-                <EditRounded fontSize='small' color='primary' sx={{ width: 18, height: 18 }} />
-              </IconContainer>
-            )}
-          </Flex>
+          <Typography fontWeight={600}>Course content</Typography>
           {units.length > 0 && (
             <Flex justifyContent='end' mb={1}>
               <Button variant='text' onClick={handleToggleModuleListAll}>
@@ -99,41 +87,41 @@ export const BasicPlanStudent = ({ lessonPlan }: BasicPlanStudentProps) => {
             </Flex>
           )}
         </Flex>
-        <Stack gap={1}>
-          {!units.length && <NoData title='No content in this course!' />}
-          <Stack gap={4}>
+        <Stack gap={1} width='100%' flex={1} sx={{ overflowY: 'scroll' }}>
+          <Stack gap={1}>
             {mappedUnits?.group.map((unit) => (
-              <Card>
-                <CardContent>
+              <Card variant='outlined'>
+                <CardContent sx={{ px: 0 }}>
                   <Stack gap={2} key={unit.id}>
                     <Box
                       display='flex'
                       alignItems='center'
                       justifyContent='space-between'
-                      sx={{ cursor: 'pointer' }}
+                      sx={{ cursor: 'pointer', px: 2 }}
                       gap={2}
                       onClick={() => handleExpandModuleList(unit.id)}
                     >
-                      <Box display='flex' alignItems='center' gap={2}>
-                        <KeyboardArrowDown />
-                        <Typography fontWeight={500}>{unit.name}</Typography>
-                      </Box>
-                      <Flex gap={3}>
-                        {labelCounts.map((item) => (
-                          <>
-                            <Box display='flex' alignItems='center' gap={1} key={item.label}>
-                              <Box component='img' src={item.icon} alt={item.label} width={25} />
-                              <Typography variant='body2'>
-                                {
-                                  handleCountItemInParent(mappedChildrenUnitByParent[unit.id]?.children)[
-                                    item.label as UnitType
-                                  ]
-                                }
-                              </Typography>
-                            </Box>
-                          </>
-                        ))}
-                      </Flex>
+                      <Stack gap={1}>
+                        <Box display='flex' alignItems='center' gap={2}>
+                          <KeyboardArrowDown />
+                          <Typography fontWeight={500}>{unit.name}</Typography>
+                        </Box>
+                        <Flex gap={3}>
+                          {labelCounts.map((item) => {
+                            const count = handleCountItemInParent(mappedChildrenUnitByParent[unit.id]?.children)[
+                              item.label as UnitType
+                            ]
+                            return (
+                              count > 0 && (
+                                <Box display='flex' alignItems='center' gap={1} key={item.label}>
+                                  <Box component='img' src={item.icon} alt={item.label} width={20} />
+                                  <Typography variant='body2'>{count}</Typography>
+                                </Box>
+                              )
+                            )
+                          })}
+                        </Flex>
+                      </Stack>
                     </Box>
                     <Collapse in={expandModuleList.includes(unit.id)} timeout='auto' unmountOnExit>
                       <Divider />
@@ -144,7 +132,14 @@ export const BasicPlanStudent = ({ lessonPlan }: BasicPlanStudentProps) => {
                           </Box>
                         )}
                         {mappedChildrenUnitByParent[unit.id]?.children.map((child) => {
-                          return <ContentItem unit={child} key={child.id} />
+                          return (
+                            <Box
+                              key={child.id}
+                              sx={{ px: 2, bgcolor: Number(unitId) === child.id ? primary[100] : 'transparent' }}
+                            >
+                              <ContentItem unit={child} />
+                            </Box>
+                          )
                         })}
                       </Stack>
                     </Collapse>

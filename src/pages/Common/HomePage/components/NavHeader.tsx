@@ -176,7 +176,7 @@ export function NavHeader() {
   }
 
   return (
-    <Flex position='fixed' width='100vw' bgcolor='white' zIndex={999} boxShadow={3}>
+    <Flex position='fixed' width='100vw' bgcolor='white' zIndex={999} boxShadow={2}>
       <Container sx={{ my: 2 }}>
         <Flex component='form' onSubmit={handleSubmit} justifyContent='space-between' alignItems='center' gap={4}>
           <Logo />

@@ -1,11 +1,10 @@
-import { Button, Container, Grid } from '@mui/material'
+import { Container, Grid } from '@mui/material'
 import { AssignmentContent, SubmissionContent } from './containers'
 import { useParams } from 'react-router-dom'
 import { assignmentKeys } from '@/services/assignment/assignment.query'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/hooks'
 import { RoleEnum } from '@/services/auth/auth.dto'
-import { ArrowBackRounded } from '@mui/icons-material'
 import { NotFound } from '@/components'
 
 export const AssignmentPage = () => {
@@ -18,10 +17,6 @@ export const AssignmentPage = () => {
     enabled: Boolean(assignmentId),
   })
 
-  const handleBack = () => {
-    window.history.back()
-  }
-
   if (!assignment && isFetchedAssignment) {
     return <NotFound />
   }
@@ -29,10 +24,7 @@ export const AssignmentPage = () => {
   return (
     profile &&
     assignment && (
-      <Container>
-        <Button startIcon={<ArrowBackRounded />} color='secondary' onClick={handleBack} sx={{ mb: 1 }}>
-          Back
-        </Button>
+      <Container sx={{ py: 3 }}>
         <Grid container spacing={4}>
           <Grid item xs={profile.data.role === RoleEnum.Student ? 8 : 12}>
             <AssignmentContent assignment={assignment} />

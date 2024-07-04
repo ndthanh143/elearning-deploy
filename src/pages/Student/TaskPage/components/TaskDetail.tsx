@@ -1,15 +1,14 @@
 import { icons } from '@/assets/icons'
-import { ConfirmPopup, CustomModal, Dropzone, Flex, IconContainer, Loading } from '@/components'
+import { ConfirmPopup, CustomModal, Dropzone, Flex, IconContainer } from '@/components'
 import { useAlert, useBoolean } from '@/hooks'
 import { fileService } from '@/services/file/file.service'
 import { GroupTask } from '@/services/groupTask/dto'
+import { groupTaskKeys } from '@/services/groupTask/query'
 import { taskSubmissionService } from '@/services/taskSubmission'
-import { GetListSubmissionResponse } from '@/services/taskSubmission/dto'
-import { taskSubmissionKeys } from '@/services/taskSubmission/query'
 import { gray, primary } from '@/styles/theme'
 import { getAbsolutePathFile } from '@/utils'
 import { Box, Button, Chip, Divider, Stack, Typography } from '@mui/material'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 interface ITaskDetailProps {
   isOpen: boolean
@@ -28,21 +27,12 @@ export const TaskDetail = ({ isOpen, onClose, data }: ITaskDetailProps) => {
   const [file, setFile] = useState<File | null>(null)
   const { value: isOpenConfirm, setTrue: openConfirm, setFalse: closeConfirm } = useBoolean(false)
 
-  const taskSubmissionInstance = taskSubmissionKeys.list({ groupTaskId: data.id })
-  const {
-    data: taskSubmission,
-    refetch: refetchTaskSubmission,
-    isFetched: isFetchedTaskSubmission,
-    isFetching: isFetchingTaskSubmission,
-  } = useQuery({
-    ...taskSubmissionInstance,
-    enabled: Boolean(data.id),
-  })
+  const taskSubmission = data.taskSubmissionInfo
 
   const { mutate: mutateSubmitTask } = useMutation({
     mutationFn: taskSubmissionService.submit,
     onSuccess: () => {
-      refetchTaskSubmission()
+      queryClient.invalidateQueries({ queryKey: groupTaskKeys.lists() })
       onClose()
       triggerAlert('Submit successfully!')
     },
@@ -64,12 +54,7 @@ export const TaskDetail = ({ isOpen, onClose, data }: ITaskDetailProps) => {
   const { mutate: mutateDeleteSubmission } = useMutation({
     mutationFn: taskSubmissionService.delete,
     onSuccess: () => {
-      queryClient.setQueryData(taskSubmissionInstance.queryKey, (oldData: GetListSubmissionResponse['data']) => {
-        return {
-          ...oldData,
-          content: oldData.content.filter((item: any) => item.id !== taskSubmission?.content[0].id),
-        }
-      })
+      queryClient.invalidateQueries({ queryKey: groupTaskKeys.lists() })
       triggerAlert('Remove successfully!')
     },
     onError: () => {
@@ -87,11 +72,11 @@ export const TaskDetail = ({ isOpen, onClose, data }: ITaskDetailProps) => {
       URL.revokeObjectURL(url)
     }
 
-    if (taskSubmission?.content[0]) {
-      const url = getAbsolutePathFile(taskSubmission?.content[0].fileUrl) || ''
+    if (taskSubmission) {
+      const url = getAbsolutePathFile(taskSubmission.fileUrl) || ''
       const a = document.createElement('a')
       a.href = url
-      a.download = taskSubmission?.content[0].fileUrl
+      a.download = taskSubmission.fileUrl
       a.click()
       URL.revokeObjectURL(url)
     }
@@ -102,8 +87,8 @@ export const TaskDetail = ({ isOpen, onClose, data }: ITaskDetailProps) => {
       setFile(null)
     }
 
-    if (taskSubmission?.content[0]) {
-      mutateDeleteSubmission(taskSubmission?.content[0].id)
+    if (taskSubmission) {
+      mutateDeleteSubmission(taskSubmission.id)
     }
 
     closeConfirm()
@@ -114,8 +99,6 @@ export const TaskDetail = ({ isOpen, onClose, data }: ITaskDetailProps) => {
       mutateUploadFile({ file: file as any, type: 'SUBMISSION_FILE' })
     }
   }
-
-  console.log('taskSubmission?.content[0]', taskSubmission?.content[0])
 
   return (
     <>
@@ -154,16 +137,12 @@ export const TaskDetail = ({ isOpen, onClose, data }: ITaskDetailProps) => {
           <Flex gap={1}>
             {icons['resource']}
             <Typography variant='body2' fontWeight={700}>
-              {file ? 'Your answer' : 'Upload your answer'}
+              Your answer
             </Typography>
           </Flex>
-          {isFetchingTaskSubmission && (
-            <Flex width='100%' py={4}>
-              <Loading />
-            </Flex>
-          )}
-          {isFetchedTaskSubmission && !file && !taskSubmission?.content[0] && <Dropzone onFileChange={setFile} />}
-          {(file || taskSubmission?.content[0]) && (
+
+          {!file && !taskSubmission && <Dropzone onFileChange={setFile} />}
+          {(file || taskSubmission) && (
             <Stack gap={2}>
               <Box
                 border={1}
@@ -180,7 +159,7 @@ export const TaskDetail = ({ isOpen, onClose, data }: ITaskDetailProps) => {
                   </IconContainer>
                   <Stack>
                     <Typography variant='body2' fontWeight={700}>
-                      {file?.name || getFileName(taskSubmission?.content[0].fileUrl || '')}
+                      {file?.name || getFileName(taskSubmission?.fileUrl || '')}
                     </Typography>
                     {file && (
                       <Typography variant='body2' color={gray[400]}>

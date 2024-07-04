@@ -1,6 +1,6 @@
 import { Flex } from '@/components'
 import { Box, Typography, IconButton, Slider, Stack } from '@mui/material'
-import { grey } from '@mui/material/colors'
+import { grey, red } from '@mui/material/colors'
 import { useRef, useEffect, useState } from 'react'
 import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
@@ -24,28 +24,42 @@ interface IVideoPlayerProps {
   }
   title: string
   onReady?: (player: any) => void
-  onProgress?: () => void
-}
-
-const formatTime = (time: number) => {
-  const hours = Math.floor(time / 3600)
-  const minutes = Math.floor((time % 3600) / 60)
-  const seconds = Math.floor(time % 60)
-  return `${hours > 0 ? `${hours}:` : ''}${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+  onTracking?: () => void
 }
 
 export const VideoPlayer = (props: IVideoPlayerProps) => {
   const videoRef = useRef<HTMLDivElement | null>(null)
   const playerRef = useRef<any | null>(null)
-  const { options, title, onReady, onProgress } = props
-  const [hovered, setHovered] = useState(false)
+  const { options, title, onReady, onTracking = () => {} } = props
+  const [_, setHovered] = useState(false)
   const [playing, setPlaying] = useState(false)
   const [volume, setVolume] = useState(1)
   const [muted, setMuted] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [fullscreen, setFullscreen] = useState(false)
-  const [tracked, setTracked] = useState(false)
+  const [showIcon, setShowIcon] = useState(false)
+
+  const setTotalWatchTimeToStorage = (total: number) => {
+    localStorage.setItem('totalWatchTime', JSON.stringify(total))
+  }
+
+  const getTotalWatchTimeFromStorage = () => {
+    return Number(JSON.parse(localStorage.getItem('totalWatchTime') || '0'))
+  }
+
+  const setTrackedToStorage = (tracked: boolean) => {
+    localStorage.setItem('tracked', JSON.stringify(tracked))
+  }
+
+  const getTrackedFromStorage = () => {
+    return Boolean(JSON.parse(localStorage.getItem('tracked') || ''))
+  }
+
+  useEffect(() => {
+    setTrackedToStorage(false)
+    localStorage.removeItem('totalWatchTime')
+  }, [])
 
   useEffect(() => {
     if (videoRef.current && !playerRef.current) {
@@ -61,28 +75,27 @@ export const VideoPlayer = (props: IVideoPlayerProps) => {
       }))
 
       player.on('timeupdate', () => {
-        const currentTime = player.currentTime() || 0
-        setCurrentTime(currentTime)
+        setCurrentTime(player.currentTime() || 0)
 
-        if (onProgress && !tracked && currentTime >= (player.duration() || 0 * 1) / 10) {
-          onProgress()
-          setTracked(true)
+        const totalWatchTime = player.currentTime() || 0
+
+        setTotalWatchTimeToStorage(totalWatchTime)
+
+        if (!getTrackedFromStorage() && getTotalWatchTimeFromStorage() >= (3 / 4) * duration && duration > 0) {
+          onTracking()
+          setTrackedToStorage(true)
         }
       })
 
       player.on('durationchange', () => {
         setDuration(player.duration() || 0)
       })
-
-      player.on('fullscreenchange', () => {
-        setFullscreen(!!player.isFullscreen())
-      })
     } else if (playerRef.current) {
       const player = playerRef.current
       player.autoplay(options.autoplay)
       player.src(options.sources)
     }
-  }, [options, onReady, onProgress])
+  }, [options, onReady])
 
   useEffect(() => {
     const player = playerRef.current
@@ -141,7 +154,14 @@ export const VideoPlayer = (props: IVideoPlayerProps) => {
       } else {
         player.requestFullscreen()
       }
+      setFullscreen(!fullscreen)
     }
+  }
+
+  const handleClick = () => {
+    handlePlayPause()
+    setShowIcon(true)
+    setTimeout(() => setShowIcon(false), 1000) // Show icon for 1 second
   }
 
   return (
@@ -156,11 +176,11 @@ export const VideoPlayer = (props: IVideoPlayerProps) => {
       }}
       width='100%'
       height={600}
-      borderRadius={4}
       alignItems='center'
       justifyContent='center'
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={handleClick} // Handle click on the video screen
     >
       <Box
         sx={{
@@ -178,59 +198,118 @@ export const VideoPlayer = (props: IVideoPlayerProps) => {
           sx={{ height: '100%', width: 'auto', aspectRatio: 16 / 9 }}
         />
       </Box>
+      {showIcon && (
+        <Flex
+          sx={{
+            justifyContent: 'center',
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            bgcolor: 'rgba(0,0,0,0.4)',
+            borderRadius: '100%',
+            width: 100,
+            height: 100,
+            transform: 'translate(-50%, -50%)',
+            animation: 'fade-in-out 1s ease-in-out', // Animation for the icon
+          }}
+        >
+          {playing ? (
+            <PauseIcon sx={{ fontSize: 60, color: 'white' }} />
+          ) : (
+            <PlayArrowIcon sx={{ fontSize: 60, color: 'white' }} />
+          )}
+        </Flex>
+      )}
       <Stack
         className='hover-overlay'
         sx={{
           position: 'absolute',
           inset: 0,
           color: 'white',
-          opacity: hovered || fullscreen ? 1 : 0,
+          opacity: 0,
           justifyContent: 'space-between',
           transition: 'opacity 0.3s ease-in-out',
-          zIndex: fullscreen ? 1 : 'auto',
         }}
       >
         <Box px={4} pt={2}>
           <Typography variant='h6'>{title}</Typography>
         </Box>
-        <Box px={4} pb={2}>
+        <Stack px={4}>
           <Slider
             value={currentTime}
-            onChange={handleTimeChange}
+            min={0}
             max={duration}
             step={1}
-            sx={{ width: '100%', py: 1 }}
-            color='primary'
+            onChange={handleTimeChange}
+            sx={{
+              width: '100%',
+              color: 'white',
+              '& .MuiSlider-thumb': {
+                display: 'none', // Hides the track
+              },
+              '& .MuiSlider-track': {
+                height: 2,
+                bgcolor: red[500],
+                borderColor: red[500],
+              },
+              '& .MuiSlider-rail': {
+                height: 2,
+              },
+            }}
           />
-          <Stack direction='row' justifyContent='space-between' alignItems='center' gap={4}>
-            <Stack direction='row' spacing={2} alignItems='center'>
-              <IconButton onClick={handlePlayPause} color='inherit' sx={{ padding: 0 }}>
-                {playing ? <PauseIcon /> : <PlayArrowIcon />}
+          <Flex justifyContent='space-between'>
+            <Flex
+              justifyContent='start'
+              alignItems='center'
+              sx={{
+                ':hover': {
+                  '.volume-slider': {
+                    width: '100px',
+                    visibility: 'visible',
+                  },
+                },
+              }}
+            >
+              <IconButton onClick={handlePlayPause} size='small' sx={{ ml: -1.5 }}>
+                {playing ? <PauseIcon sx={{ color: 'white' }} /> : <PlayArrowIcon sx={{ color: 'white' }} />}
               </IconButton>
-              <IconButton onClick={handleMuteToggle} color='inherit'>
-                {muted ? <VolumeOffIcon /> : <VolumeUpIcon />}
+              <IconButton onClick={handleMuteToggle}>
+                {muted ? <VolumeOffIcon sx={{ color: 'white' }} /> : <VolumeUpIcon sx={{ color: 'white' }} />}
               </IconButton>
-              <Box width={60}>
-                <Slider
-                  value={volume}
-                  onChange={handleVolumeChange}
-                  step={0.1}
-                  min={0}
-                  max={1}
-                  color='primary'
-                  sx={{ py: 0.5 }}
-                />
-              </Box>
-              <Typography variant='body2' whiteSpace='nowrap'>
-                {formatTime(currentTime)} / {formatTime(duration)}
-              </Typography>
-            </Stack>
-            <IconButton onClick={handleToggleZoom} color='inherit'>
-              {fullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+              <Slider
+                className='volume-slider'
+                value={volume}
+                min={0}
+                max={1}
+                step={0.01}
+                onChange={handleVolumeChange}
+                sx={{
+                  transition: 'all 0.2s ease-in-out',
+                  visibility: 'hidden',
+                  width: 0,
+                  color: 'white',
+                  ml: 2,
+                  '& .MuiSlider-thumb': {
+                    height: 10,
+                    width: 10,
+                  },
+                  '& .MuiSlider-track': {
+                    height: 2,
+                  },
+                  '& .MuiSlider-rail': {
+                    height: 2,
+                  },
+                }}
+              />
+            </Flex>
+            <IconButton onClick={handleToggleZoom} sx={{ mr: -1 }} size='small'>
+              {fullscreen ? <FullscreenExitIcon sx={{ color: 'white' }} /> : <FullscreenIcon sx={{ color: 'white' }} />}
             </IconButton>
-          </Stack>
-        </Box>
+          </Flex>
+        </Stack>
       </Stack>
     </Flex>
   )
 }
+
+export default VideoPlayer

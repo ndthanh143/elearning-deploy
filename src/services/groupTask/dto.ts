@@ -1,6 +1,7 @@
 import { BasePaginationResponse, BaseResponse } from '../common/base.dto'
 import { Group } from '../group/dto'
 import { Task } from '../task/dto'
+import { TaskSubmission } from '../taskSubmission/dto'
 
 export type GetListGroupTaskResponse = BasePaginationResponse<GroupTask[]>
 export type GetGroupTaskResponse = BaseResponse<GroupTask>
@@ -27,4 +28,5 @@ export interface GroupTask {
   endDate: string
   taskInfo: Task
   groupInfo: Group
+  taskSubmissionInfo?: TaskSubmission
 }

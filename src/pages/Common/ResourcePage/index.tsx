@@ -1,16 +1,14 @@
 import { icons } from '@/assets/icons'
 import { Flex, Loading, NoData, PDFViewer } from '@/components'
 import { configs } from '@/configs'
-import { useAlert } from '@/hooks'
 import { resourceKey } from '@/services/resource/query'
-import { ArrowBackRounded } from '@mui/icons-material'
-import { Button, Card, CardContent, Container, Typography } from '@mui/material'
+import { Box, Card, CardContent, Container, Stack, Typography } from '@mui/material'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { VideoPlayer } from './VideoPlayer'
 import videojs from 'video.js'
-import { getAbsolutePathFile } from '@/utils'
+import { formatDate, getAbsolutePathFile } from '@/utils'
 import { unitService } from '@/services/unit'
 
 const trackingUrl = (url: string) => {
@@ -18,7 +16,6 @@ const trackingUrl = (url: string) => {
 }
 
 export function ResourcePage() {
-  const { triggerAlert } = useAlert()
   const { resourceId, unitId, courseId } = useParams()
 
   const resourceInstance = resourceKey.detail(Number(resourceId))
@@ -34,10 +31,6 @@ export function ResourcePage() {
 
   const handleLastPage = () => {
     mutateTracking({ unitId: Number(unitId), courseId: Number(courseId) })
-  }
-
-  const handleBackPage = () => {
-    window.history.back()
   }
 
   const videoSrc = resource?.state === 'DONE' ? resource?.urlDocument : getAbsolutePathFile(resource?.urlDocument || '')
@@ -72,7 +65,7 @@ export function ResourcePage() {
 
   const handleTracking = () => {
     mutateTracking({ unitId: Number(unitId), courseId: Number(courseId) })
-    triggerAlert('tracking')
+    // triggerAlert('tracking')
   }
 
   if (isLoadingResource)
@@ -85,11 +78,7 @@ export function ResourcePage() {
   return (
     isFetchedResource &&
     (resource ? (
-      <Container maxWidth='lg'>
-        <Button startIcon={<ArrowBackRounded />} color='secondary' sx={{ mb: 2 }} onClick={handleBackPage}>
-          Back
-        </Button>
-
+      <Box>
         {resource.urlDocument.includes('.pdf') && (
           <Card elevation={0}>
             <CardContent>
@@ -102,17 +91,25 @@ export function ResourcePage() {
           </Card>
         )}
         {resource.urlDocument.includes('VIDEO') && (
-          <>
-            {resource.state === 'PROCESSING' && <Typography>Video Processing...</Typography>}
+          <Stack gap={4}>
+            {/* {resource.state === 'PROCESSING' && <Typography>Video Processing...</Typography>} */}
             <VideoPlayer
               options={videoJsOptions}
               onReady={handlePlayerReady}
               title={resource.title}
-              onProgress={handleTracking}
+              onTracking={handleTracking}
             />
-          </>
+            <Container maxWidth='lg'>
+              <Typography variant='h2' fontWeight={700}>
+                {resource.title}
+              </Typography>
+              <Typography variant='body2' color='#333'>
+                Last updated on {formatDate.toText(new Date())}
+              </Typography>
+            </Container>
+          </Stack>
         )}
-      </Container>
+      </Box>
     ) : (
       <NoData title='No Resource Found' />
     ))

@@ -1,13 +1,11 @@
 import { useEffect } from 'react'
-import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom'
-import { Flex, Header, IconContainer } from '..'
+import { Outlet, useNavigate, useParams } from 'react-router-dom'
+import { Flex } from '..'
 import { useQuery } from '@tanstack/react-query'
 import { courseKeys } from '@/services/course/course.query'
-import { Box, Drawer, Grid, Stack } from '@mui/material'
-import { BasicPlanStudent } from '@/pages/Common/CourseDetailPage/containers'
+import { Box, Stack } from '@mui/material'
 import { useAuth, useBoolean } from '@/hooks'
-import { ArrowBackRounded, ArrowForwardRounded } from '@mui/icons-material'
-import { primary } from '@/styles/theme'
+import { LessonLayoutHeader, SideContentCourse } from './components'
 
 export function LessonLayout() {
   const navigate = useNavigate()
@@ -17,15 +15,7 @@ export function LessonLayout() {
   const courseInstance = courseKeys.detail(Number(courseId))
   const { data: course } = useQuery(courseInstance)
 
-  const { value: isOpenDrawer, setFalse: closeDrawer, setTrue: openDrawer } = useBoolean(false)
-
-  const { pathname } = useLocation()
-
-  useEffect(() => {
-    if (pathname) {
-      closeDrawer()
-    }
-  }, [pathname])
+  const { value: isOpenSideContent, toggle: toggleSideContent } = useBoolean(false)
 
   useEffect(() => {
     const pathname = window.location.href.replace(window.location.origin, '')
@@ -46,48 +36,30 @@ export function LessonLayout() {
   }, [profile])
 
   return (
-    <Box bgcolor='#F8F4FE' minHeight='100vh'>
-      <Header />
-      <Grid container mt={4} pb={4}>
-        <Grid item xs={12}>
+    <Stack bgcolor='#F8F4FE' height='100vh' width='100vw' sx={{ overflowY: 'hidden' }}>
+      <Box flex={1}>
+        <LessonLayoutHeader toggleSideContent={toggleSideContent} course={course} />
+      </Box>
+      <Flex height='100%'>
+        <Stack height='100%' maxWidth='100vw' sx={{ overflowY: 'scroll' }} flex={1} pb={8}>
           <Outlet />
-        </Grid>
-        {/* <Grid item xs={3}> */}
-
-        {/* </Grid> */}
-      </Grid>
-      <Drawer open={isOpenDrawer} anchor='right' onClose={closeDrawer}>
-        <Stack gap={2} px={2} pt={2} minWidth={400}>
-          <IconContainer isActive onClick={closeDrawer} sx={{ width: 'fit-content' }}>
-            <ArrowForwardRounded fontSize='small' />
-          </IconContainer>
-          {course && <BasicPlanStudent lessonPlan={course.lessonPlanInfo} />}
         </Stack>
-      </Drawer>
-
-      <Flex
-        sx={{
-          borderTopLeftRadius: 40,
-          borderBottomLeftRadius: 40,
-          bgcolor: primary[500],
-          width: 'fit-content',
-          color: 'white',
-          px: 1,
-          py: 1,
-          position: 'fixed',
-          top: '20%',
-          right: 0,
-          overflow: 'hidden',
-          cursor: 'pointer',
-          opacity: 0.7,
-          ':hover': {
-            opacity: 1,
-          },
-        }}
-        onClick={openDrawer}
-      >
-        <ArrowBackRounded fontSize='small' sx={{ color: 'white' }} />
+        <Stack
+          gap={2}
+          pt={1}
+          width={isOpenSideContent ? 3 / 12 : 0}
+          overflow='hidden'
+          height='100%'
+          px={isOpenSideContent ? 1 : 0}
+          sx={{
+            visibility: isOpenSideContent ? 'visible' : 'hidden',
+            opacity: isOpenSideContent ? 1 : 0,
+            transition: 'all 0.2s ease-in-out',
+          }}
+        >
+          {course && <SideContentCourse lessonPlan={course.lessonPlanInfo} />}
+        </Stack>
       </Flex>
-    </Box>
+    </Stack>
   )
 }
