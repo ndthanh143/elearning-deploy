@@ -50,7 +50,7 @@ import { QuizReview } from './pages/Common/QuizPage/containers'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { AdminLayout } from './components/layout/AdminLayout'
-import { Dashboard, UserManagement } from './pages/Admin'
+import { AdminCourseManagementPage, AdminLoginManagement, Dashboard, UserManagement } from './pages/Admin'
 import { ReactFlowProvider } from 'reactflow'
 import { PlanningDetailPage } from './pages/Teacher/PlanningDetailPage'
 import { AuthLayout, CoursesPageLayout, PublicLayout } from './components/layout'
@@ -246,6 +246,7 @@ const router = createBrowserRouter([
       </AuthLayout>
     ),
   },
+
   {
     path: 'admin',
     element: <AdminLayout />,
@@ -258,7 +259,15 @@ const router = createBrowserRouter([
         path: 'users',
         element: <UserManagement />,
       },
+      {
+        path: 'courses',
+        element: <AdminCourseManagementPage />,
+      },
     ],
+  },
+  {
+    path: '/admin/login',
+    element: <AdminLoginManagement />,
   },
   {
     path: 'planning',

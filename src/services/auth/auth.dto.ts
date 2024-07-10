@@ -17,7 +17,7 @@ export type AuthLoginData = {
 }
 
 export type LoginAdminPayload = {
-  email: string
+  username: string
   password: string
 }
 

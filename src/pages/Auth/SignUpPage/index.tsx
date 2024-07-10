@@ -43,7 +43,7 @@ export const SignUpPage = () => {
               <Box width={100} height={100}>
                 {icons['education']}
               </Box>
-              <Typography variant='h4'>Start using Edpuzzle, stop boring classes in their tracks.</Typography>
+              <Typography variant='h4'>Start using Brainstone, stop boring classes in their tracks.</Typography>
             </Stack>
             <Flex gap={2}>
               <Button
@@ -66,8 +66,8 @@ export const SignUpPage = () => {
               </IconButton>
               <Typography variant='h6' maxWidth={380} textAlign='center'>
                 {mode === 'teacher'
-                  ? 'Hi, teacher! Level up your lessons with Edpuzzle.'
-                  : 'Join Edpuzzle and unleash the power of video learning!'}
+                  ? 'Hi, teacher! Level up your lessons with Brainstone.'
+                  : 'Join Brainstone and unleash the power of video learning!'}
               </Typography>
               <IconButton sx={{ visibility: 'hidden' }}>
                 <ArrowForwardOutlined />

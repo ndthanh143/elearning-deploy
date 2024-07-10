@@ -8,6 +8,8 @@ export const userKeys = {
   fullList: (query: any) => defineQuery([...userKeys.fullLists(), query], () => userService.getAll(query)),
   profiles: () => [...userKeys.all, 'profile'] as const,
   profile: () => defineQuery([...userKeys.profiles()], userService.getCurrentUser),
+  adminProfiles: () => [...userKeys.all, 'admin-profile'] as const,
+  adminProfile: () => defineQuery([...userKeys.adminProfiles()], userService.getAdminProfile),
   schedules: () => [...userKeys.all, 'schedule'] as const,
   schedule: () => defineQuery([...userKeys.schedules()], userService.getSchedule),
   members: () => [...userKeys.all, 'member'] as const,

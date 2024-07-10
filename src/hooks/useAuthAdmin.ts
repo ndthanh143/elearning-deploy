@@ -6,7 +6,7 @@ import { userKeys } from '../services/user/user.query'
 import { useState } from 'react'
 import { useActivityTracking, useBoolean } from '.'
 
-export const useAuth = () => {
+export const useAuthAdmin = () => {
   const queryClient = useQueryClient()
   const { handleOptOut } = useActivityTracking()
 
@@ -14,7 +14,7 @@ export const useAuth = () => {
 
   const { value: isAuthenticated, setTrue: setAuthenticated, setFalse: disableAuthenticated } = useBoolean()
 
-  const userInstance = userKeys.profile()
+  const userInstance = userKeys.adminProfile()
   const { data: profile, isLoading, refetch, isFetched } = useQuery({ ...userInstance, enabled: Boolean(accessToken) })
 
   const logout = () => {

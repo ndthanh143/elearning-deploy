@@ -78,7 +78,7 @@ export const QuizInfo = () => {
               <Typography>You haven't get attempt!</Typography>
             )}
           </Stack>
-          {(!quiz.attemptNumber || quiz.quizSubmissionInfo.length < quiz.attemptNumber) &&
+          {/* {(!quiz.attemptNumber || quiz.quizSubmissionInfo.length < quiz.attemptNumber) &&
             new Date(quiz.endDate) > new Date() &&
             new Date(quiz.startDate) < new Date() && (
               <>
@@ -87,8 +87,14 @@ export const QuizInfo = () => {
                   Start Quiz
                 </Button>
               </>
-            )}
-          {new Date(quiz.endDate) < new Date() && (
+            )} */}
+          <>
+            <Divider />
+            <Button variant='contained' onClick={handleStartQuiz} sx={{ my: 1 }}>
+              Start Quiz
+            </Button>
+          </>
+          {/* {new Date(quiz.endDate) < new Date() && (
             <>
               <Divider />
               <Typography textAlign='center' color={gray[500]}>
@@ -103,7 +109,7 @@ export const QuizInfo = () => {
                 This quiz is not open, please wait
               </Typography>
             </>
-          )}
+          )} */}
         </BoxContent>
         <ModalAttempts data={quiz.quizSubmissionInfo} onClose={closeAttempts} isOpen={isOpenAttempts} />
       </Container>

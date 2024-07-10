@@ -30,6 +30,11 @@ export const userService = {
 
     return data
   },
+  getAdminProfile: async () => {
+    const { data } = await axiosInstance.get<UserResponse>(`${BASE_USER_URL}/admin-profile`)
+
+    return data
+  },
   getSchedule: async () => {
     const { data } = await axiosInstance.get<ScheduleResponse>(`${BASE_USER_URL}/my-schedule`)
 

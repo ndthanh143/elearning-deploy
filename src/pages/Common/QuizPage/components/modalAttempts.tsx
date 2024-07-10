@@ -38,7 +38,7 @@ export const ModalAttempts = ({ data, isOpen, isReviewAble, onClose }: ModalAtte
               <TableCell align='center'>{Number(item.score).toFixed(2)}</TableCell>
               <TableCell align='right'>
                 <CustomTooltip title='Review your answers'>
-                  <Button variant='outlined' onClick={() => handleReviewAttempts(item.id)} disabled={!isReviewAble}>
+                  <Button variant='outlined' onClick={() => handleReviewAttempts(item.id)}>
                     <VisibilityOutlined />
                   </Button>
                 </CustomTooltip>

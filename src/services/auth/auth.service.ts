@@ -1,8 +1,10 @@
 import Cookies from 'js-cookie'
 
 import {
+  AuthLoginData,
   AuthLoginResponse,
   LoginAdminPayload,
+  LoginPayload,
   RequestForgotPasswordPayload,
   RequestForgotPasswordResponse,
   ResetPasswordPayload,
@@ -11,6 +13,8 @@ import {
   VerifyOtpResponse,
 } from './auth.dto'
 import axiosInstance from '../../axios'
+import { configs } from '@/configs'
+import axios from 'axios'
 
 const BASE_AUTH_URL = 'auth'
 const authService = {
@@ -32,12 +36,27 @@ const authService = {
     localStorage.clear()
   },
   loginAdmin: async (payload: LoginAdminPayload) => {
-    const { data } = await axiosInstance.post<AuthLoginResponse>(`${BASE_AUTH_URL}/login`, payload)
+    // Concatenate the client ID and secret
+    const encodedStr = `${'brainstone_admin_app_client'}:${'20110565brainstone'}`
 
-    Cookies.set('access_token', data.data.access_token)
+    // Encode the concatenated string to Base64
+    const encoded = btoa(encodedStr)
+
+    const { data } = await axios.post<AuthLoginData>(
+      `${configs.API_AUTH_URL}/api/token`,
+      { ...payload, grant_type: 'password' },
+      {
+        headers: {
+          Authorization: `Basic ${encoded}`,
+        },
+      },
+    )
+
+    Cookies.set('access_token', data.access_token)
 
     return data
   },
+
   signUp: async ({ type, payload }: { type: 'teacher' | 'student'; payload: SignUpPayload }) => {
     const routePath = type === 'teacher' ? 'teacher/signup' : 'student/signup'
     const { data } = await axiosInstance.post<AuthLoginResponse>(routePath, payload)
@@ -46,7 +65,7 @@ const authService = {
 
     return data.data
   },
-  login: async ({ type, payload }: { type: 'teacher' | 'student'; payload: LoginAdminPayload }) => {
+  login: async ({ type, payload }: { type: 'teacher' | 'student'; payload: LoginPayload }) => {
     const routePath = type === 'teacher' ? 'teacher/login' : 'student/login'
     const { data } = await axiosInstance.post<AuthLoginResponse>(routePath, payload)
 

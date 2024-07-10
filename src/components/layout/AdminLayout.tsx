@@ -15,7 +15,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks'
 import { useEffect, useState } from 'react'
-import { DashboardOutlined, LogoutOutlined, PeopleOutline } from '@mui/icons-material'
+import { DashboardOutlined, LogoutOutlined, PeopleOutline, PlayLessonRounded } from '@mui/icons-material'
 import { ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 
 const drawerWidth: number = 240
@@ -89,18 +89,23 @@ export const AdminLayout = () => {
       icon: <PeopleOutline color={pathname === '/admin/users' ? 'primary' : 'inherit'} />,
       href: '/admin/users',
     },
+    {
+      title: 'Users',
+      icon: <PlayLessonRounded color={pathname === '/admin/courses' ? 'primary' : 'inherit'} />,
+      href: '/admin/courses',
+    },
   ]
 
   useEffect(() => {
     if (!accessToken) {
-      navigate('/login', {
+      navigate('/admin/login', {
         state: {
           from: pathname,
         },
       })
     }
     if (!profile && isFetched) {
-      navigate('/login', {
+      navigate('/admin/login', {
         state: {
           from: pathname,
         },
