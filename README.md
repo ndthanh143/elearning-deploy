@@ -8,8 +8,8 @@ Brainstone is a project for a cross-platform online learning system.
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/en/download/package-manager) (version 18.x.x - 20.x.x)
-- pnpm (install globally if not already installed: `npm install -g pnpm`)
+- [Node.js](https://nodejs.org/en/download/package-manager) (version 18.x.x - 20.x.x) 💻
+- pnpm (install globally if not already installed: `npm install -g pnpm`) 📦
 
 ### Installation
 
@@ -60,12 +60,12 @@ pnpm start
 
 ## Technologies Used
 
-- [ReactJS](https://react.dev/)
-- [Vite](https://vitejs.dev/)
-- [Material-UI (MUI)](https://mui.com/)
-- [React Hook Form (Form handler)](https://react-hook-form.com/)
-- [Tanstack Query (v5)](https://tanstack.com/query/latest)
-- [React Flow](https://reactflow.dev/)
+- [ReactJS](https://react.dev/) ⚛️
+- [Vite](https://vitejs.dev/) ⚡️
+- [Material-UI (MUI)](https://mui.com/) 🎨
+- [React Hook Form (Form handler)](https://react-hook-form.com/) 📋
+- [Tanstack Query (v5)](https://tanstack.com/query/latest) 📊
+- [React Flow](https://reactflow.dev/) 🌀
 
 ## Environment Variables
 
@@ -88,7 +88,17 @@ VITE_API_AUTH_URL=
 
 To get the key of those variables, please call the owner of this project to get information !
 
+## Structure Diagram
+
+![Structure Diagram](/public/StructureDiagram.jpg)
+
 ## Author
 
-- Nguyen Duy Thanh - Frontend Developer
-- Truong Tan Phuc - Backend Developer
+👨‍💻 **Nguyen Duy Thanh** - Frontend Developer
+
+👨‍💻 **Truong Tan Phuc** - Backend Developer
+
+---
+
+Cheers 🍻🍻
+Happy Coding !
