@@ -18,3 +18,23 @@ export type GetListStudentCourseQuery = {
 export type EnrollPayload = {
   courseId: number
 }
+
+export type GetMyStudentQuery = {
+  courseId?: number
+  page?: number
+  size?: number
+}
+
+export type GetMyStudentResponse = BasePaginationResponse<MyStudentData[]>
+
+export type MyStudentData = {
+  studentId: number
+  fullName: string
+  email: string
+  avatarPath: string
+  totalUnit: number
+  totalUnitDone: number
+  courseId: number
+  courseName: string
+  joinDate: string
+}

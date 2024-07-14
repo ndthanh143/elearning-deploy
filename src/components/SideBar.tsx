@@ -77,6 +77,20 @@ export const SideBar = () => {
         ),
         href: '/planning',
       },
+      // {
+      //   title: 'Lesson',
+      //   icon: (
+      //     <CollectionsBookmarkRounded
+      //       fontSize='small'
+      //       sx={{
+      //         width: 22,
+      //         height: 22,
+      //         color: startsWith(pathname, '/lesson') ? 'primary.main' : '#404040',
+      //       }}
+      //     />
+      //   ),
+      //   href: '/lesson',
+      // },
       {
         title: 'Students',
         icon: (

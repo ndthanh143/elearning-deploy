@@ -3,6 +3,7 @@ import {
   AssignmentResponse,
   AssignmentsResponse,
   CreateAssignmentPayload,
+  GetAssignmentDetailParams,
   GetListAssignmentQuery,
   GetScheduleAssignmentResponse,
   GetScheduleQuery,
@@ -14,8 +15,13 @@ export const assignmentService = {
     const { data } = await axiosInstance.get<AssignmentsResponse>('/assignment/list', { params: { ...query } })
     return data.data
   },
-  getDetail: async (assignmentId: number) => {
-    const { data } = await axiosInstance.get<AssignmentResponse>(`/assignment/retrieve/${assignmentId}`)
+  getDetail: async (params: GetAssignmentDetailParams) => {
+    const { assignmentId, ...query } = params
+    const { data } = await axiosInstance.get<AssignmentResponse>(`/assignment/retrieve/${assignmentId}`, {
+      params: {
+        ...query,
+      },
+    })
 
     return data.data
   },

@@ -3,13 +3,17 @@ import axiosInstance from '@/axios'
 import {
   CreateResourcePayload,
   CreateTrackingResourcePayload,
+  GetResourceDetailParams,
   GetResourceResponse,
   UpdateResourcePayload,
 } from './resource.dto'
 
 export const resourceService = {
-  getResourceDetails: async (resourceId: number) => {
-    const { data } = await axiosInstance.get<GetResourceResponse>(`/resources/retrieve/${resourceId}`)
+  getResourceDetails: async (params: GetResourceDetailParams) => {
+    const { resourceId, ...query } = params
+    const { data } = await axiosInstance.get<GetResourceResponse>(`/resources/retrieve/${resourceId}`, {
+      params: query,
+    })
 
     return data.data
   },

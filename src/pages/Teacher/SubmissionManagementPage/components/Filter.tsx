@@ -1,7 +1,7 @@
 import { CustomSelect, Flex } from '@/components'
 import { Course } from '@/services/course/course.dto'
 
-export function Filter({ courses }: { courses: Course[] }) {
+export function Filter({ courses, onChangeCourse }: { courses: Course[]; onChangeCourse: (courseId: number) => void }) {
   const selectDataTypeSubmit = [
     {
       label: 'All',
@@ -26,6 +26,7 @@ export function Filter({ courses }: { courses: Course[] }) {
         }))}
         defaultValue={''}
         size='small'
+        onChange={(e) => onChangeCourse(e.target.value as number)}
       />
       <CustomSelect data={selectDataTypeSubmit} defaultValue={selectDataTypeSubmit[0].value} size='small' />
     </Flex>

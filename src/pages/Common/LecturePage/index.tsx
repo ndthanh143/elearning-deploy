@@ -40,7 +40,11 @@ export const LecturePage = () => {
     freezeOnceVisible: true,
   })
 
-  const lectureInstance = lectureKeys.detail(Number(lectureId))
+  const lectureInstance = lectureKeys.detail({
+    lectureId: Number(lectureId),
+    courseId: Number(courseId),
+    unitId: Number(unitId),
+  })
   const {
     data: lectureData,
     isFetched: isFetchedLecture,

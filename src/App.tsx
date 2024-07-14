@@ -31,6 +31,7 @@ import {
   CourseCertificatePage,
   SearchPage,
   CoursePublicPage,
+  LessonManagementPage,
 } from './pages'
 
 import 'react-big-calendar/lib/css/react-big-calendar.css'
@@ -143,6 +144,7 @@ const router = createBrowserRouter([
       { path: ':courseId/manage', element: <EditCoursePage /> },
     ],
   },
+  { path: 'lesson', element: <Layout />, children: [{ index: true, element: <LessonManagementPage /> }] },
   {
     path: 'planning',
     children: [

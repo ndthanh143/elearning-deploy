@@ -56,3 +56,9 @@ export type AssignmentSchedule = {
   unitId: number
   unitName: string
 }
+
+export type GetAssignmentDetailParams = {
+  assignmentId: number
+  courseId?: number
+  unitId?: number
+}

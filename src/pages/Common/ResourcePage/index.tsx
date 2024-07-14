@@ -18,7 +18,11 @@ const trackingUrl = (url: string) => {
 export function ResourcePage() {
   const { resourceId, unitId, courseId } = useParams()
 
-  const resourceInstance = resourceKey.detail(Number(resourceId))
+  const resourceInstance = resourceKey.detail({
+    resourceId: Number(resourceId),
+    unitId: Number(unitId),
+    courseId: Number(courseId),
+  })
   const {
     data: resource,
     isFetched: isFetchedResource,

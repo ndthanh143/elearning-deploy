@@ -11,7 +11,11 @@ export const AssignmentPage = () => {
   const { profile } = useAuth()
   const { assignmentId, courseId, unitId } = useParams()
 
-  const assignmentInstance = assignmentKeys.detail(Number(assignmentId))
+  const assignmentInstance = assignmentKeys.detail({
+    assignmentId: Number(assignmentId),
+    courseId: Number(courseId),
+    unitId: Number(unitId),
+  })
   const { data: assignment, isFetched: isFetchedAssignment } = useQuery({
     ...assignmentInstance,
     enabled: Boolean(assignmentId),

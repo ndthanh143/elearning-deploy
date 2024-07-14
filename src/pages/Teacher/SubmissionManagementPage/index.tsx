@@ -21,6 +21,7 @@ export const SubmissionManagementPage = () => {
           <Divider sx={{ bgcolor: 'primary.main', py: 0.5, borderRadius: 3, width: 200, mx: 'auto', my: 4 }} />
           <QuizSubmission courses={courses || []} />
         </Stack>
+        <Stack position='absolute'></Stack>
       </Stack>
     </Container>
   )

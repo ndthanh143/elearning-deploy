@@ -21,7 +21,6 @@ import { RightActionStudent } from './components'
 import 'reactflow/dist/style.css'
 import { EditRounded } from '@mui/icons-material'
 import { useAuth } from '@/hooks'
-import { StudentMindMapControl } from './StudentMindMapControl'
 
 const nodeTypes = {
   customNode: CourseCustomNodeComponent, // Define your custom node type

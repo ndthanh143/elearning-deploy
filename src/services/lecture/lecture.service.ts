@@ -2,13 +2,19 @@ import axiosInstance from '../../axios'
 import {
   CreateLecturePayload,
   CreateLectureTrackingPayload,
+  GetLectureDetailParams,
   LectureResponse,
   UpdateLecturePayload,
 } from './lecture.dto'
 
 export const lectureService = {
-  getById: async (lectureId: number) => {
-    const { data } = await axiosInstance.get<LectureResponse>(`/lecture/retrieve/${lectureId}`)
+  getById: async (params: GetLectureDetailParams) => {
+    const { lectureId, ...query } = params
+    const { data } = await axiosInstance.get<LectureResponse>(`/lecture/retrieve/${lectureId}`, {
+      params: {
+        ...query,
+      },
+    })
     return data.data
   },
   create: async (payload: CreateLecturePayload) => {

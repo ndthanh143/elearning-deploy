@@ -10,14 +10,15 @@ export type GetQuizScheduleResponse = BaseResponse<QuizSchedule[]>
 export type GetQuizStartQuery = {
   courseId: number
   id: number
+  unitId: number
 }
 
 export type Quiz = {
   attemptNumber: number
   description: string
   quizTitle: string
-  startDate: Date
-  endDate: Date
+  startDate?: Date
+  endDate?: Date
   quizTimeLimit: number
   unitInfo: Unit
   quizSubmissionInfo: QuizSubmission[]
@@ -90,4 +91,10 @@ export type QuizSchedule = {
   startDate: number
   unitId: number
   unitName: string
+}
+
+export type GetQuizDetailParams = {
+  courseId?: number
+  quizId: number
+  unitId?: number
 }

@@ -1,8 +1,10 @@
 import { defineQuery } from '../../utils'
+import { GetResourceDetailParams } from './resource.dto'
 import { resourceService } from './resource.service'
 
 export const resourceKey = {
   all: ['resource'] as const,
   details: () => [...resourceKey.all, 'detail'] as const,
-  detail: (id: number) => defineQuery([...resourceKey.details(), id], () => resourceService.getResourceDetails(id)),
+  detail: (params: GetResourceDetailParams) =>
+    defineQuery([...resourceKey.details(), params], () => resourceService.getResourceDetails(params)),
 }

@@ -1,8 +1,8 @@
-import { ConfirmPopup, CustomSelect, Flex } from '@/components'
+import { CustomSelect, Flex } from '@/components'
 import { courseKeys } from '@/services/course/course.query'
 import { gray } from '@/styles/theme'
 import { formatDate, getAbsolutePathFile } from '@/utils'
-import { CancelRounded, CheckRounded, DeleteOutline, EditOutlined } from '@mui/icons-material'
+import { CancelRounded, CheckRounded } from '@mui/icons-material'
 import {
   Avatar,
   IconButton,
@@ -21,7 +21,7 @@ import { useState } from 'react'
 const PAGE_SIZE = 10
 export function AdminCourseManagementPage() {
   const [page, setPage] = useState(1)
-  const courseInstance = courseKeys.myCourse()
+  const courseInstance = courseKeys.list({ page, size: PAGE_SIZE })
   const { data: courses } = useQuery({ ...courseInstance })
 
   const data = [
@@ -106,7 +106,7 @@ export function AdminCourseManagementPage() {
           onChange={(_, page) => setPage(page - 1)}
         />
       </Table>
-      <ConfirmPopup isOpen title='Accept Publish Course' subtitle='are you sure to allow to publish this course?' />
+      {/* <ConfirmPopup isOpen title='Accept Publish Course' subtitle='are you sure to allow to publish this course?' /> */}
     </Stack>
   )
 }

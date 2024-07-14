@@ -1,4 +1,4 @@
-import { Flex, Loading, NoData } from '@/components'
+import { CustomSelect, Flex, Loading, NoData } from '@/components'
 import { useBoolean } from '@/hooks'
 import { ReviewSubmissionText } from '@/pages/Common/AssignmentPage/components'
 import { Submission } from '@/services/assignmentSubmission/assignmentSubmission.dto'
@@ -10,7 +10,6 @@ import {
   Button,
   Card,
   CardContent,
-  Chip,
   IconButton,
   Pagination,
   Stack,
@@ -73,11 +72,11 @@ export const AssignmentSubmission = ({ courses }: { courses: Course[] }) => {
   const { value: isOpenEditScore, setTrue: openEditScore, setFalse: closeEditScore } = useBoolean(false)
   const { value: isOpenTextReview, setTrue: openTextReview, setFalse: closeTextReview } = useBoolean(false)
   const [selectedCourseId, setSelectedCourseId] = useState<number>()
-  const [selectedAssignmentId, _] = useState<number>()
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState<number>()
 
   const assignmentSubmissionInstance = assignmentSubmissionKeys.list({
     courseId: selectedAssignmentId,
-    assignmentId: selectedAssignmentId,
+    ...(selectedAssignmentId && { assignmentId: selectedAssignmentId }),
     page: page - 1,
     size: DEFAULT_PAGE_LIMIT,
   })
@@ -90,13 +89,11 @@ export const AssignmentSubmission = ({ courses }: { courses: Course[] }) => {
   } = useQuery({ ...assignmentSubmissionInstance })
 
   const assignmentsInstance = assignmentKeys.list({ courseId: selectedCourseId })
-  const { data: assignments } = useQuery({
+  const { data: assignments, refetch: refetchAssignments } = useQuery({
     ...assignmentsInstance,
     enabled: Boolean(selectedCourseId),
     select: (data) => data.content,
   })
-
-  console.log('assignments', assignments)
 
   const handleCloseReview = () => {
     setSelectedSubmission(null)
@@ -137,13 +134,19 @@ export const AssignmentSubmission = ({ courses }: { courses: Course[] }) => {
     }
   }, [courses])
 
+  useEffect(() => {
+    if (selectedCourseId) {
+      refetchAssignments()
+    }
+  }, [selectedCourseId])
+
   const headings = ['Student', 'Submit date', 'File', 'Link', 'Text', 'Score', 'Action']
 
   return (
     <Stack gap={2}>
       <Flex justifyContent='space-between'>
         <Typography fontWeight={700}>Assignment</Typography>
-        <Filter courses={courses} />
+        <Filter courses={courses} onChangeCourse={setSelectedCourseId} />
       </Flex>
       <Stack gap={4}>
         <Card sx={{ height: '100%' }} elevation={0}>
@@ -152,9 +155,23 @@ export const AssignmentSubmission = ({ courses }: { courses: Course[] }) => {
               <Typography variant='body2' fontWeight={700}>
                 List submissions
               </Typography>
-              <Button startIcon={icons['excel']} variant='outlined' onClick={handleExportToExcel}>
-                Export to Excel
-              </Button>
+              <Flex gap={2}>
+                <CustomSelect
+                  data={[
+                    { label: 'All', value: 'all' },
+                    ...(assignments
+                      ? assignments.map((item) => ({ label: item.assignmentTitle, value: item.id }))
+                      : []),
+                  ]}
+                  value={selectedAssignmentId || 'all'}
+                  size='small'
+                  onChange={(e) => setSelectedAssignmentId(Number(e.target.value) ? Number(e.target.value) : undefined)}
+                />
+
+                <Button startIcon={icons['excel']} variant='outlined' onClick={handleExportToExcel}>
+                  Export to Excel
+                </Button>
+              </Flex>
             </Flex>
             <Stack justifyContent='space-between' height='100%'>
               {isLoadingAssignmentSubmission ? (
@@ -231,7 +248,10 @@ export const AssignmentSubmission = ({ courses }: { courses: Course[] }) => {
                               </TableCell>
                               <TableCell align='right'>
                                 {submission.score ? (
-                                  <Chip color='primary' label={submission.score} />
+                                  // <Chip color='primary' label={submission.score} />
+                                  <Typography color={submission.score > 5 ? 'primary' : 'error'} fontWeight={700}>
+                                    {submission.score}
+                                  </Typography>
                                 ) : (
                                   <Tooltip title='No data'>
                                     <BlockOutlined />

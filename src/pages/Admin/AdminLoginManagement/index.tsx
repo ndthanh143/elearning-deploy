@@ -7,6 +7,8 @@ import authService from '@/services/auth/auth.service'
 import { useNavigate } from 'react-router-dom'
 import { LoginAdminPayload } from '@/services/auth/auth.dto'
 import { useAlert } from '@/hooks'
+import { useAuthAdmin } from '@/hooks/useAuthAdmin'
+import { useEffect } from 'react'
 
 const schema = yup.object().shape({
   username: yup.string().required('Username is required'),
@@ -14,6 +16,7 @@ const schema = yup.object().shape({
 })
 
 export function AdminLoginManagement() {
+  const { isAuthenticated } = useAuthAdmin()
   const { triggerAlert } = useAlert()
   const navigate = useNavigate()
   const {
@@ -37,6 +40,12 @@ export function AdminLoginManagement() {
   const onSubmit = (data: LoginAdminPayload) => {
     mutate(data)
   }
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/admin/dashboard')
+    }
+  }, [isAuthenticated])
 
   return (
     <Box

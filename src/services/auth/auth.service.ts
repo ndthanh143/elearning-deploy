@@ -16,7 +16,6 @@ import axiosInstance from '../../axios'
 import { configs } from '@/configs'
 import axios from 'axios'
 
-const BASE_AUTH_URL = 'auth'
 const authService = {
   loginGoogle: async ({ type, accessToken }: { type: 'teacher' | 'student'; accessToken: string }) => {
     const routePath = type === 'student' ? 'student/google/verify-token' : 'teacher/google/verify-token'
@@ -52,7 +51,7 @@ const authService = {
       },
     )
 
-    Cookies.set('access_token', data.access_token)
+    Cookies.set('admin_access_token', data.access_token)
 
     return data
   },

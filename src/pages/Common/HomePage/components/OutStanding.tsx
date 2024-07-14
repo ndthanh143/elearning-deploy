@@ -46,25 +46,25 @@ const ItemCard = ({
 
 const cardProps = [
   {
-    title: 'Online Billing, Invoicing, & Contracts',
+    title: 'Online Learning & Education for Students and Teachers',
     description:
-      'Simple and secure control of your organization’s financial and legal transactions. Send customized invoices and contracts',
+      'Simplify and securely manage your organization’s financial and legal transactions. Customize and send invoices and contracts.',
     icon: <CalendarMonthRounded color='primary' />,
-    color: 'green',
+    color: '#ededed',
   },
   {
     title: 'Easy Scheduling & Attendance Tracking',
     description:
-      'Schedule and reserve classrooms at one campus or multiple campuses. Keep detailed records of student attendance',
+      'Schedule and reserve classrooms across single or multiple campuses. Maintain detailed student attendance records.',
     icon: <CalendarMonthRounded color='primary' />,
-    color: 'orange',
+    color: '#ededed',
   },
   {
     title: 'Customer Tracking',
     description:
-      'Automate and track emails to individuals or groups. Skilline’s built-in system helps organize your organization ',
+      'Automate and track emails to individuals or groups. Brainstone’s integrated system helps streamline your organization.',
     icon: <CalendarMonthRounded color='primary' />,
-    color: 'blue',
+    color: '#ededed',
   },
 ]
 
@@ -74,12 +74,11 @@ export function OutStanding() {
       <Stack gap={8}>
         <Stack alignItems='center'>
           <Typography variant='h2' fontWeight={700} textAlign='center'>
-            <span style={{ color: '#2F327D' }}>All-In-One</span>{' '}
-            <span style={{ color: '#F48C06' }}>Cloud Software.</span>
+            <span style={{ color: '#2F327D' }}>All-In-One</span> <span style={{ color: '#F48C06' }}>Brainstone.</span>
           </Typography>
           <Typography variant='body1' color={gray[500]} textAlign='center' maxWidth={600}>
-            Skilline is one powerful online software suite that combines all the tools needed to run a successful school
-            or office.
+            Brainstone is a platform that provides a variety of features that will help you manage your educational
+            institution
           </Typography>
         </Stack>
         <Grid container spacing={4} width='100%'>

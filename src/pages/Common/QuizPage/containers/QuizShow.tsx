@@ -74,7 +74,7 @@ export const QuizShow = () => {
 
   const { value: isOpenConfirmSubmit, setTrue: openConfirmSubmit, setFalse: closeConfirmSubmit } = useBoolean(false)
 
-  const quizInstance = quizKey.start({ courseId: Number(courseId), id: Number(quizId) })
+  const quizInstance = quizKey.start({ courseId: Number(courseId), id: Number(quizId), unitId: Number(unitId) })
   const { data } = useQuery(quizInstance)
 
   const { mutate: mutateSubmit, isPending: isLoadingSubmit } = useMutation({

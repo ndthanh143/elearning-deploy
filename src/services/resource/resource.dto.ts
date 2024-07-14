@@ -30,3 +30,9 @@ export type CreateTrackingResourcePayload = {
   resourceId: number
   unitId: number
 }
+
+export type GetResourceDetailParams = {
+  courseId?: number
+  resourceId: number
+  unitId?: number
+}

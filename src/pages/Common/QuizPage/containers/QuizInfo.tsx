@@ -9,14 +9,18 @@ import { useParams } from 'react-router-dom'
 import { ModalAttempts } from '../components'
 
 export const QuizInfo = () => {
-  const { quizId, courseId } = useParams()
+  const { quizId, courseId, unitId } = useParams()
 
   const { setValue } = useLocalStorage<boolean>('quizStarted', false)
   const { setValue: setQuizTimer } = useLocalStorage('quiz-timer', Date.now())
 
   const { value: isOpenAttempts, setTrue: openAttempts, setFalse: closeAttempts } = useBoolean(false)
 
-  const quizInstance = quizKey.detail(Number(quizId), Number(courseId))
+  const quizInstance = quizKey.detail({
+    quizId: Number(quizId),
+    courseId: Number(courseId),
+    unitId: Number(unitId),
+  })
   const { data: quiz } = useQuery(quizInstance)
 
   const handleStartQuiz = () => {
@@ -50,11 +54,15 @@ export const QuizInfo = () => {
             </Stack>
             <Stack direction='row' gap={1}>
               <Typography>Open:</Typography>
-              <Typography fontWeight={500}>{formatDate.toDateTime(quiz.startDate)}</Typography>
+              <Typography fontWeight={500}>
+                {quiz.startDate ? formatDate.toDateTime(quiz.startDate) : 'Anytime'}
+              </Typography>
             </Stack>
             <Stack direction='row' gap={1}>
               <Typography>Close:</Typography>
-              <Typography fontWeight={500}>{formatDate.toDateTime(quiz.endDate)}</Typography>
+              <Typography fontWeight={500}>
+                {quiz.endDate ? formatDate.toDateTime(quiz.endDate) : 'No close'}
+              </Typography>
             </Stack>
           </Stack>
           <Divider />

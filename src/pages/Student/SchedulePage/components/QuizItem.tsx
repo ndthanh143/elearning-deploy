@@ -35,12 +35,15 @@ export const QuizItem = ({ isActive, onClick, quizData }: QuizItemProps) => {
         onClick={onClick}
       >
         <Stack direction='row' mb={1} alignItems='center' justifyContent='space-between'>
-          <Stack direction='row' gap={2} alignItems='center'>
-            <Box component='img' src={actions.quiz} width={30} height={30} />
-            <Typography variant='body2'>
-              {formatDate.toDateTime(quizData.quizInfo.startDate)} - {formatDate.toDateTime(quizData.quizInfo.endDate)}
-            </Typography>
-          </Stack>
+          {quizData.quizInfo.startDate && quizData.quizInfo.endDate && (
+            <Stack direction='row' gap={2} alignItems='center'>
+              <Box component='img' src={actions.quiz} width={30} height={30} />
+              <Typography variant='body2'>
+                {formatDate.toDateTime(quizData.quizInfo.startDate)} -{' '}
+                {formatDate.toDateTime(quizData.quizInfo.endDate)}
+              </Typography>
+            </Stack>
+          )}
           <IconButton onClick={onOpen}>
             <MoreHorizOutlined />
           </IconButton>

@@ -28,6 +28,34 @@ import dayjs from 'dayjs'
 import { ModalAddStudentToCourse } from '.'
 import { coursesRegistrationKeys } from '@/services/coursesRegistration/coursesRegistration.query'
 
+const Progress = ({ totalUnit, totalUnitDone }: { totalUnit: number; totalUnitDone: number }) => {
+  const isFinished = totalUnit > 0 && totalUnitDone === totalUnit
+  return (
+    <Stack>
+      <Flex justifyContent='space-between'>
+        <Chip
+          label={isFinished ? 'Completed' : 'In progress'}
+          size='small'
+          color={isFinished ? 'success' : 'primary'}
+        />
+        <Typography fontWeight={500} variant='body2'>
+          {((totalUnitDone / totalUnit) * 100).toFixed(0)}%
+        </Typography>
+      </Flex>
+      <Slider
+        value={(totalUnitDone / totalUnit) * 100}
+        color={totalUnitDone / totalUnit === 1 ? 'success' : 'primary'}
+        sx={{
+          py: 1,
+          '& .MuiSlider-thumb': {
+            display: 'none',
+          },
+        }}
+      />
+    </Stack>
+  )
+}
+
 const PAGE_SIZE = 5
 export function TableDataStudent() {
   const { profile } = useAuth()
@@ -43,7 +71,11 @@ export function TableDataStudent() {
   const coursesInstance = courseKeys.list({ teacherId: profile?.data.id })
   const { data: courses } = useQuery(coursesInstance)
 
-  const studentsInstance = coursesRegistrationKeys.list({ courseId: Number(selectedCourseId), page, size: PAGE_SIZE })
+  const studentsInstance = coursesRegistrationKeys.myStudent({
+    courseId: Number(selectedCourseId),
+    page,
+    size: PAGE_SIZE,
+  })
   const {
     data: students,
     isFetched: isFetchedStudents,
@@ -127,7 +159,7 @@ export function TableDataStudent() {
               ) : !!students?.content.length ? (
                 students?.content.map((student, index) => (
                   <TableRow
-                    key={student.id}
+                    key={student.studentId}
                     sx={{
                       '&:nth-of-type(odd)': {
                         backgroundColor: gray[50],
@@ -136,51 +168,30 @@ export function TableDataStudent() {
                         border: 0,
                       },
                     }}
-                    onClick={() => toggleRow(student.id)}
+                    onClick={() => toggleRow(student.studentId)}
                   >
                     <TableCell>
                       <Typography variant='body1'>{index + 1 + page * PAGE_SIZE}</Typography>
                     </TableCell>
                     <TableCell>
                       <Flex alignItems='center' gap={2}>
-                        <Avatar src={student.studentInfo.avatarPath} sizes='small'>
-                          {student.studentInfo.fullName.charAt(0)}
+                        <Avatar src={student.avatarPath} sizes='small'>
+                          {student.fullName.charAt(0)}
                         </Avatar>
                         <Stack>
-                          <Typography>{student.studentInfo.fullName}</Typography>
-                          <Typography variant='body2'>{student.studentInfo.email}</Typography>
+                          <Typography>{student.fullName}</Typography>
+                          <Typography variant='body2'>{student.email}</Typography>
                         </Stack>
                       </Flex>
                     </TableCell>
                     <TableCell>
-                      <Stack>
-                        <Flex justifyContent='space-between'>
-                          <Chip
-                            label={index % 2 === 0 ? 'In progress' : 'Completed'}
-                            size='small'
-                            color={index % 2 === 0 ? 'primary' : 'success'}
-                          />
-                          <Typography fontWeight={500} variant='body2'>
-                            {index % 2 === 0 ? '70%' : '100%'}
-                          </Typography>
-                        </Flex>
-                        <Slider
-                          value={index % 2 === 0 ? 70 : 100}
-                          color={index % 2 === 0 ? 'primary' : 'success'}
-                          sx={{
-                            py: 1,
-                            '& .MuiSlider-thumb': {
-                              display: 'none',
-                            },
-                          }}
-                        />
-                      </Stack>
+                      <Progress totalUnit={student.totalUnit} totalUnitDone={student.totalUnitDone} />
                     </TableCell>
-                    <TableCell>{dayjs(student.createDate).format('LLL')}</TableCell>
+                    <TableCell>{dayjs(student.joinDate).format('LLL')}</TableCell>
                     <TableCell>
                       <IconButton
                         onClick={() => {
-                          setSelectedStudent(student.id)
+                          setSelectedStudent(student.studentId)
                         }}
                       >
                         <DeleteOutline color='error' />
@@ -215,7 +226,7 @@ export function TableDataStudent() {
       {!!selectedStudent && (
         <ConfirmPopup
           isOpen={!!selectedStudent}
-          title='Delete student'
+          title='Remove student'
           subtitle='Are you sure to delete this student from course? this action cannot be revert'
           onClose={() => setSelectedStudent(null)}
           onAccept={handleDelete}

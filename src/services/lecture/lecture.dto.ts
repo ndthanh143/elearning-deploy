@@ -23,3 +23,9 @@ export type CreateLectureTrackingPayload = {
   lectureId: number
   unitId: number
 }
+
+export type GetLectureDetailParams = {
+  courseId?: number
+  lectureId: number
+  unitId?: number
+}

@@ -1,5 +1,5 @@
 import { defineQuery } from '../../utils'
-import { GetListStudentCourseQuery } from './coursesRegistration.dto'
+import { GetListStudentCourseQuery, GetMyStudentQuery } from './coursesRegistration.dto'
 import { coursesRegistrationService } from './coursesRegistration.service'
 
 export const coursesRegistrationKeys = {
@@ -8,5 +8,10 @@ export const coursesRegistrationKeys = {
   list: (query: GetListStudentCourseQuery) =>
     defineQuery([...coursesRegistrationKeys.lists(), query], () =>
       coursesRegistrationService.getCoursesRegistrationStudent(query),
+    ),
+  myStudents: () => [...coursesRegistrationKeys.all, 'my-student'] as const,
+  myStudent: (query: GetMyStudentQuery) =>
+    defineQuery([...coursesRegistrationKeys.myStudents(), query], () =>
+      coursesRegistrationService.getMyStudents(query),
     ),
 }

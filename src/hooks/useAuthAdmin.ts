@@ -1,16 +1,14 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import Cookies from 'js-cookie'
 
-import authService from '../services/auth/auth.service'
 import { userKeys } from '../services/user/user.query'
 import { useState } from 'react'
-import { useActivityTracking, useBoolean } from '.'
+import { useBoolean } from '.'
 
 export const useAuthAdmin = () => {
   const queryClient = useQueryClient()
-  const { handleOptOut } = useActivityTracking()
 
-  const [accessToken, _] = useState(Cookies.get('access_token'))
+  const [accessToken, _] = useState(Cookies.get('admin_access_token'))
 
   const { value: isAuthenticated, setTrue: setAuthenticated, setFalse: disableAuthenticated } = useBoolean()
 
@@ -18,14 +16,10 @@ export const useAuthAdmin = () => {
   const { data: profile, isLoading, refetch, isFetched } = useQuery({ ...userInstance, enabled: Boolean(accessToken) })
 
   const logout = () => {
-    handleOptOut()
-    authService.logout()
+    Cookies.remove('admin_access_token')
     disableAuthenticated()
     queryClient.setQueryData(userInstance.queryKey, null)
   }
-
-  const isStudent = profile?.data.role === 'Student'
-  const isTeacher = profile?.data.role === 'Teacher'
 
   return {
     accessToken,
@@ -36,7 +30,5 @@ export const useAuthAdmin = () => {
     setAuthenticated,
     isFetched,
     logout,
-    isStudent,
-    isTeacher,
   }
 }

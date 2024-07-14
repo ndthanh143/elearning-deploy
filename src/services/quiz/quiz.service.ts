@@ -2,6 +2,7 @@ import axiosInstance from '@/axios'
 import {
   CreateQuizPayload,
   GetListQuizQuery,
+  GetQuizDetailParams,
   GetQuizScheduleQuery,
   GetQuizScheduleResponse,
   GetQuizStartQuery,
@@ -16,10 +17,11 @@ export const quizService = {
     const { data } = await axiosInstance.get<QuizzesResponse>('/quiz/list', { params: { ...query } })
     return data.data
   },
-  getQuiz: async (quizId: number, courseId?: number) => {
+  getDetail: async (params: GetQuizDetailParams) => {
+    const { quizId, ...query } = params
     const { data } = await axiosInstance.get<QuizResponse>(`/quiz/retrieve/${quizId}`, {
       params: {
-        courseId,
+        ...query,
       },
     })
 

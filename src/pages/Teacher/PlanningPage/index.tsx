@@ -5,13 +5,13 @@ import { useAuth } from '@/hooks'
 import { lessonPlanKey } from '@/services/lessonPlan/lessonPlan.query'
 
 import { AddPlanSection, PlanCard } from './components'
-import { NoData } from '@/components'
+import { Flex, Loading, NoData } from '@/components'
 
 export const PlanningPage = () => {
   const { profile } = useAuth()
 
   const lessonPlanInstance = lessonPlanKey.list({ teacherId: profile?.data.id as number })
-  const { data, isFetched } = useQuery({ ...lessonPlanInstance, enabled: !!profile?.data.id })
+  const { data, isFetched, isFetching } = useQuery({ ...lessonPlanInstance, enabled: !!profile?.data.id })
 
   return (
     <Container sx={{ my: 2 }}>
@@ -33,6 +33,7 @@ export const PlanningPage = () => {
           ))}
         </Grid>
       </Stack>
+      <Flex justifyContent='center'>{isFetching && <Loading />}</Flex>
     </Container>
   )
 }
