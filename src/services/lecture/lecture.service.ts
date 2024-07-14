@@ -1,7 +1,9 @@
 import axiosInstance from '../../axios'
+import { unitService } from '../unit'
 import {
   CreateLecturePayload,
   CreateLectureTrackingPayload,
+  CreateLectureWithUnitPayload,
   GetLectureDetailParams,
   LectureResponse,
   UpdateLecturePayload,
@@ -19,6 +21,20 @@ export const lectureService = {
   },
   create: async (payload: CreateLecturePayload) => {
     const { data } = await axiosInstance.post<LectureResponse>('/lecture/create', payload)
+
+    return data.data
+  },
+  createWithUnit: async (payload: CreateLectureWithUnitPayload) => {
+    const { lessonPlanId, parentId, position, ...props } = payload
+    const { data } = await axiosInstance.post<LectureResponse>('/lecture/create', props)
+
+    await unitService.create({
+      lessonPlanId,
+      parentId,
+      position,
+      lectureId: data.data.id,
+      name: data.data.lectureName,
+    })
 
     return data.data
   },

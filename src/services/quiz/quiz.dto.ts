@@ -17,8 +17,8 @@ export type Quiz = {
   attemptNumber: number
   description: string
   quizTitle: string
-  startDate?: Date
-  endDate?: Date
+  startDate?: string
+  endDate?: string
   quizTimeLimit: number
   unitInfo: Unit
   quizSubmissionInfo: QuizSubmission[]
@@ -30,8 +30,8 @@ export type UpdateQuizPayload = {
   attemptNumber: number
   description?: string
   quizTitle: string
-  startDate: string
-  endDate: string
+  startDate?: string
+  endDate?: string
   quizTimeLimit: number
   isPublicAnswer: boolean
 }
@@ -63,13 +63,21 @@ export interface Answer {
 export type CreateQuizPayload = {
   attemptNumber: number
   description?: string
-  endDate: string
-  modulesId: number
+  endDate?: string
   quizTimeLimit: number
   quizTitle: string
-  startDate: string
+  startDate?: string
   isPublicAnswer: boolean
 }
+
+export type CreateQuizWithUnitPayload = {
+  lessonPlanId: number
+  parentId?: number
+  position?: {
+    x: number
+    y: number
+  }
+} & CreateQuizPayload
 
 export type GetListQuizQuery = {
   courseId?: number

@@ -27,7 +27,7 @@ export const PlanningPage = () => {
         )}
         <Grid container spacing={4}>
           {data?.content.map((plan) => (
-            <Grid item xs={3}>
+            <Grid item xs={12} md={6} lg={3}>
               <PlanCard data={plan} />
             </Grid>
           ))}

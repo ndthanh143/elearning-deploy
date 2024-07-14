@@ -37,7 +37,7 @@ import { toast } from 'react-toastify'
 import { lectureService } from '@/services/lecture/lecture.service'
 import { resourceService } from '@/services/resource/resource.service'
 import { Lecture } from '@/services/lecture/lecture.dto'
-import { Assignment } from '@/services/assignment/assignment.dto'
+import { Assignment, UpdateAssignmentPayload } from '@/services/assignment/assignment.dto'
 import { Resource } from '@/services/resource/resource.dto'
 import { ResourceActions } from '../modals/ResourceActions'
 import { Quiz } from '@/services/quiz/quiz.dto'
@@ -76,6 +76,7 @@ export const BasicPlanTeacher = ({ lessonPlanId }: BasicPlanTeacherProps) => {
   const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null)
   const [selectedResource, setSelectedResource] = useState<Resource | null>(null)
   const [selectedQuiz, setSelectedQuiz] = useState<Quiz | null>(null)
+  const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null)
 
   const {
     register,
@@ -123,6 +124,8 @@ export const BasicPlanTeacher = ({ lessonPlanId }: BasicPlanTeacherProps) => {
     mutateCreateSection({ name: data.name, description: data.description, lessonPlanId, parentId: lastUnit?.id })
   }
 
+  const { mutate: mutateUpdateUnit } = useMutation({ mutationFn: unitService.update })
+
   const { mutate: mutateUpdateLecture } = useMutation({
     mutationFn: lectureService.update,
     onSuccess: () => {
@@ -167,6 +170,15 @@ export const BasicPlanTeacher = ({ lessonPlanId }: BasicPlanTeacherProps) => {
     }
   }
 
+  const handleUpdateAssignment = (payload: UpdateAssignmentPayload) => {
+    const { startDate, endDate, ...props } = payload
+    mutateUpdateAssignment(props)
+
+    if ((startDate || endDate) && selectedUnit) {
+      mutateUpdateUnit({ id: selectedUnit.id, startDate: startDate, endDate: endDate })
+    }
+  }
+
   const handleEditItem = (item: Unit) => {
     if (item.lectureInfo) {
       setSelectedLecture(item.lectureInfo)
@@ -180,6 +192,7 @@ export const BasicPlanTeacher = ({ lessonPlanId }: BasicPlanTeacherProps) => {
     if (item.quizInfo) {
       setSelectedQuiz(item.quizInfo)
     }
+    setSelectedUnit(item)
   }
 
   const handleEditPlan = ({ lessonPlanName }: { lessonPlanName: string }) => {
@@ -314,7 +327,14 @@ export const BasicPlanTeacher = ({ lessonPlanId }: BasicPlanTeacherProps) => {
             Add sections
           </Button>
         </Stack>
-        {selectedQuiz && <QuizActions isOpen onClose={() => setSelectedQuiz(null)} defaultData={selectedQuiz} />}
+        {selectedQuiz && (
+          <QuizActions
+            isOpen
+            onClose={() => setSelectedQuiz(null)}
+            defaultData={{ ...selectedQuiz, startDate: selectedUnit?.startDate, endDate: selectedUnit?.endDate }}
+            unitId={selectedUnit?.id}
+          />
+        )}
         <ConfirmPopup
           title='Confirm delete'
           subtitle='Are you sure to delete this lesson plan?, this action will be undo.'
@@ -338,8 +358,12 @@ export const BasicPlanTeacher = ({ lessonPlanId }: BasicPlanTeacherProps) => {
           <AssignmentActions
             isOpen
             onClose={() => setSelectedAssignment(null)}
-            defaultData={selectedAssignment}
-            onUpdate={mutateUpdateAssignment}
+            defaultData={{
+              ...selectedAssignment,
+              startDate: selectedUnit?.startDate,
+              endDate: selectedUnit?.endDate,
+            }}
+            onUpdate={handleUpdateAssignment}
           />
         )}
         {selectedResource && (

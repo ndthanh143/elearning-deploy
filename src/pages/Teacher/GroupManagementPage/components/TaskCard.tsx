@@ -45,6 +45,8 @@ export const TaskCard: React.FC<TaskCardProps> = ({
     },
   })
 
+  console.log('data', data)
+
   return (
     <>
       <Stack

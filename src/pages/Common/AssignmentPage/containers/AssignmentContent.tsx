@@ -78,13 +78,13 @@ export const AssignmentContent = ({ assignment }: AssignmentContentProps) => {
           <Box display='flex' gap={1}>
             {icons['calendar']}
             <Typography variant='body2' fontWeight={500}>
-              {formatDate.toDateTime(assignment.startDate)}
+              {assignment.startDate ? formatDate.toDateTime(new Date(assignment.startDate)) : 'Anytime'}
             </Typography>
           </Box>
           <Box display='flex' gap={1} mt={1}>
             {icons['deadline']}
             <Typography variant='body2' fontWeight={500}>
-              {assignment.endDate ? formatDate.toDateTime(assignment.endDate) : 'Unlimited'}
+              {assignment.endDate ? formatDate.toDateTime(new Date(assignment.endDate)) : 'Unlimited'}
             </Typography>
           </Box>
           {!(assignment.createDate === assignment.modifiedDate) && (

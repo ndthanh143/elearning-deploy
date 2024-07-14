@@ -12,6 +12,15 @@ export type CreateLecturePayload = {
   lectureContent: string
 }
 
+export type CreateLectureWithUnitPayload = {
+  lessonPlanId: number
+  parentId?: number
+  position?: {
+    x: number
+    y: number
+  }
+} & CreateLecturePayload
+
 export type UpdateLecturePayload = {
   id: number
   lectureName?: string

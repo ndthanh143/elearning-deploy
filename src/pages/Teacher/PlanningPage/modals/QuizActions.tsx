@@ -30,11 +30,13 @@ import { useState } from 'react'
 import { answerService } from '@/services/answer/answer.service'
 import { moduleKey } from '@/services/module/module.query'
 import { AddOutlined, ArrowBackOutlined } from '@mui/icons-material'
+import { unitService } from '@/services/unit'
 
 export type AddQuizProps = {
   isOpen?: boolean
   onClose: () => void
   defaultData?: Quiz
+  unitId?: number
 }
 
 const schema = object({
@@ -48,7 +50,8 @@ const schema = object({
   isPublicAnswer: boolean().required('Public answer setting is required'),
 })
 
-export const QuizActions = ({ isOpen = true, onClose, defaultData }: AddQuizProps) => {
+export const QuizActions = ({ isOpen = true, onClose, defaultData, unitId }: AddQuizProps) => {
+  console.log('defaultData', defaultData)
   const queryClient = useQueryClient()
 
   const { value: isOpenAddQuestion, setFalse: closeAddQuestion, setTrue: openAddQuestion } = useBoolean(false)
@@ -80,8 +83,8 @@ export const QuizActions = ({ isOpen = true, onClose, defaultData }: AddQuizProp
       quizTitle,
       description,
       attemptNumber,
-      endDate: dayjs(endDate).toISOString(),
-      startDate: dayjs(startDate).toISOString(),
+      endDate: endDate ? dayjs(endDate).toISOString() : '',
+      startDate: startDate ? dayjs(startDate).toISOString() : '',
       quizTimeLimit,
       isPublicAnswer: true,
     },
@@ -104,6 +107,8 @@ export const QuizActions = ({ isOpen = true, onClose, defaultData }: AddQuizProp
       queryClient.invalidateQueries({ queryKey: moduleKey.lists() })
     },
   })
+
+  const { mutate: mutateUpdateUnit } = useMutation({ mutationFn: unitService.update })
 
   const { mutate: mutateAddQuestion } = useMutation({
     mutationFn: quizQuestionService.create,
@@ -133,7 +138,14 @@ export const QuizActions = ({ isOpen = true, onClose, defaultData }: AddQuizProp
   })
 
   const onSubmitHandler = (data: UpdateQuizPayload) => {
-    mutateUpdateQuiz({ ...data, quizTimeLimit: data.quizTimeLimit })
+    const { startDate, endDate, ...props } = data
+    mutateUpdateQuiz({ ...props, quizTimeLimit: props.quizTimeLimit })
+
+    mutateUpdateUnit({
+      id: Number(unitId),
+      startDate: dayjs(startDate).toISOString(),
+      endDate: dayjs(endDate).toISOString(),
+    })
   }
 
   const handleSaveQuestion = (data: CreateQuestionPayload) => {

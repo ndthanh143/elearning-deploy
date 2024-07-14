@@ -1,9 +1,19 @@
 import { CustomTooltip } from '@/components'
-import { useBoolean } from '@/hooks'
-import { AssignmentActions, LectureActions, ModalSection, SectionModalProps } from '@/pages/Teacher/PlanningPage/modals'
+import { useAlert, useBoolean } from '@/hooks'
+import {
+  AssignmentActions,
+  LectureActions,
+  ModalSection,
+  QuizActions,
+  SectionModalProps,
+} from '@/pages/Teacher/PlanningPage/modals'
 import { ResourceActions } from '@/pages/Teacher/PlanningPage/modals/ResourceActions'
+import { CreateAssignmentPayload } from '@/services/assignment/assignment.dto'
 import { assignmentService } from '@/services/assignment/assignment.service'
+import { CreateLecturePayload } from '@/services/lecture/lecture.dto'
 import { lectureService } from '@/services/lecture/lecture.service'
+import { quizService } from '@/services/quiz/quiz.service'
+import { CreateResourcePayload } from '@/services/resource/resource.dto'
 import { resourceService } from '@/services/resource/resource.service'
 import { unitService } from '@/services/unit'
 import { unitKey } from '@/services/unit/query'
@@ -21,6 +31,7 @@ interface IRightActionProps {
 const xPos = 200
 const yPos = 50
 export function RightAction({ lessonPlanId }: IRightActionProps) {
+  const { triggerAlert } = useAlert()
   const queryClient = useQueryClient()
   const { fitView } = useReactFlow()
   const { value: isOpenAddSection, setTrue: openAddSection, setFalse: closeAddSection } = useBoolean()
@@ -32,7 +43,6 @@ export function RightAction({ lessonPlanId }: IRightActionProps) {
     mutationFn: unitService.create,
     onSuccess: (payload) => {
       closeAddSection()
-      console.log('payload', payload)
       fitView({
         nodes: [{ id: payload.id.toString() }],
         duration: 500,
@@ -40,23 +50,7 @@ export function RightAction({ lessonPlanId }: IRightActionProps) {
         maxZoom: 1,
       })
 
-      let toastMessage = 'Create unit successfully!'
-
-      if (payload.lectureInfo) {
-        toastMessage = 'Create lecture successfully!'
-        closeLecture()
-      }
-      if (payload.assignmentInfo) {
-        toastMessage = 'Create assignment successfully!'
-        closeAssignment()
-      }
-      if (payload.resourceInfo) {
-        toastMessage = 'Create resource successfully!'
-        closeResource()
-      }
-      if (payload.quizInfo) {
-        toastMessage = 'Create quiz successfully!'
-      }
+      const toastMessage = 'Create unit successfully!'
 
       queryClient.invalidateQueries({ queryKey: unitKey.lists() })
       toast.success(toastMessage)
@@ -64,50 +58,58 @@ export function RightAction({ lessonPlanId }: IRightActionProps) {
   })
 
   const { mutate: mutateCreateLecture } = useMutation({
-    mutationFn: lectureService.create,
-    onSuccess: (data) => {
-      mutateCreateUnit({
-        lessonPlanId: lessonPlanId,
-        description: data.lectureName,
-        name: data.lectureName,
-        lectureId: data.id,
-        position: {
-          x: xPos,
-          y: yPos,
-        },
-      })
+    mutationFn: lectureService.createWithUnit,
+    onSuccess: () => {
+      handleCreateFinish('lecture')
     },
   })
 
   const { mutate: mutateCreateResource } = useMutation({
-    mutationFn: resourceService.create,
-    onSuccess: (data) => {
-      mutateCreateUnit({
-        lessonPlanId,
-        description: data.title,
-        name: data.title,
-        resourceId: data.id,
-        position: {
-          x: xPos,
-          y: yPos,
-        },
-      })
+    mutationFn: resourceService.createWithUnit,
+    onSuccess: () => {
+      handleCreateFinish('resource')
     },
   })
 
+  const {
+    mutate: mutateCreateQuiz,
+    data: quiz,
+    reset,
+  } = useMutation({
+    mutationFn: quizService.createWithUnit,
+    onSuccess: () => {
+      handleCreateFinish('quiz')
+    },
+  })
+
+  const handleCreateFinish = (type: 'assignment' | 'lecture' | 'quiz' | 'resource' | 'video') => {
+    let toastMessage = 'Create unit successfully!'
+    switch (type) {
+      case 'lecture':
+        toastMessage = 'Create lecture successfully!'
+        closeLecture()
+        break
+      case 'assignment':
+        toastMessage = 'Create assignment successfully!'
+        closeAssignment()
+        break
+      case 'resource':
+        toastMessage = 'Create resource successfully!'
+        closeResource()
+        break
+      case 'quiz':
+        toastMessage = 'Create quiz successfully!'
+        break
+    }
+
+    queryClient.invalidateQueries({ queryKey: unitKey.lists() })
+    triggerAlert(toastMessage, 'success')
+  }
+
   const { mutate: mutateCreateAssignment } = useMutation({
-    mutationFn: assignmentService.create,
-    onSuccess: (data) => {
-      mutateCreateUnit({
-        lessonPlanId,
-        description: data.assignmentContent,
-        name: data.assignmentTitle,
-        assignmentId: data.id,
-        position: {
-          x: xPos,
-          y: yPos,
-        },
-      })
+    mutationFn: assignmentService.createWithUnit,
+    onSuccess: () => {
+      handleCreateFinish('assignment')
     },
   })
 
@@ -125,6 +127,53 @@ export function RightAction({ lessonPlanId }: IRightActionProps) {
     }
 
     mutateCreateUnit(payload)
+  }
+
+  const handleAssignmentActions = (payload: CreateAssignmentPayload) => {
+    mutateCreateAssignment({
+      ...payload,
+      lessonPlanId: Number(lessonPlanId),
+      position: {
+        x: xPos + 200,
+        y: yPos + 50,
+      },
+    })
+  }
+
+  const handleLectureActions = (payload: CreateLecturePayload) => {
+    mutateCreateLecture({
+      ...payload,
+      lessonPlanId: Number(lessonPlanId),
+      position: {
+        x: xPos + 200,
+        y: yPos + 50,
+      },
+    })
+  }
+
+  const handleResourceActions = (payload: CreateResourcePayload) => {
+    mutateCreateResource({
+      ...payload,
+      lessonPlanId: Number(lessonPlanId),
+      position: {
+        x: xPos + 200,
+        y: yPos + 50,
+      },
+    })
+  }
+
+  const handleQuizActions = () => {
+    mutateCreateQuiz({
+      quizTitle: 'Quiz example...',
+      attemptNumber: 0,
+      quizTimeLimit: 0,
+      isPublicAnswer: true,
+      lessonPlanId: Number(lessonPlanId),
+      position: {
+        x: xPos + 200,
+        y: yPos + 50,
+      },
+    })
   }
 
   const listButtonsProps = {
@@ -146,7 +195,7 @@ export function RightAction({ lessonPlanId }: IRightActionProps) {
     quiz: {
       title: 'Add new quiz',
       icon: <QuizRounded />,
-      onClick: () => {},
+      onClick: handleQuizActions,
     },
     assignment: {
       title: 'Add new assignment',
@@ -180,9 +229,10 @@ export function RightAction({ lessonPlanId }: IRightActionProps) {
       </Stack>
 
       <ModalSection isOpen={isOpenAddSection} onClose={closeAddSection} onSubmit={handleCreateSection} />
-      <ResourceActions isOpen={isOpenResource} onClose={closeResource} onCreate={mutateCreateResource} />
-      <AssignmentActions isOpen={isOpenAssignment} onClose={closeAssignment} onCreate={mutateCreateAssignment} />
-      <LectureActions isOpen={isOpenLecture} onClose={closeLecture} onCreate={mutateCreateLecture} />
+      <ResourceActions isOpen={isOpenResource} onClose={closeResource} onCreate={handleResourceActions} />
+      <AssignmentActions isOpen={isOpenAssignment} onClose={closeAssignment} onCreate={handleAssignmentActions} />
+      <LectureActions isOpen={isOpenLecture} onClose={closeLecture} onCreate={handleLectureActions} />
+      {quiz && <QuizActions isOpen onClose={reset} defaultData={quiz} />}
     </>
   )
 }

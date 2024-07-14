@@ -61,6 +61,12 @@ export function ModalListStudentToAdd({
 
   const { mutate: mutateAddStudent } = useMutation({
     mutationFn: groupService.addStudentToGroup,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: groupKeys.lists() })
+      onClose()
+      const message = `Add ${checked.length} student to group successfully!`
+      triggerAlert(message, 'success')
+    },
   })
 
   const handleAddStudentToGroup = async () => {

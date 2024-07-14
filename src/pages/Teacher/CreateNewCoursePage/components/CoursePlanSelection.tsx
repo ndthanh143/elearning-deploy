@@ -42,7 +42,7 @@ export function CoursePlanSelection({ form }: ICoursePlanSelectionProps) {
       </Box>
       <Grid container spacing={2}>
         {lessonPlans?.content.map((plan) => (
-          <Grid item xs={4}>
+          <Grid item xs={12} md={6} lg={4}>
             <Box
               onClick={() => setValue('lessonPlanId', plan.id)}
               border='4px solid'

@@ -4,11 +4,12 @@ import { courseService } from '@/services/course/course.service'
 import { Container } from '@mui/material'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import { CreateCoursePayload, UpdateCoursePayload } from '@/services/course/course.dto'
 import { FormCourseHandle } from '../CreateNewCoursePage/components'
+import { useAlert } from '@/hooks'
 
 export function EditCoursePage() {
+  const { triggerAlert } = useAlert()
   const queryClient = useQueryClient()
 
   const { courseId } = useParams()
@@ -19,8 +20,11 @@ export function EditCoursePage() {
   const { mutate: mutateUpdateCourse, isPending: isLoadingUpdate } = useMutation({
     mutationFn: courseService.update,
     onSuccess: () => {
-      toast.success('Update course successfully!')
+      triggerAlert('Update course successfully!', 'success')
       queryClient.invalidateQueries({ queryKey: courseKeys.lists() })
+    },
+    onError: () => {
+      triggerAlert('Update course failed!', 'error')
     },
   })
 

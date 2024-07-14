@@ -1,13 +1,16 @@
 import axiosInstance from '../../axios'
+import { unitService } from '../unit'
 import {
   AssignmentResponse,
   AssignmentsResponse,
   CreateAssignmentPayload,
+  CreateAssignmentWithUnitPayload,
   GetAssignmentDetailParams,
   GetListAssignmentQuery,
   GetScheduleAssignmentResponse,
   GetScheduleQuery,
   UpdateAssignmentPayload,
+  UpdateAssignmentWithUnitPayload,
 } from './assignment.dto'
 
 export const assignmentService = {
@@ -37,8 +40,39 @@ export const assignmentService = {
 
     return data.data
   },
+  createWithUnit: async (payload: CreateAssignmentWithUnitPayload) => {
+    const { lessonPlanId, parentId, startDate, endDate, ...props } = payload
+    const { data } = await axiosInstance.post<AssignmentResponse>('/assignment/create', props)
+
+    await unitService.create({
+      lessonPlanId,
+      parentId,
+      startDate,
+      endDate,
+      assignmentId: data.data.id,
+      name: data.data.assignmentTitle,
+    })
+
+    return data.data
+  },
   update: async (payload: UpdateAssignmentPayload) => {
     const { data } = await axiosInstance.put<AssignmentResponse>('/assignment/update', payload)
+
+    return data.data
+  },
+  updateWithUnit: async (payload: UpdateAssignmentWithUnitPayload) => {
+    const { id, parentId, startDate, endDate, position, ...props } = payload
+    const { data } = await axiosInstance.put<AssignmentResponse>('/assignment/update', props)
+
+    await unitService.update({
+      id,
+      parentId,
+      startDate,
+      endDate,
+      assignmentId: data.data.id,
+      name: data.data.assignmentTitle,
+      position,
+    })
 
     return data.data
   },

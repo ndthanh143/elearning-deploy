@@ -19,6 +19,15 @@ export type CreateResourcePayload = {
   urlDocument: string
 }
 
+export type CreateResourceUnitPayload = {
+  lessonPlanId: number
+  parentId?: number
+  position?: {
+    x: number
+    y: number
+  }
+} & CreateResourcePayload
+
 export type UpdateResourcePayload = {
   id: number
   title: string

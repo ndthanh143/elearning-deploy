@@ -43,6 +43,8 @@ export const AssignmentActions = ({
   const { value: isOpenUpload, setTrue: openUpload, setFalse: closeUpload } = useBoolean(false)
   const { value: isOpenYoutube, setTrue: openYoutube, setFalse: closeYoutube } = useBoolean(false)
 
+  console.log('default', defaultData)
+
   const { register, handleSubmit, setValue, getValues, watch } = useForm<CreateAssignmentPayload>({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -50,8 +52,8 @@ export const AssignmentActions = ({
       urlDocument: defaultData?.urlDocument || '',
       assignmentContent: defaultData?.assignmentContent,
       assignmentTitle: defaultData?.assignmentTitle,
-      startDate: dayjs(defaultData?.startDate).toISOString(),
-      endDate: dayjs(defaultData?.endDate).toISOString(),
+      startDate: defaultData?.startDate ? dayjs(defaultData?.startDate).toISOString() : '',
+      endDate: defaultData?.endDate ? dayjs(defaultData?.endDate).toISOString() : '',
     },
   })
 

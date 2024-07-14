@@ -148,7 +148,6 @@ export const ActionsUnit = ({ data: unit }: ActionsUnitProps) => {
   const handleAddQuiz = () => {
     mutateCreateQuiz({
       quizTitle: 'Quiz 1',
-      modulesId: unit.id,
       attemptNumber: 0,
       endDate: dayjs().toISOString(),
       quizTimeLimit: 0,

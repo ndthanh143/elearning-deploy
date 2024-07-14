@@ -55,13 +55,13 @@ export const QuizInfo = () => {
             <Stack direction='row' gap={1}>
               <Typography>Open:</Typography>
               <Typography fontWeight={500}>
-                {quiz.startDate ? formatDate.toDateTime(quiz.startDate) : 'Anytime'}
+                {quiz.startDate ? formatDate.toDateTime(new Date(quiz.startDate)) : 'Anytime'}
               </Typography>
             </Stack>
             <Stack direction='row' gap={1}>
               <Typography>Close:</Typography>
               <Typography fontWeight={500}>
-                {quiz.endDate ? formatDate.toDateTime(quiz.endDate) : 'No close'}
+                {quiz.endDate ? formatDate.toDateTime(new Date(quiz.endDate)) : 'No close'}
               </Typography>
             </Stack>
           </Stack>

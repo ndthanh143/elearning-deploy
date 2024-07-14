@@ -1,6 +1,7 @@
 import axiosInstance from '@/axios'
 import {
   CreateQuizPayload,
+  CreateQuizWithUnitPayload,
   GetListQuizQuery,
   GetQuizDetailParams,
   GetQuizScheduleQuery,
@@ -11,6 +12,7 @@ import {
   QuizzesResponse,
   UpdateQuizPayload,
 } from './quiz.dto'
+import { unitService } from '../unit'
 
 export const quizService = {
   getList: async (query: GetListQuizQuery) => {
@@ -45,6 +47,22 @@ export const quizService = {
   },
   create: async (payload: CreateQuizPayload) => {
     const { data } = await axiosInstance.post<QuizResponse>('/quiz/create', payload)
+
+    return data.data
+  },
+  createWithUnit: async (payload: CreateQuizWithUnitPayload) => {
+    const { lessonPlanId, parentId, startDate, endDate, position, ...props } = payload
+    const { data } = await axiosInstance.post<QuizResponse>('/quiz/create', props)
+
+    await unitService.create({
+      lessonPlanId,
+      parentId,
+      startDate,
+      endDate,
+      quizId: data.data.id,
+      name: data.data.quizTitle,
+      position,
+    })
 
     return data.data
   },

@@ -6,6 +6,9 @@ import { Chart as ChartJS } from 'chart.js/auto'
 import { CategoryScale } from 'chart.js'
 import { Bar, Doughnut } from 'react-chartjs-2'
 import { BoxContent } from '@/components'
+import { useAuthAdmin } from '@/hooks/useAuthAdmin'
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 ChartJS.register(CategoryScale)
 
@@ -65,11 +68,19 @@ const DoughnutChart = () => {
 }
 
 export function Dashboard() {
+  const navigate = useNavigate()
+  const { isAuthenticated } = useAuthAdmin()
   const userInstance = userKeys.fullList({})
   const { data: users } = useQuery(userInstance)
 
   const teacherCount = users?.content.filter((user) => user.role === RoleEnum.Teacher).length
   const studentCount = users?.content.filter((user) => user.role === RoleEnum.Student).length
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/admin')
+    }
+  }, [isAuthenticated])
 
   return (
     <Grid container spacing={4}>

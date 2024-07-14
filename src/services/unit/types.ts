@@ -9,7 +9,7 @@ export type GetDetailUnitResponse = BaseResponse<Unit>
 export type GetListUnitResponse = BasePaginationResponse<Unit[]>
 
 export type CreateUnitPayload = {
-  description: string
+  description?: string
   lessonPlanId: number
   name: string
   parentId?: number
@@ -18,6 +18,8 @@ export type CreateUnitPayload = {
   quizId?: number
   resourceId?: number
   assignmentId?: number
+  startDate?: string
+  endDate?: string
 }
 
 export interface Position {
@@ -40,6 +42,8 @@ export type Unit = {
   unlock: boolean
   isDone: boolean
   labelConnection?: string
+  startDate?: string
+  endDate?: string
 }
 
 export type GetListUnitQuery = {
@@ -58,6 +62,8 @@ export type UpdateUnitPayload = {
   quizId?: number
   resourceId?: number
   parentId?: number
+  startDate?: string
+  endDate?: string
 }
 
 export interface PrerequisiteUpdate {

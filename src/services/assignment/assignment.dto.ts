@@ -8,8 +8,8 @@ export type Assignment = {
   assignmentContent: string
   assignmentTitle: string
   assignmentType: number
-  endDate: Date | null
-  startDate: Date
+  endDate?: string | null
+  startDate?: string | null
   state: number
   urlDocument: string
   assignmentSubmissionInfo: Submission[]
@@ -24,6 +24,15 @@ export type CreateAssignmentPayload = {
   urlDocument?: string
 }
 
+export type CreateAssignmentWithUnitPayload = {
+  lessonPlanId: number
+  parentId?: number
+  position?: {
+    x: number
+    y: number
+  }
+} & CreateAssignmentPayload
+
 export type UpdateAssignmentPayload = {
   assignmentContent?: string
   assignmentTitle: string
@@ -34,6 +43,15 @@ export type UpdateAssignmentPayload = {
   urlDocument?: string
   id: number
 }
+
+export type UpdateAssignmentWithUnitPayload = {
+  id: number
+  parentId?: number
+  position?: {
+    x: number
+    y: number
+  }
+} & UpdateAssignmentPayload
 
 export type GetListAssignmentQuery = {
   courseId?: number

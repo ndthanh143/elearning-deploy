@@ -39,8 +39,8 @@ export const QuizItem = ({ isActive, onClick, quizData }: QuizItemProps) => {
             <Stack direction='row' gap={2} alignItems='center'>
               <Box component='img' src={actions.quiz} width={30} height={30} />
               <Typography variant='body2'>
-                {formatDate.toDateTime(quizData.quizInfo.startDate)} -{' '}
-                {formatDate.toDateTime(quizData.quizInfo.endDate)}
+                {formatDate.toDateTime(new Date(quizData.quizInfo.startDate))} -{' '}
+                {formatDate.toDateTime(new Date(quizData.quizInfo.endDate))}
               </Typography>
             </Stack>
           )}

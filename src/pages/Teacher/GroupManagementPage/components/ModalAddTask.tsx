@@ -17,6 +17,9 @@ export function ModalAddTask({ isOpen, status, onClose, onSubmit, form }: IModal
     register,
     formState: { errors },
   } = form
+
+  console.log('hehe', new Date(form.getValues('endDate')))
+
   return (
     <Modal open={isOpen} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} onClose={onClose}>
       <Box component='form' onSubmit={handleSubmit(onSubmit)} bgcolor='white' p={2} borderRadius={3} minWidth={500}>
@@ -87,6 +90,7 @@ export function ModalAddTask({ isOpen, status, onClose, onSubmit, form }: IModal
               placeholder='Add task description'
               type='date'
               {...register('endDate')}
+              defaultValue={new Date(form.getValues('endDate'))}
               error={errors.endDate ? true : false}
               helperText={errors.endDate?.message}
             />

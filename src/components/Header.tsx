@@ -23,7 +23,7 @@ import {
 } from '@mui/material'
 
 import { CustomMenu, Flex, IconContainer, Logo } from '.'
-import { useAuth, useBoolean, useMenu, useOnClickOutside } from '../hooks'
+import { useAlert, useAuth, useBoolean, useMenu, useOnClickOutside } from '../hooks'
 import { useNavigate } from 'react-router-dom'
 import { notificationKey } from '@/services/notification/notification.query'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -135,6 +135,7 @@ const Message = ({
 }
 
 const Notification = () => {
+  const { triggerAlert } = useAlert()
   const queryClient = useQueryClient()
 
   const { profile } = useAuth()
@@ -160,6 +161,9 @@ const Notification = () => {
     mutationFn: notificationService.read,
     onSuccess: () => {
       closeMoreActions()
+    },
+    onError: () => {
+      triggerAlert('Failed to mark all as read', 'error')
     },
   })
 

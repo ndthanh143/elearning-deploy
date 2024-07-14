@@ -1,5 +1,5 @@
 import { CustomSelect, Flex, Loading, NoData } from '@/components'
-import { useBoolean } from '@/hooks'
+import { useAlert, useBoolean } from '@/hooks'
 import { ReviewSubmissionText } from '@/pages/Common/AssignmentPage/components'
 import { Submission } from '@/services/assignmentSubmission/assignmentSubmission.dto'
 import { assignmentSubmissionKeys } from '@/services/assignmentSubmission/assignmentSubmission.query'
@@ -66,6 +66,7 @@ const exportToExcel = ({
 
 const DEFAULT_PAGE_LIMIT = 1
 export const AssignmentSubmission = ({ courses }: { courses: Course[] }) => {
+  const { triggerAlert } = useAlert()
   const [page, setPage] = useState(1)
 
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null)
@@ -104,7 +105,7 @@ export const AssignmentSubmission = ({ courses }: { courses: Course[] }) => {
     mutationFn: assignmentSubmissionService.update,
     onSuccess: () => {
       refetchSubmission()
-      toast.success('Update score successfully')
+      triggerAlert('Update score successfully', 'success')
       closeEditScore()
       setSelectedSubmission(null)
     },

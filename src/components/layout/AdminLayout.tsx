@@ -15,7 +15,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks'
 import { useEffect, useState } from 'react'
-import { DashboardOutlined, LogoutOutlined, PeopleOutline, PlayLessonRounded } from '@mui/icons-material'
+import { DashboardRounded, LogoutOutlined, PeopleRounded, PlayLessonRounded } from '@mui/icons-material'
 import { ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 
 const drawerWidth: number = 240
@@ -81,16 +81,16 @@ export const AdminLayout = () => {
   const listMenuItem = [
     {
       title: 'Dashboard',
-      icon: <DashboardOutlined color={pathname === '/admin/users' ? 'primary' : 'inherit'} />,
+      icon: <DashboardRounded color={pathname === '/admin' ? 'primary' : 'inherit'} />,
       href: '/admin',
     },
     {
       title: 'Users',
-      icon: <PeopleOutline color={pathname === '/admin/users' ? 'primary' : 'inherit'} />,
+      icon: <PeopleRounded color={pathname === '/admin/users' ? 'primary' : 'inherit'} />,
       href: '/admin/users',
     },
     {
-      title: 'Users',
+      title: 'Courses',
       icon: <PlayLessonRounded color={pathname === '/admin/courses' ? 'primary' : 'inherit'} />,
       href: '/admin/courses',
     },

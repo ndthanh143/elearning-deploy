@@ -50,11 +50,16 @@ export const AssignmentItem = ({ isActive, onClick, assignmentData }: Assignment
           <Typography color={gray[800]} fontStyle='italic'>
             {assignmentData.courseInfo.courseName}
           </Typography>
-          <Typography>Open: {formatDate.toDateTime(assignmentData.assignmentInfo.startDate)}</Typography>
+          <Typography>
+            Open:{' '}
+            {assignmentData.assignmentInfo.startDate
+              ? formatDate.toDateTime(new Date(assignmentData.assignmentInfo.startDate))
+              : 'Anytime'}
+          </Typography>
           <Typography>
             Close:{' '}
             {assignmentData.assignmentInfo.endDate
-              ? formatDate.toDateTime(assignmentData.assignmentInfo.endDate)
+              ? formatDate.toDateTime(new Date(assignmentData.assignmentInfo.endDate))
               : 'Unlimited'}
           </Typography>
         </Stack>

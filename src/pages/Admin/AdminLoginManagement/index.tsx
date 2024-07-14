@@ -30,7 +30,7 @@ export function AdminLoginManagement() {
   const { mutate } = useMutation({
     mutationFn: authService.loginAdmin,
     onSuccess: () => {
-      navigate('/admin/dashboard')
+      navigate('/admin')
     },
     onError: () => {
       triggerAlert('Username or password not match', 'error')
@@ -43,7 +43,7 @@ export function AdminLoginManagement() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/admin/dashboard')
+      navigate('/admin')
     }
   }, [isAuthenticated])
 

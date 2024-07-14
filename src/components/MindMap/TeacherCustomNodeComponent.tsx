@@ -1,4 +1,4 @@
-import { useBoolean } from '@/hooks'
+import { useAlert, useBoolean } from '@/hooks'
 import {
   AssignmentActions,
   LectureActions,
@@ -22,7 +22,6 @@ import {
 import { Box, Grid, Stack, Typography, styled } from '@mui/material'
 import { blue, orange } from '@mui/material/colors'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { toast } from 'react-toastify'
 import { Handle, NodeProps, Position, useStore } from 'reactflow'
 import { DrawerNodeDetail } from './components'
 import { MutableRefObject } from 'react'
@@ -31,8 +30,10 @@ import { assignmentService } from '@/services/assignment/assignment.service'
 import { resourceService } from '@/services/resource/resource.service'
 import { primary } from '@/styles/theme'
 import { quizService } from '@/services/quiz/quiz.service'
-import dayjs from 'dayjs'
 import { icons } from '@/assets/icons'
+import { CreateAssignmentPayload } from '@/services/assignment/assignment.dto'
+import { CreateLecturePayload } from '@/services/lecture/lecture.dto'
+import { CreateResourcePayload } from '@/services/resource/resource.dto'
 
 const StyledHandle = styled(Handle)(() => ({
   background: primary[100],
@@ -97,6 +98,7 @@ const StyledHandle = styled(Handle)(() => ({
 export const TeacherCustomNodeComponent = (
   props: NodeProps<Unit & { parentRef: MutableRefObject<HTMLDivElement>; type: 'common' | 'main' }>,
 ) => {
+  const { triggerAlert } = useAlert()
   const queryClient = useQueryClient()
 
   const {
@@ -125,29 +127,13 @@ export const TeacherCustomNodeComponent = (
 
   const { mutate: mutateCreateUnit } = useMutation({
     mutationFn: unitService.create,
-    onSuccess: (payload) => {
+    onSuccess: () => {
       closeAddSection()
 
       let toastMessage = 'Create unit successfully!'
 
-      if (payload.lectureInfo) {
-        toastMessage = 'Create lecture successfully!'
-        closeLecture()
-      }
-      if (payload.assignmentInfo) {
-        toastMessage = 'Create assignment successfully!'
-        closeAssignment()
-      }
-      if (payload.resourceInfo) {
-        toastMessage = 'Create resource successfully!'
-        closeResource()
-      }
-      if (payload.quizInfo) {
-        toastMessage = 'Create quiz successfully!'
-      }
-
       queryClient.invalidateQueries({ queryKey: unitKey.lists() })
-      toast.success(toastMessage)
+      triggerAlert(toastMessage, 'success')
     },
   })
 
@@ -156,70 +142,68 @@ export const TeacherCustomNodeComponent = (
     data: quiz,
     reset,
   } = useMutation({
-    mutationFn: quizService.create,
-    onSuccess: (data) => {
-      if (data) {
-        mutateCreateUnit({
-          lessonPlanId: Number(unit.lessonPlanInfo?.id),
-          description: data.quizTitle,
-          parentId: unit.id,
-          name: data.quizTitle,
-          quizId: data.id,
-        })
-      }
+    mutationFn: quizService.createWithUnit,
+    onSuccess: () => {
+      handleCreateFinish('quiz')
     },
   })
 
   const { mutate: mutateCreateLecture } = useMutation({
-    mutationFn: lectureService.create,
-    onSuccess: (data) => {
-      mutateCreateUnit({
-        lessonPlanId: Number(unit.lessonPlanInfo?.id),
-        description: data.lectureName,
-        parentId: unit.id,
-        name: data.lectureName,
-        lectureId: data.id,
-        position: {
-          x: xPos + 200,
-          y: yPos + 50,
-        },
-      })
+    mutationFn: lectureService.createWithUnit,
+    onSuccess: () => {
+      handleCreateFinish('lecture')
     },
   })
 
   const { mutate: mutateCreateResource } = useMutation({
-    mutationFn: resourceService.create,
-    onSuccess: (data) => {
-      mutateCreateUnit({
-        lessonPlanId: Number(unit.lessonPlanInfo?.id),
-        description: data.title,
-        parentId: unit.id,
-        name: data.title,
-        resourceId: data.id,
-        position: {
-          x: xPos + 200,
-          y: yPos + 50,
-        },
-      })
+    mutationFn: resourceService.createWithUnit,
+    onSuccess: () => {
+      handleCreateFinish('resource')
     },
   })
 
+  const handleCreateFinish = (type: 'assignment' | 'lecture' | 'quiz' | 'resource' | 'video') => {
+    let toastMessage = 'Create unit successfully!'
+    switch (type) {
+      case 'lecture':
+        toastMessage = 'Create lecture successfully!'
+        closeLecture()
+        break
+      case 'assignment':
+        toastMessage = 'Create assignment successfully!'
+        closeAssignment()
+        break
+      case 'resource':
+        toastMessage = 'Create resource successfully!'
+        closeResource()
+        break
+      case 'quiz':
+        toastMessage = 'Create quiz successfully!'
+        break
+    }
+
+    queryClient.invalidateQueries({ queryKey: unitKey.lists() })
+    triggerAlert(toastMessage, 'success')
+  }
+
   const { mutate: mutateCreateAssignment } = useMutation({
-    mutationFn: assignmentService.create,
-    onSuccess: (data) => {
-      mutateCreateUnit({
-        lessonPlanId: Number(unit.lessonPlanInfo?.id),
-        description: data.assignmentContent,
-        parentId: unit.id,
-        name: data.assignmentTitle,
-        assignmentId: data.id,
-        position: {
-          x: xPos + 200,
-          y: yPos + 50,
-        },
-      })
+    mutationFn: assignmentService.createWithUnit,
+    onSuccess: () => {
+      handleCreateFinish('assignment')
     },
   })
+
+  const handleAssignmentActions = (payload: CreateAssignmentPayload) => {
+    mutateCreateAssignment({
+      ...payload,
+      lessonPlanId: Number(unit.lessonPlanInfo?.id),
+      parentId: unit.id,
+      position: {
+        x: xPos + 200,
+        y: yPos + 50,
+      },
+    })
+  }
 
   const handleCreateSection = (data: SectionModalProps) => {
     const newPosition = {
@@ -238,15 +222,42 @@ export const TeacherCustomNodeComponent = (
     mutateCreateUnit(payload)
   }
 
-  const handleAddQuiz = () => {
+  const handleLectureActions = (payload: CreateLecturePayload) => {
+    mutateCreateLecture({
+      ...payload,
+      lessonPlanId: Number(unit.lessonPlanInfo?.id),
+      parentId: unit.id,
+      position: {
+        x: xPos + 200,
+        y: yPos + 50,
+      },
+    })
+  }
+
+  const handleResourceActions = (payload: CreateResourcePayload) => {
+    mutateCreateResource({
+      ...payload,
+      lessonPlanId: Number(unit.lessonPlanInfo?.id),
+      parentId: unit.id,
+      position: {
+        x: xPos + 200,
+        y: yPos + 50,
+      },
+    })
+  }
+
+  const handleQuizActions = () => {
     mutateCreateQuiz({
-      quizTitle: 'Quiz 1',
-      modulesId: unit.id,
+      quizTitle: 'Quiz example...',
       attemptNumber: 0,
-      endDate: dayjs().toISOString(),
       quizTimeLimit: 0,
-      startDate: dayjs().toISOString(),
       isPublicAnswer: true,
+      lessonPlanId: Number(unit.lessonPlanInfo?.id),
+      parentId: unit.id,
+      position: {
+        x: xPos + 200,
+        y: yPos + 50,
+      },
     })
   }
 
@@ -273,7 +284,7 @@ export const TeacherCustomNodeComponent = (
     },
     quiz: {
       icon: <QuizOutlined fontSize='small' color='secondary' />,
-      onClick: handleAddQuiz,
+      onClick: handleQuizActions,
       tooltip: 'Quiz',
     },
     assignment: {
@@ -471,9 +482,9 @@ export const TeacherCustomNodeComponent = (
             </Stack>
           </Box>
         </Stack>
-        <ResourceActions isOpen={isOpenResource} onClose={closeResource} onCreate={mutateCreateResource} />
-        <AssignmentActions isOpen={isOpenAssignment} onClose={closeAssignment} onCreate={mutateCreateAssignment} />
-        <LectureActions isOpen={isOpenLecture} onClose={closeLecture} onCreate={mutateCreateLecture} />
+        <ResourceActions isOpen={isOpenResource} onClose={closeResource} onCreate={handleResourceActions} />
+        <AssignmentActions isOpen={isOpenAssignment} onClose={closeAssignment} onCreate={handleAssignmentActions} />
+        <LectureActions isOpen={isOpenLecture} onClose={closeLecture} onCreate={handleLectureActions} />
         <ModalSection isOpen={isOpenAddSection} onClose={closeAddSection} onSubmit={handleCreateSection} />
         {quiz && <QuizActions isOpen onClose={reset} defaultData={quiz} />}
         <DrawerNodeDetail isOpen={isOpenDrawer && selected} onClose={closeDrawer} unit={unit} />
