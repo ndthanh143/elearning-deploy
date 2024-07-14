@@ -1,3 +1,4 @@
+import Cookies from 'js-cookie'
 import axiosInstance from '../../axios'
 import {
   AutoCompleteCourseQuery,
@@ -28,7 +29,13 @@ export const courseService = {
   },
 
   getList: async (query: GetListCoursesQuery) => {
-    const { data } = await axiosInstance.get<CoursesResponse>('/course/list', { params: { ...query } })
+    const adminAccessToken = Cookies.get('admin_access_token')
+    const { data } = await axiosInstance.get<CoursesResponse>('/course/list', {
+      params: { ...query },
+      headers: {
+        ...(adminAccessToken && { Authorization: `Bearer ${adminAccessToken}` }),
+      },
+    })
 
     return data.data
   },

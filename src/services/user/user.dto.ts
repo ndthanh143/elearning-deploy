@@ -44,3 +44,11 @@ export interface QuizzesInfo {
   courseInfo: Course
   quizInfo: Quiz
 }
+
+export type AdminResponse = BaseResponse<{
+  id: number
+  userName: string
+  fullName: string
+  avatarPath: string
+  isSuperAdmin: boolean
+}>

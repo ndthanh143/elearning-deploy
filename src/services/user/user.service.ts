@@ -1,5 +1,7 @@
+import { configs } from '@/configs'
 import axiosInstance from '../../axios'
 import {
+  AdminResponse,
   GetStudentsQuery,
   RelativeMemberReponse,
   ScheduleResponse,
@@ -7,6 +9,8 @@ import {
   UserResponse,
   UsersResponse,
 } from './user.dto'
+import Cookies from 'js-cookie'
+import axios from 'axios'
 
 const BASE_USER_URL = 'account'
 export const userService = {
@@ -31,9 +35,14 @@ export const userService = {
     return data
   },
   getAdminProfile: async () => {
-    const { data } = await axiosInstance.get<UserResponse>(`${BASE_USER_URL}/admin-profile`)
+    const token = Cookies.get('admin_access_token')
+    const { data } = await axios.get<AdminResponse>(`${configs.API_AUTH_URL}/v1/account/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
 
-    return data
+    return data.data
   },
   getSchedule: async () => {
     const { data } = await axiosInstance.get<ScheduleResponse>(`${BASE_USER_URL}/my-schedule`)

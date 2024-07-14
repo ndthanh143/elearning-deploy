@@ -17,6 +17,7 @@ import { useAuth } from '../../hooks'
 import { useEffect, useState } from 'react'
 import { DashboardRounded, LogoutOutlined, PeopleRounded, PlayLessonRounded } from '@mui/icons-material'
 import { ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
+import { useAuthAdmin } from '@/hooks/useAuthAdmin'
 
 const drawerWidth: number = 240
 
@@ -72,7 +73,7 @@ export const AdminLayout = () => {
     setOpen(!open)
   }
 
-  const { accessToken, profile, isFetched, logout } = useAuth()
+  const { accessToken, profile, isFetched, logout } = useAuthAdmin()
 
   const navigate = useNavigate()
 
@@ -98,18 +99,10 @@ export const AdminLayout = () => {
 
   useEffect(() => {
     if (!accessToken) {
-      navigate('/admin/login', {
-        state: {
-          from: pathname,
-        },
-      })
+      navigate('/admin/login')
     }
     if (!profile && isFetched) {
-      navigate('/admin/login', {
-        state: {
-          from: pathname,
-        },
-      })
+      navigate('/admin/login')
     }
   }, [profile])
 

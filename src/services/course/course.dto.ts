@@ -29,7 +29,25 @@ export type Course = {
   isFirstJoin?: boolean
   isPublic?: boolean
   categoryInfo?: { id: number; name: string; categoryName: string }
+  versionInfo?: Version
 } & BaseData
+
+export type Version = {
+  createDate: string
+  id: number
+  modifiedDate: string
+  note: string
+  state: number
+  versionCode: number
+  courseInfo: Course
+}
+
+export const VERSION_STATE = {
+  init: 1,
+  pending: 2,
+  approved: 3,
+  rejected: 4,
+} as const
 
 export type CreateCoursePayload = {
   courseName: string

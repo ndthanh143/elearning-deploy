@@ -1,6 +1,6 @@
 import { Flex } from '@/components'
 import { primary } from '@/styles/theme'
-import { InfoRounded, NewspaperRounded, PlayLessonRounded } from '@mui/icons-material'
+import { InfoRounded, NewspaperRounded, PlayLessonRounded, PublishRounded } from '@mui/icons-material'
 import { Box, Stack, Typography } from '@mui/material'
 
 interface ITableStepProps {
@@ -28,6 +28,11 @@ const listStep = [
     title: 'Newsletter',
     description: 'Create a welcome and congratulation message for your students',
     icon: <NewspaperRounded color='primary' />,
+  },
+  {
+    title: 'Publishment',
+    description: 'Set the course to be published or not',
+    icon: <PublishRounded color='primary' />,
   },
 ]
 

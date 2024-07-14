@@ -21,6 +21,11 @@ export const useAuthAdmin = () => {
     queryClient.setQueryData(userInstance.queryKey, null)
   }
 
+  const login = () => {
+    setAuthenticated()
+    refetch()
+  }
+
   return {
     accessToken,
     profile,
@@ -30,5 +35,6 @@ export const useAuthAdmin = () => {
     setAuthenticated,
     isFetched,
     logout,
+    login,
   }
 }

@@ -69,7 +69,7 @@ const DoughnutChart = () => {
 
 export function Dashboard() {
   const navigate = useNavigate()
-  const { isAuthenticated } = useAuthAdmin()
+  const { profile } = useAuthAdmin()
   const userInstance = userKeys.fullList({})
   const { data: users } = useQuery(userInstance)
 
@@ -77,10 +77,10 @@ export function Dashboard() {
   const studentCount = users?.content.filter((user) => user.role === RoleEnum.Student).length
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!profile) {
       navigate('/admin')
     }
-  }, [isAuthenticated])
+  }, [profile])
 
   return (
     <Grid container spacing={4}>

@@ -16,7 +16,7 @@ const schema = yup.object().shape({
 })
 
 export function AdminLoginManagement() {
-  const { isAuthenticated } = useAuthAdmin()
+  const { profile, login } = useAuthAdmin()
   const { triggerAlert } = useAlert()
   const navigate = useNavigate()
   const {
@@ -30,7 +30,7 @@ export function AdminLoginManagement() {
   const { mutate } = useMutation({
     mutationFn: authService.loginAdmin,
     onSuccess: () => {
-      navigate('/admin')
+      login()
     },
     onError: () => {
       triggerAlert('Username or password not match', 'error')
@@ -42,10 +42,10 @@ export function AdminLoginManagement() {
   }
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (profile) {
       navigate('/admin')
     }
-  }, [isAuthenticated])
+  }, [profile])
 
   return (
     <Box
