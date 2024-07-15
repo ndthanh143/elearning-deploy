@@ -1,5 +1,5 @@
 import { defineQuery } from '../../utils'
-import { GetStudentsQuery, SearchStudentQuery } from './user.dto'
+import { GetStudentsQuery, GetUsersQuery, SearchStudentQuery } from './user.dto'
 import { userService } from './user.service'
 
 export const userKeys = {
@@ -19,4 +19,10 @@ export const userKeys = {
   searches: () => [...userKeys.all, 'search'] as const,
   search: (query: SearchStudentQuery) =>
     defineQuery([...userKeys.searches(), query], () => userService.searchStudents(query)),
+  listTeachers: () => [...userKeys.all, 'list-teachers'] as const,
+  listTeacher: (query: GetUsersQuery) =>
+    defineQuery([...userKeys.listTeachers(), query], () => userService.getListTeachers(query)),
+  listStudents: () => [...userKeys.all, 'list-students'] as const,
+  listStudent: (query: GetUsersQuery) =>
+    defineQuery([...userKeys.listStudents(), query], () => userService.getListStudents(query)),
 }

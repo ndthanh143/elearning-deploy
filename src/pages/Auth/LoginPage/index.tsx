@@ -71,6 +71,10 @@ export const LoginPage = () => {
       if (response.response?.status === 404) {
         setSignUpMode(true)
       }
+
+      if ((response.response?.data as { code: string }).code === 'ERROR_STATUS_LOCKED') {
+        triggerAlert('Your account has been locked, please contact to administrator to complain!', 'error')
+      }
     },
   })
 
@@ -83,6 +87,11 @@ export const LoginPage = () => {
     onSuccess: () => {
       refetch()
       triggerAlert('Login successfully!')
+    },
+    onError: (response: AxiosError) => {
+      if ((response.response?.data as { code: string }).code === 'ERROR_STATUS_LOCKED') {
+        triggerAlert('Your account has been locked, please contact to administrator to complain!', 'error')
+      }
     },
   })
 

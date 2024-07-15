@@ -3,6 +3,7 @@ import axiosInstance from '../../axios'
 import {
   AdminResponse,
   GetStudentsQuery,
+  GetUsersQuery,
   RelativeMemberReponse,
   ScheduleResponse,
   SearchStudentQuery,
@@ -66,5 +67,21 @@ export const userService = {
   },
   delete: async (id: number) => {
     await axiosInstance.delete(`/account/delete/${id}`)
+  },
+  getListTeachers: async (query: GetUsersQuery) => {
+    const { data } = await axiosInstance.get<UsersResponse>('/teacher/list', { params: { ...query } })
+
+    return data.data
+  },
+  getListStudents: async (query: GetUsersQuery) => {
+    const { data } = await axiosInstance.get<UsersResponse>('/student/list', { params: { ...query } })
+
+    return data.data
+  },
+  updateStatusTeacher: async (payload: { teacherId: number; status: number }) => {
+    await axiosInstance.post('/teacher/change-status', payload)
+  },
+  updateStatusStudent: async (payload: { studentId: number; status: number }) => {
+    await axiosInstance.post('/student/change-status', payload)
   },
 }

@@ -7,7 +7,7 @@ import { MindMapStudent } from '@/components/MindMap/MindMapStudent'
 import { CourseFooter } from './containers/CourseFooter'
 import { ModalWelcome } from './components'
 import { useAuth, useBoolean } from '@/hooks'
-import { Button, Link, NoData } from '@/components'
+import { Button, Flex, Link, Loading, NoData } from '@/components'
 
 export const CourseDetailPage = () => {
   const { isStudent } = useAuth()
@@ -23,6 +23,14 @@ export const CourseDetailPage = () => {
       <MindMapStudent lessonPlan={course.lessonPlanInfo} isLoading={isLoadingCourse} />
     ),
     basic: course?.lessonPlanInfo && <BasicPlanStudent lessonPlan={course.lessonPlanInfo} />,
+  }
+
+  if (isLoadingCourse && !course) {
+    return (
+      <Flex height='90vh' justifyContent='center'>
+        <Loading />
+      </Flex>
+    )
   }
 
   return (

@@ -17,7 +17,7 @@ export const PlanningPage = () => {
     <Container sx={{ my: 2 }}>
       <AddPlanSection />
       <Stack mt={4} gap={1}>
-        <Typography variant='h3' fontWeight={700}>
+        <Typography variant='h3' fontWeight={600}>
           Your plans
         </Typography>
         {!data?.totalElements && isFetched && (
@@ -33,7 +33,11 @@ export const PlanningPage = () => {
           ))}
         </Grid>
       </Stack>
-      <Flex justifyContent='center'>{isFetching && <Loading />}</Flex>
+      {isFetching && (
+        <Flex justifyContent='center' height='40vh'>
+          <Loading />
+        </Flex>
+      )}
     </Container>
   )
 }
