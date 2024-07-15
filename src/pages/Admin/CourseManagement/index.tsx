@@ -1,14 +1,14 @@
-import { CustomSelect, Flex, Loading, NoData } from '@/components'
+import { CustomModal, CustomSelect, Flex, Loading, NoData } from '@/components'
+import { useAlert } from '@/hooks'
 import { versionService } from '@/services'
 import { VERSION_STATE } from '@/services/course/course.dto'
 import { versionKey } from '@/services/version/query'
 import { gray } from '@/styles/theme'
 import { formatDate, getAbsolutePathFile } from '@/utils'
-import { CancelRounded, CheckRounded } from '@mui/icons-material'
 import {
   Avatar,
   Box,
-  IconButton,
+  Button,
   Pagination,
   Stack,
   Table,
@@ -16,6 +16,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  TextField,
   Typography,
 } from '@mui/material'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -23,10 +24,14 @@ import { useEffect, useState } from 'react'
 
 const PAGE_SIZE = 5
 export function AdminCourseManagementPage() {
+  const { triggerAlert } = useAlert()
+  const [note, setNote] = useState('')
   const [selectedState, setSelectedState] = useState<number>(2)
   const [page, setPage] = useState(0)
   const courseInstance = versionKey.list({ state: selectedState, page, size: PAGE_SIZE })
   const { data: versions, refetch, isFetched, isFetching } = useQuery({ ...courseInstance })
+
+  const [selectedReject, setSelectedReject] = useState<number>()
 
   const data = [
     {
@@ -43,19 +48,25 @@ export function AdminCourseManagementPage() {
     },
   ]
 
-  const { mutate: mutateApprove } = useMutation({
+  const { mutate: mutateChangeState } = useMutation({
     mutationFn: versionService.changeState,
     onSuccess: () => {
       refetch()
+      selectedReject && handleCloseRejectNote()
+      triggerAlert('Update status successfully', 'success')
     },
   })
 
   const handleApprove = (versionId: number) => {
-    mutateApprove({ versionId, state: VERSION_STATE.approved })
+    mutateChangeState({ versionId, state: VERSION_STATE.approved })
   }
 
-  const handleReject = (versionId: number) => {
-    mutateApprove({ versionId, state: VERSION_STATE.rejected })
+  const handleReject = () => {
+    selectedReject && mutateChangeState({ versionId: selectedReject, state: VERSION_STATE.rejected, note })
+  }
+
+  const handleCloseRejectNote = () => {
+    setSelectedReject(undefined)
   }
 
   useEffect(() => {
@@ -82,7 +93,6 @@ export function AdminCourseManagementPage() {
         <TableHead>
           <TableRow>
             <TableCell>Course</TableCell>
-            <TableCell>Price</TableCell>
             <TableCell>Created Date</TableCell>
             <TableCell>State</TableCell>
             <TableCell>Action</TableCell>
@@ -112,10 +122,7 @@ export function AdminCourseManagementPage() {
                   </Stack>
                 </Flex>
               </TableCell>
-              <TableCell>
-                {item.courseInfo.price}
-                {item.courseInfo.currency}
-              </TableCell>
+
               <TableCell>{formatDate.toCommon(item.courseInfo.createDate)}</TableCell>
               <TableCell>
                 {item.state === VERSION_STATE.approved && (
@@ -131,21 +138,24 @@ export function AdminCourseManagementPage() {
                 {item.state === VERSION_STATE.pending && <Typography variant='body2'>Pending</Typography>}
               </TableCell>
               <TableCell>
-                <Stack direction='row'>
-                  <IconButton
+                <Stack direction='row' gap={1}>
+                  <Button
+                    variant='outlined'
                     onClick={() => handleApprove(item.id)}
                     disabled={!!(item.state === VERSION_STATE.approved)}
                     sx={{ opacity: item.state === VERSION_STATE.approved ? 0.4 : 1 }}
                   >
-                    <CheckRounded color='success' />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => handleReject(item.id)}
+                    Approve
+                  </Button>
+                  <Button
+                    variant='outlined'
+                    color='error'
+                    onClick={() => setSelectedReject(item.id)}
                     disabled={!!(item.state === VERSION_STATE.rejected)}
                     sx={{ opacity: item.state === VERSION_STATE.rejected ? 0.4 : 1 }}
                   >
-                    <CancelRounded color='error' />
-                  </IconButton>
+                    Reject
+                  </Button>
                 </Stack>
               </TableCell>
             </TableRow>
@@ -165,6 +175,18 @@ export function AdminCourseManagementPage() {
         onChange={(_, page) => setPage(page - 1)}
       />
       {/* <ConfirmPopup isOpen title='Accept Publish Course' subtitle='are you sure to allow to publish this course?' /> */}
+
+      <CustomModal isOpen={!!selectedReject} title='Reject Note' maxWidth={400} onClose={handleCloseRejectNote}>
+        <Stack gap={1}>
+          <Typography variant='body2' fontWeight={500}>
+            Content
+          </Typography>
+          <TextField value={note} onChange={(e) => setNote(e.target.value)} placeholder='Type reason...' minRows={3} />
+          <Button variant='contained' onClick={handleReject} sx={{ mt: 2 }}>
+            Submit
+          </Button>
+        </Stack>
+      </CustomModal>
     </Stack>
   )
 }

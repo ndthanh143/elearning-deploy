@@ -1,4 +1,4 @@
-import { Button, ConfirmPopup, CustomModal, CustomSelect, Flex, Link, Loading } from '@/components'
+import { Button, ConfirmPopup, CustomModal, CustomSelect, Flex, Link, Loading, LoadingButton } from '@/components'
 import { useAlert, useBoolean } from '@/hooks'
 import { AddRounded, AutoModeRounded } from '@mui/icons-material'
 import {
@@ -36,7 +36,10 @@ type ModalGroupForm = UseFormReturn<
 
 const schema = object({
   name: string().required('Name is required'),
-  size: number().required('Size is required'),
+  size: number()
+    .min(2, 'Group must at least 2 members')
+    .max(50, 'Group maximum 50 members')
+    .required('Size is required'),
 })
 
 const ModalAddGroup = ({
@@ -54,7 +57,11 @@ const ModalAddGroup = ({
   loading: boolean
   onSubmit: (payload: { name: string; size: number }) => void
 }) => {
-  const { register, handleSubmit } = form
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = form
 
   return (
     <CustomModal
@@ -62,15 +69,20 @@ const ModalAddGroup = ({
       isOpen={isOpen}
       onClose={onClose}
       sx={{ maxWidth: 400 }}
-      loading={loading}
     >
       <Stack component='form' onSubmit={handleSubmit(onSubmit)} gap={2}>
-        <TextField label='Name' {...register('name')} />
-        <TextField type='number' label='Size' {...register('size')} />
+        <TextField label='Name' {...register('name')} error={!!errors.name} helperText={errors.name?.message} />
+        <TextField
+          type='number'
+          label='Size'
+          {...register('size')}
+          error={!!errors.size}
+          helperText={errors.size?.message}
+        />
 
-        <MuiButton variant='contained' fullWidth type='submit'>
+        <LoadingButton variant='contained' fullWidth type='submit' isLoading={loading}>
           {status === 'create' ? 'Create' : 'Save'}
-        </MuiButton>
+        </LoadingButton>
       </Stack>
     </CustomModal>
   )
@@ -78,12 +90,13 @@ const ModalAddGroup = ({
 
 const AddGroup = ({ onClick }: { onClick: () => void }) => {
   return (
-    <Card variant='outlined' sx={{ height: '100%' }}>
+    <Card variant='outlined' sx={{ height: '100%', cursor: 'pointer' }} onClick={onClick}>
       <CardContent sx={{ height: '100%' }}>
-        <Flex justifyContent='center' alignItems='center' height='100%'>
-          <Button startIcon={<AddRounded />} fullWidth sx={{ py: 2 }} onClick={onClick}>
+        <Flex justifyContent='center' alignItems='center' height='100%' gap={1}>
+          <AddRounded fontSize='small' color='primary' />
+          <Typography variant='body1' color='primary'>
             Add new group
-          </Button>
+          </Typography>
         </Flex>
       </CardContent>
     </Card>

@@ -13,6 +13,11 @@ export type GetStudentsQuery = {
   courseId: number
 } & PaginationQuery
 
+export type GetUsersQuery = {
+  email?: string
+  status?: number
+} & PaginationQuery
+
 export type SearchStudentQuery = {
   email?: string
 }
@@ -22,6 +27,7 @@ export type Account = {
   avatarPath: string
   email: string
   role: 'Student' | 'Teacher'
+  status: number
 } & BaseData
 
 export type Role = {

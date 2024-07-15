@@ -1,4 +1,4 @@
-import { Flex, Header, SideBar } from '..'
+import { Flex, Header, Loading, SideBar } from '..'
 import { Box } from '@mui/material'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { PropsWithChildren, useEffect } from 'react'
@@ -9,7 +9,7 @@ import 'reactflow/dist/style.css'
 export const Layout = ({ children = null }: PropsWithChildren) => {
   const navigate = useNavigate()
 
-  const { accessToken, profile, isFetched } = useAuth()
+  const { accessToken, profile, isFetched, isLoading } = useAuth()
 
   const { init, close } = useWebSocket()
   useEffect(() => {
@@ -42,6 +42,14 @@ export const Layout = ({ children = null }: PropsWithChildren) => {
       })
     }
   }, [profile])
+
+  if (isLoading && !profile) {
+    return (
+      <Flex height='100vh' alignItems='center'>
+        <Loading />
+      </Flex>
+    )
+  }
 
   return (
     profile && (

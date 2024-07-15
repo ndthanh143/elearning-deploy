@@ -7,6 +7,7 @@ import { useAlert, useAuth } from '@/hooks'
 import { useNavigate } from 'react-router-dom'
 import { lessonPlanKey } from '@/services/lessonPlan/lessonPlan.query'
 import { icons } from '@/assets/icons'
+import { LoadingOverlay } from '@/components'
 
 export function AddPlanSection() {
   const { profile } = useAuth()
@@ -27,7 +28,7 @@ export function AddPlanSection() {
     },
   }
 
-  const { mutate: mutateCreateLessonPlan } = useMutation({
+  const { mutate: mutateCreateLessonPlan, isPending: isLoadingCreatePlan } = useMutation({
     mutationFn: lessonPlanService.create,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: lessonPlanKey.lists() })
@@ -76,6 +77,7 @@ export function AddPlanSection() {
           </Button>
         ))}
       </Stack>
+      <LoadingOverlay isOpen={isLoadingCreatePlan} title='Creating your plan...' />
     </>
   )
 }
