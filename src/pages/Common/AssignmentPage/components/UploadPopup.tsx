@@ -1,8 +1,8 @@
-import { BoxContent, Dropzone, Flex } from '@/components'
+import { BoxContent, Dropzone, Flex, LoadingButton } from '@/components'
 import { UploadEnumType, UploadFileData } from '@/services/file/file.dto'
 import { fileService } from '@/services/file/file.service'
 import { FileUploadRounded } from '@mui/icons-material'
-import { Box, Button, Card, CardContent, Divider, IconButton, Modal, Stack, Typography } from '@mui/material'
+import { Box, Card, CardContent, Divider, IconButton, Modal, Stack, Typography } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { getResourceType } from '@/utils'
@@ -17,7 +17,7 @@ export type UploadPopupProps = {
 export const UploadPopup = ({ isOpen, onClose, onSubmit }: UploadPopupProps) => {
   const [file, setFile] = useState<File | null>(null)
 
-  const { mutate: mutateUploadFile } = useMutation({
+  const { mutate: mutateUploadFile, isPending: isLoadingUploadFile } = useMutation({
     mutationKey: ['upload-file'],
     mutationFn: fileService.upload,
     onSuccess: (data) => {
@@ -26,7 +26,7 @@ export const UploadPopup = ({ isOpen, onClose, onSubmit }: UploadPopupProps) => 
     },
   })
 
-  const { mutate: mutateUploadVideo } = useMutation({
+  const { mutate: mutateUploadVideo, isPending: isLoadingUploadVideo } = useMutation({
     mutationKey: ['upload-file'],
     mutationFn: fileService.uploadVideoFile,
     onSuccess: (data) => {
@@ -79,9 +79,14 @@ export const UploadPopup = ({ isOpen, onClose, onSubmit }: UploadPopupProps) => 
                 </CardContent>
               </Card>
             )}
-            <Button variant='contained' fullWidth onClick={handleSubmit}>
+            <LoadingButton
+              variant='contained'
+              fullWidth
+              onClick={handleSubmit}
+              isLoading={isLoadingUploadVideo || isLoadingUploadFile}
+            >
               Submit
-            </Button>
+            </LoadingButton>
           </Stack>
         </Stack>
       </BoxContent>

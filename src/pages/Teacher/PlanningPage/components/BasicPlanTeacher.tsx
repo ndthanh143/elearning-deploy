@@ -1,5 +1,5 @@
 import actions from '@/assets/images/icons/actions'
-import { ConfirmPopup, Flex, Loading, NoData } from '@/components'
+import { ConfirmPopup, Flex, Loading, LoadingOverlay, NoData } from '@/components'
 import { useAlert, useAuth, useBoolean } from '@/hooks'
 import {
   AddOutlined,
@@ -33,7 +33,6 @@ import { handleMappedChildrenUnitByParent, handleMappedUnits } from '@/utils'
 import { ContentItem } from './ContentItem'
 import { ModalSection, AssignmentActions, LectureActions, QuizActions, SectionModalProps } from '../modals'
 import { assignmentService } from '@/services/assignment/assignment.service'
-import { toast } from 'react-toastify'
 import { lectureService } from '@/services/lecture/lecture.service'
 import { resourceService } from '@/services/resource/resource.service'
 import { Lecture } from '@/services/lecture/lecture.dto'
@@ -93,29 +92,40 @@ export const BasicPlanTeacher = ({ lessonPlanId }: BasicPlanTeacherProps) => {
   const { value: isOpenConfirm, setTrue: openConfirm, setFalse: closeConfirm } = useBoolean()
   const { value: isEditSectionName, setTrue: setEditSectionName, setFalse: closeEditSectionName } = useBoolean()
 
-  const { mutate: mutateCreateSection } = useMutation({
+  const { mutate: mutateCreateSection, isPending: isLoadingSection } = useMutation({
     mutationFn: unitService.create,
     onSuccess: () => {
       closeAddSection()
       refetchUnits()
       queryClient.invalidateQueries({ queryKey: unitKey.lists() })
-      toast.success('Create section successfully!')
+      triggerAlert('Create section successfully!', 'success')
+    },
+    onError: () => {
+      triggerAlert('Create section failed!', 'error')
     },
   })
 
-  const { mutate: mutateUpdatePlan } = useMutation({
+  const { mutate: mutateUpdatePlan, isPending: isLoadingUpdatePlan } = useMutation({
     mutationFn: lessonPlanService.update,
     onSuccess: () => {
       closeEditSectionName()
       queryClient.invalidateQueries({ queryKey: lessonPlanKey.lists() })
       triggerAlert('Update lesson plan successfully!')
     },
+    onError: () => {
+      triggerAlert('Update lesson plan failed!', 'error')
+    },
   })
 
-  const { mutate: mutateDeletePlan } = useMutation({
+  const { mutate: mutateDeletePlan, isPending: isLoadingDeletePlan } = useMutation({
     mutationFn: lessonPlanService.delete,
     onSuccess: () => {
-      toast.success('Delete lesson plan successfully!')
+      navigate('/planning')
+      triggerAlert('Delete lesson plan successfully!', 'success')
+      queryClient.invalidateQueries({ queryKey: lessonPlanKey.lists() })
+    },
+    onError: () => {
+      triggerAlert('Delete lesson plan failed!', 'error')
     },
   })
 
@@ -126,28 +136,28 @@ export const BasicPlanTeacher = ({ lessonPlanId }: BasicPlanTeacherProps) => {
 
   const { mutate: mutateUpdateUnit } = useMutation({ mutationFn: unitService.update })
 
-  const { mutate: mutateUpdateLecture } = useMutation({
+  const { mutate: mutateUpdateLecture, isPending: isLoadingLecture } = useMutation({
     mutationFn: lectureService.update,
     onSuccess: () => {
-      toast.success('Update successfully')
+      triggerAlert('Update successfully')
       setSelectedLecture(null)
       queryClient.invalidateQueries({ queryKey: unitKey.lists() })
     },
   })
 
-  const { mutate: mutateUpdateAssignment } = useMutation({
+  const { mutate: mutateUpdateAssignment, isPending: isLoadingAssignment } = useMutation({
     mutationFn: assignmentService.update,
     onSuccess: () => {
-      toast.success('Update successfully')
+      triggerAlert('Update successfully')
       setSelectedAssignment(null)
       queryClient.invalidateQueries({ queryKey: unitKey.lists() })
     },
   })
 
-  const { mutate: mutateUpdateResource } = useMutation({
+  const { mutate: mutateUpdateResource, isPending: isLoadingAction } = useMutation({
     mutationFn: resourceService.update,
     onSuccess: () => {
-      toast.success('Update successfully')
+      triggerAlert('Update successfully')
       setSelectedResource(null)
       queryClient.invalidateQueries({ queryKey: unitKey.lists() })
     },
@@ -174,8 +184,8 @@ export const BasicPlanTeacher = ({ lessonPlanId }: BasicPlanTeacherProps) => {
     const { startDate, endDate, ...props } = payload
     mutateUpdateAssignment(props)
 
-    if ((startDate || endDate) && selectedUnit) {
-      mutateUpdateUnit({ id: selectedUnit.id, startDate: startDate, endDate: endDate })
+    if (startDate || endDate) {
+      mutateUpdateUnit({ id: selectedUnit?.id as number, startDate: startDate, endDate: endDate })
     }
   }
 
@@ -204,13 +214,19 @@ export const BasicPlanTeacher = ({ lessonPlanId }: BasicPlanTeacherProps) => {
   }
 
   if (isLoadingUnits) {
-    return <Loading />
+    return (
+      <Flex justifyContent='center' height='90vh' alignItems='center'>
+        <Loading />
+      </Flex>
+    )
   }
 
   const mappedUnits = handleMappedUnits(units?.content || [])
 
   const mappedChildrenUnitByParent: Record<number, Unit & { children: Unit[] }> =
     handleMappedChildrenUnitByParent(mappedUnits) || {}
+
+  console.log('selectedUnit', selectedUnit)
 
   return (
     units && (
@@ -352,18 +368,20 @@ export const BasicPlanTeacher = ({ lessonPlanId }: BasicPlanTeacherProps) => {
             onClose={() => setSelectedLecture(null)}
             defaultData={selectedLecture}
             onUpdate={mutateUpdateLecture}
+            isLoading={isLoadingLecture}
           />
         )}
-        {selectedAssignment && (
+        {selectedAssignment && selectedUnit && (
           <AssignmentActions
             isOpen
             onClose={() => setSelectedAssignment(null)}
             defaultData={{
               ...selectedAssignment,
-              startDate: selectedUnit?.startDate,
-              endDate: selectedUnit?.endDate,
+              startDate: selectedUnit.startDate,
+              endDate: selectedUnit.endDate,
             }}
             onUpdate={handleUpdateAssignment}
+            isLoading={isLoadingAssignment}
           />
         )}
         {selectedResource && (
@@ -372,9 +390,16 @@ export const BasicPlanTeacher = ({ lessonPlanId }: BasicPlanTeacherProps) => {
             onClose={() => setSelectedResource(null)}
             defaultData={selectedResource}
             onUpdate={mutateUpdateResource}
+            isLoading={isLoadingAction}
           />
         )}
-        <ModalSection isOpen={isOpenAddSection} onClose={closeAddSection} onSubmit={handleCreateSection} />
+        <ModalSection
+          isOpen={isOpenAddSection}
+          onClose={closeAddSection}
+          onSubmit={handleCreateSection}
+          isLoading={isLoadingSection}
+        />
+        <LoadingOverlay isOpen={isLoadingDeletePlan || isLoadingUpdatePlan} />
       </Container>
     )
   )

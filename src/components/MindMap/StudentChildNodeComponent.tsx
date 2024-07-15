@@ -104,7 +104,7 @@ export const CourseChildNodeComponent = (props: NodeProps<Unit & { hidden: boole
   const contentMenu = () => (
     <Stack py={2} px={2} gap={2} minWidth={200}>
       <Stack gap={1}>
-        <Typography variant='body2' fontWeight={700}>
+        <Typography variant='body2' fontWeight={500}>
           {unit.name}
         </Typography>
         <Typography

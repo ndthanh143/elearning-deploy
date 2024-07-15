@@ -125,7 +125,7 @@ export const TeacherCustomNodeComponent = (
 
   const { value: isOpenDrawer, setTrue: openDrawer, setFalse: closeDrawer } = useBoolean(false)
 
-  const { mutate: mutateCreateUnit } = useMutation({
+  const { mutate: mutateCreateUnit, isPending: isLoadingCreateSection } = useMutation({
     mutationFn: unitService.create,
     onSuccess: () => {
       closeAddSection()
@@ -148,14 +148,14 @@ export const TeacherCustomNodeComponent = (
     },
   })
 
-  const { mutate: mutateCreateLecture } = useMutation({
+  const { mutate: mutateCreateLecture, isPending: isLoadingLecture } = useMutation({
     mutationFn: lectureService.createWithUnit,
     onSuccess: () => {
       handleCreateFinish('lecture')
     },
   })
 
-  const { mutate: mutateCreateResource } = useMutation({
+  const { mutate: mutateCreateResource, isPending: isLoadingAction } = useMutation({
     mutationFn: resourceService.createWithUnit,
     onSuccess: () => {
       handleCreateFinish('resource')
@@ -186,7 +186,7 @@ export const TeacherCustomNodeComponent = (
     triggerAlert(toastMessage, 'success')
   }
 
-  const { mutate: mutateCreateAssignment } = useMutation({
+  const { mutate: mutateCreateAssignment, isPending: isLoadingAssignment } = useMutation({
     mutationFn: assignmentService.createWithUnit,
     onSuccess: () => {
       handleCreateFinish('assignment')
@@ -482,10 +482,30 @@ export const TeacherCustomNodeComponent = (
             </Stack>
           </Box>
         </Stack>
-        <ResourceActions isOpen={isOpenResource} onClose={closeResource} onCreate={handleResourceActions} />
-        <AssignmentActions isOpen={isOpenAssignment} onClose={closeAssignment} onCreate={handleAssignmentActions} />
-        <LectureActions isOpen={isOpenLecture} onClose={closeLecture} onCreate={handleLectureActions} />
-        <ModalSection isOpen={isOpenAddSection} onClose={closeAddSection} onSubmit={handleCreateSection} />
+        <ResourceActions
+          isOpen={isOpenResource}
+          onClose={closeResource}
+          onCreate={handleResourceActions}
+          isLoading={isLoadingAction}
+        />
+        <AssignmentActions
+          isOpen={isOpenAssignment}
+          onClose={closeAssignment}
+          onCreate={handleAssignmentActions}
+          isLoading={isLoadingAssignment}
+        />
+        <LectureActions
+          isOpen={isOpenLecture}
+          onClose={closeLecture}
+          onCreate={handleLectureActions}
+          isLoading={isLoadingLecture}
+        />
+        <ModalSection
+          isOpen={isOpenAddSection}
+          onClose={closeAddSection}
+          onSubmit={handleCreateSection}
+          isLoading={isLoadingCreateSection}
+        />
         {quiz && <QuizActions isOpen onClose={reset} defaultData={quiz} />}
         <DrawerNodeDetail isOpen={isOpenDrawer && selected} onClose={closeDrawer} unit={unit} />
       </Box>

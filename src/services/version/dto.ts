@@ -1,5 +1,5 @@
 import { BasePaginationResponse } from '../common/base.dto'
-import { Course, Version } from '../course/course.dto'
+import { Version } from '../course/course.dto'
 
 export type GetVersionResponse = BasePaginationResponse<Version[]>
 

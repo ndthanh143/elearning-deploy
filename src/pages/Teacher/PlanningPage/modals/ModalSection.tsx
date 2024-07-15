@@ -1,7 +1,7 @@
-import { BoxContent } from '@/components'
+import { BoxContent, LoadingButton } from '@/components'
 import { Unit } from '@/services/unit/types'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Button, Modal, Stack, TextField } from '@mui/material'
+import { Button, Modal, Stack, TextField, Typography } from '@mui/material'
 import { useForm } from 'react-hook-form'
 import { object, string } from 'yup'
 
@@ -10,19 +10,20 @@ export type AddSectionProps = {
   onClose: () => void
   defaultValues?: Unit
   onSubmit: (data: SectionModalProps) => void
+  isLoading?: boolean
 }
 
 export type SectionModalProps = {
   name: string
-  description: string
+  description?: string
 }
 
 const schema = object({
-  description: string().required(),
+  description: string(),
   name: string().required(),
 })
 
-export const ModalSection = ({ isOpen, onClose, defaultValues, onSubmit }: AddSectionProps) => {
+export const ModalSection = ({ isOpen, onClose, defaultValues, onSubmit, isLoading }: AddSectionProps) => {
   const { register, handleSubmit } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -38,15 +39,18 @@ export const ModalSection = ({ isOpen, onClose, defaultValues, onSubmit }: AddSe
   return (
     <Modal open={isOpen} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} onClose={onClose}>
       <BoxContent width={500} component='form' onSubmit={handleSubmit(onSubmitHandler)}>
-        <Stack gap={2} my={2}>
+        <Typography variant='body1' fontWeight={600} textAlign='left' mb={2}>
+          {defaultValues ? 'Edit' : 'Create new'} section
+        </Typography>
+        <Stack gap={2}>
           <TextField size='small' fullWidth placeholder='Section name' {...register('name')} />
-          <TextField fullWidth placeholder='Description' {...register('description')} />
-
           <Stack direction='row' justifyContent='end' gap={2}>
-            <Button onClick={onClose}>Cancel</Button>
-            <Button variant='contained' type='submit'>
-              {defaultValues ? 'Update' : 'Create'}
+            <Button onClick={onClose} disabled={isLoading}>
+              Cancel
             </Button>
+            <LoadingButton variant='contained' type='submit' isLoading={isLoading}>
+              {defaultValues ? 'Update' : 'Create'}
+            </LoadingButton>
           </Stack>
         </Stack>
       </BoxContent>

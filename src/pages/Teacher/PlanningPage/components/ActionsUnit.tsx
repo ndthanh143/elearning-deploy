@@ -1,4 +1,4 @@
-import { useBoolean } from '@/hooks'
+import { useAlert, useBoolean } from '@/hooks'
 import {
   ArticleOutlined,
   AssignmentOutlined,
@@ -12,20 +12,22 @@ import { ModalSection, AssignmentActions, LectureActions, QuizActions, SectionMo
 import { ResourceActions } from '../modals/ResourceActions'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { quizService } from '@/services/quiz/quiz.service'
-import dayjs from 'dayjs'
 import { ConfirmPopup, Flex, ModalLoading } from '@/components'
-import { toast } from 'react-toastify'
 import { Unit } from '@/services/unit/types'
 import { unitService } from '@/services/unit'
 import { unitKey } from '@/services/unit/query'
 import { lectureService } from '@/services/lecture/lecture.service'
 import { resourceService } from '@/services/resource/resource.service'
 import { assignmentService } from '@/services/assignment/assignment.service'
+import { CreateAssignmentPayload } from '@/services/assignment/assignment.dto'
+import { CreateResourcePayload } from '@/services/resource/resource.dto'
+import { CreateLecturePayload } from '@/services/lecture/lecture.dto'
 type ActionsUnitProps = {
   data: Unit
 }
 
 export const ActionsUnit = ({ data: unit }: ActionsUnitProps) => {
+  const { triggerAlert } = useAlert()
   const queryClient = useQueryClient()
 
   const { value: isOpenLecture, setTrue: openLecture, setFalse: closeLecture } = useBoolean()
@@ -34,96 +36,90 @@ export const ActionsUnit = ({ data: unit }: ActionsUnitProps) => {
   const { value: isOpenSectionModal, setTrue: openSectionModal, setFalse: closeSectionModal } = useBoolean()
   const { value: isOpenConfirm, setTrue: openConfirm, setFalse: closeConfirm } = useBoolean()
 
+  const handleCreateFinish = (type: 'assignment' | 'lecture' | 'quiz' | 'resource' | 'video') => {
+    let toastMessage = 'Create unit successfully!'
+    switch (type) {
+      case 'lecture':
+        toastMessage = 'Create lecture successfully!'
+        closeLecture()
+        break
+      case 'assignment':
+        toastMessage = 'Create assignment successfully!'
+        closeAssignment()
+        break
+      case 'resource':
+        toastMessage = 'Create resource successfully!'
+        closeResource()
+        break
+      case 'quiz':
+        toastMessage = 'Create quiz successfully!'
+        break
+    }
+
+    queryClient.invalidateQueries({ queryKey: unitKey.lists() })
+    triggerAlert(toastMessage, 'success')
+  }
+
   const {
     mutate: mutateCreateQuiz,
     isPending: isPendingCreateQuiz,
     data: quiz,
     reset,
   } = useMutation({
-    mutationFn: quizService.create,
-    onSuccess: (data) => {
-      if (data) {
-        mutateCreateUnit({
-          lessonPlanId: Number(unit.lessonPlanInfo?.id),
-          description: data.quizTitle,
-          parentId: unit.id,
-          name: data.quizTitle,
-          quizId: data.id,
-        })
-      }
+    mutationFn: quizService.createWithUnit,
+    onSuccess: () => {
+      handleCreateFinish('quiz')
     },
   })
 
-  const { mutate: mutateCreateUnit } = useMutation({
-    mutationFn: unitService.create,
-    onSuccess: (payload) => {
-      let toastMessage = 'Create unit successfully!'
+  const { mutate: mutateCreateLecture, isPending: isLoadingLecture } = useMutation({
+    mutationFn: lectureService.createWithUnit,
+    onSuccess: () => {
+      handleCreateFinish('lecture')
+    },
+  })
+  const handleCreateLecture = (payload: CreateLecturePayload) => {
+    mutateCreateLecture({
+      ...payload,
+      parentId: unit.id,
+      lessonPlanId: Number(unit.lessonPlanInfo?.id),
+    })
+  }
 
-      if (payload.lectureInfo) {
-        toastMessage = 'Create lecture successfully!'
-        closeLecture()
-      }
-      if (payload.assignmentInfo) {
-        toastMessage = 'Create assignment successfully!'
-        closeAssignment()
-      }
-      if (payload.resourceInfo) {
-        toastMessage = 'Create resource successfully!'
-        closeResource()
-      }
-      if (payload.quizInfo) {
-        toastMessage = 'Create quiz successfully!'
-      }
+  const { mutate: mutateCreateResource, isPending: isLoadingAction } = useMutation({
+    mutationFn: resourceService.createWithUnit,
+    onSuccess: () => {
+      handleCreateFinish('resource')
+    },
+  })
+  const handleCreateResource = (payload: CreateResourcePayload) => {
+    mutateCreateResource({
+      ...payload,
+      parentId: unit.id,
+      lessonPlanId: Number(unit.lessonPlanInfo?.id),
+    })
+  }
 
-      queryClient.invalidateQueries({ queryKey: unitKey.lists() })
-      toast.success(toastMessage)
+  const { mutate: mutateCreateAssignment, isPending: isLoadingAssignment } = useMutation({
+    mutationFn: assignmentService.createWithUnit,
+    onSuccess: () => {
+      handleCreateFinish('assignment')
     },
   })
 
-  const { mutate: mutateCreateLecture } = useMutation({
-    mutationFn: lectureService.create,
-    onSuccess: (data) => {
-      mutateCreateUnit({
-        lessonPlanId: Number(unit.lessonPlanInfo?.id),
-        description: data.lectureName,
-        parentId: unit.id,
-        name: data.lectureName,
-        lectureId: data.id,
-      })
-    },
-  })
+  const handleCreateAssignment = (payload: CreateAssignmentPayload) => {
+    mutateCreateAssignment({
+      ...payload,
+      parentId: unit.id,
+      lessonPlanId: Number(unit.lessonPlanInfo?.id),
+    })
+  }
 
-  const { mutate: mutateCreateResource } = useMutation({
-    mutationFn: resourceService.create,
-    onSuccess: (data) => {
-      mutateCreateUnit({
-        lessonPlanId: Number(unit.lessonPlanInfo?.id),
-        description: data.title,
-        parentId: unit.id,
-        name: data.title,
-        resourceId: data.id,
-      })
-    },
-  })
-
-  const { mutate: mutateCreateAssignment } = useMutation({
-    mutationFn: assignmentService.create,
-    onSuccess: (data) => {
-      mutateCreateUnit({
-        lessonPlanId: Number(unit.lessonPlanInfo?.id),
-        description: data.assignmentContent,
-        parentId: unit.id,
-        name: data.assignmentTitle,
-        assignmentId: data.id,
-      })
-    },
-  })
-
-  const { mutate: mutateUpdate } = useMutation({
+  const { mutate: mutateUpdate, isPending: isLoadingSection } = useMutation({
     mutationFn: unitService.update,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: unitKey.lists() })
-      toast.success('Update Section successfully')
+      triggerAlert('Update Section successfully', 'success')
       closeSectionModal()
     },
   })
@@ -132,7 +128,7 @@ export const ActionsUnit = ({ data: unit }: ActionsUnitProps) => {
     mutationFn: unitService.delete,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: unitKey.lists() })
-      toast.success('Delete Section successfully')
+      triggerAlert('Delete Section successfully', 'success')
       closeSectionModal()
     },
   })
@@ -145,14 +141,14 @@ export const ActionsUnit = ({ data: unit }: ActionsUnitProps) => {
     mutateDelete(unit.id)
   }
 
-  const handleAddQuiz = () => {
+  const handleQuizActions = () => {
     mutateCreateQuiz({
-      quizTitle: 'Quiz 1',
+      quizTitle: 'Quiz example...',
       attemptNumber: 0,
-      endDate: dayjs().toISOString(),
       quizTimeLimit: 0,
-      startDate: dayjs().toISOString(),
       isPublicAnswer: true,
+      lessonPlanId: Number(unit.lessonPlanInfo?.id),
+      parentId: unit.id,
     })
   }
 
@@ -193,7 +189,7 @@ export const ActionsUnit = ({ data: unit }: ActionsUnitProps) => {
           <Tooltip title='Add new quiz'>
             <IconButton
               color='secondary'
-              onClick={handleAddQuiz}
+              onClick={handleQuizActions}
               sx={{
                 border: 1,
                 ':hover': {
@@ -258,11 +254,27 @@ export const ActionsUnit = ({ data: unit }: ActionsUnitProps) => {
         onClose={closeSectionModal}
         defaultValues={unit}
         onSubmit={handleUpdateSecion}
+        isLoading={isLoadingSection}
       />
 
-      <LectureActions isOpen={isOpenLecture} onClose={closeLecture} onCreate={mutateCreateLecture} />
-      <ResourceActions isOpen={isOpenResource} onClose={closeResource} onCreate={mutateCreateResource} />
-      <AssignmentActions isOpen={isOpenAssignment} onClose={closeAssignment} onCreate={mutateCreateAssignment} />
+      <LectureActions
+        isOpen={isOpenLecture}
+        onClose={closeLecture}
+        onCreate={handleCreateLecture}
+        isLoading={isLoadingLecture}
+      />
+      <ResourceActions
+        isOpen={isOpenResource}
+        onClose={closeResource}
+        onCreate={handleCreateResource}
+        isLoading={isLoadingAction}
+      />
+      <AssignmentActions
+        isOpen={isOpenAssignment}
+        onClose={closeAssignment}
+        onCreate={handleCreateAssignment}
+        isLoading={isLoadingAssignment}
+      />
 
       {quiz && <QuizActions isOpen onClose={reset} defaultData={quiz} />}
       <ConfirmPopup

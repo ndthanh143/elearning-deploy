@@ -51,7 +51,7 @@ export const TeacherChildNodeComponent = (props: NodeProps<Unit>) => {
     },
   })
 
-  const { mutate: mutateUpdateLecture } = useMutation({
+  const { mutate: mutateUpdateLecture, isPending: isLoadingLecture } = useMutation({
     mutationFn: lectureService.update,
     onSuccess: (lecture) => {
       toast.success('Update lecture successfully!')
@@ -140,7 +140,7 @@ export const TeacherChildNodeComponent = (props: NodeProps<Unit>) => {
               <Box component='img' src={icons[type as UnitType]} alt='icon' width={40} height={40} />
             </Flex>
             <Stack position='absolute' top='110%' minWidth={200}>
-              <Typography variant='body2' textAlign={'center'} fontWeight={700}>
+              <Typography variant='body2' textAlign={'center'} fontWeight={500}>
                 {unit.name}
               </Typography>
               {/* <Typography variant='body2' textAlign={'center'} color={gray[500]}>
@@ -195,6 +195,7 @@ export const TeacherChildNodeComponent = (props: NodeProps<Unit>) => {
             isOpen={Boolean(unit.lectureInfo)}
             onClose={closeLecture}
             onUpdate={mutateUpdateLecture}
+            isLoading={isLoadingLecture}
           />
         </Drawer>
       )}

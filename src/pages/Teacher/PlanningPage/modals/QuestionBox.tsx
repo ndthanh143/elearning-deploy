@@ -1,4 +1,4 @@
-import { ConfirmPopup } from '@/components'
+import { ConfirmPopup, LoadingButton } from '@/components'
 import {
   Anwser,
   AnwserCreate,
@@ -39,6 +39,7 @@ type QuestionBoxProps = {
   index?: number
   status: 'edit' | 'view' | 'create'
   defaultQuestion?: QuizQuestion
+  isLoading?: boolean
 }
 export const QuestionBox = ({
   quizId,
@@ -47,6 +48,8 @@ export const QuestionBox = ({
   onUpdate,
   onSave,
   status: defaultStatus,
+  index,
+  isLoading,
 }: QuestionBoxProps) => {
   const queryClient = useQueryClient()
   const [selectedDeleteQuestion, setSelectedDeleteQuestion] = useState<number | null>(null)
@@ -117,7 +120,7 @@ export const QuestionBox = ({
 
   return (
     <Badge
-      badgeContent={1}
+      badgeContent={index}
       color='primary'
       anchorOrigin={{
         vertical: 'top',
@@ -159,7 +162,7 @@ export const QuestionBox = ({
               <Stack direction='row' gap={2} alignItems='center'>
                 <Tooltip title='Choose correct anwser'>
                   {questionType === 1 ? (
-                    <Radio value={index} />
+                    <Radio value={index} checked={item.isCorrect} />
                   ) : (
                     <Checkbox onChange={() => handleCheckBoxAnwser(index)} />
                   )}
@@ -201,17 +204,19 @@ export const QuestionBox = ({
                 }}
                 variant='outlined'
                 fullWidth
+                disabled={isLoading}
               >
                 Cancel
               </Button>
-              <Button
+              <LoadingButton
                 variant='contained'
                 onClick={handleSubmit}
                 disabled={answers.length <= 2 || !questionContent}
                 fullWidth
+                isLoading={isLoading}
               >
                 Save
-              </Button>
+              </LoadingButton>
             </>
           ) : (
             <>

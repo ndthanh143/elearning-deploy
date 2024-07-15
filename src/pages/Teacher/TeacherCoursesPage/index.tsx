@@ -59,7 +59,7 @@ export const TeacherCoursesPage = () => {
             ) : (
               <Grid container spacing={4}>
                 {courses?.content.map((course) => (
-                  <Grid item xs={4} key={course.id}>
+                  <Grid item xs={12} md={6} lg={4} xl={3} key={course.id}>
                     <TeacherCourseCard data={course} onDelete={mutateDeleteCourse} />
                   </Grid>
                 ))}

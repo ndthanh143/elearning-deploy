@@ -1,4 +1,4 @@
-import { ErrorField, Flex, Loading } from '@/components'
+import { ErrorField, Flex, Loading, LoadingButton } from '@/components'
 import { Quiz, UpdateQuizPayload } from '@/services/quiz/quiz.dto'
 import { quizQuestionKey } from '@/services/quizQuestion/quizQuestion.query'
 import { quizQuestionService } from '@/services/quizQuestion/quizQuestion.service'
@@ -22,15 +22,15 @@ import dayjs from 'dayjs'
 import { useForm } from 'react-hook-form'
 import { boolean, number, object, string } from 'yup'
 import { QuestionBox } from '.'
-import { useBoolean } from '@/hooks'
+import { useAlert, useBoolean } from '@/hooks'
 import { CreateQuestionPayload, QuizQuestion, UpdateQuestionPayload } from '@/services/quizQuestion/quizQuestion.dto'
 import { quizService } from '@/services/quiz/quiz.service'
 import { toast } from 'react-toastify'
 import { useState } from 'react'
 import { answerService } from '@/services/answer/answer.service'
-import { moduleKey } from '@/services/module/module.query'
 import { AddOutlined, ArrowBackOutlined } from '@mui/icons-material'
 import { unitService } from '@/services/unit'
+import { unitKey } from '@/services/unit/query'
 
 export type AddQuizProps = {
   isOpen?: boolean
@@ -51,7 +51,7 @@ const schema = object({
 })
 
 export const QuizActions = ({ isOpen = true, onClose, defaultData, unitId }: AddQuizProps) => {
-  console.log('defaultData', defaultData)
+  const { triggerAlert } = useAlert()
   const queryClient = useQueryClient()
 
   const { value: isOpenAddQuestion, setFalse: closeAddQuestion, setTrue: openAddQuestion } = useBoolean(false)
@@ -99,12 +99,12 @@ export const QuizActions = ({ isOpen = true, onClose, defaultData, unitId }: Add
     ...quizQuestionsInstance,
   })
 
-  const { mutate: mutateUpdateQuiz } = useMutation({
+  const { mutate: mutateUpdateQuiz, isPending: isLoadingQuiz } = useMutation({
     mutationFn: quizService.update,
     onSuccess: () => {
       onClose()
-      toast.success('Update quiz successfully')
-      queryClient.invalidateQueries({ queryKey: moduleKey.lists() })
+      triggerAlert('Update quiz successfully')
+      queryClient.invalidateQueries({ queryKey: unitKey.lists() })
     },
   })
 
@@ -118,7 +118,7 @@ export const QuizActions = ({ isOpen = true, onClose, defaultData, unitId }: Add
     },
   })
 
-  const { mutate: mutateUpdateQuestion } = useMutation({
+  const { mutate: mutateUpdateQuestion, isPending: isLoadingUpdateQuestion } = useMutation({
     mutationFn: quizQuestionService.update,
     onSuccess: () => {
       setSelectedQuestion(null)
@@ -126,11 +126,15 @@ export const QuizActions = ({ isOpen = true, onClose, defaultData, unitId }: Add
     },
   })
 
-  const { mutate: mutateCreateAnswers, data: anwsersCreated } = useMutation({
+  const {
+    mutate: mutateCreateAnswers,
+    data: anwsersCreated,
+    isPending: isLoadingCreateAnswers,
+  } = useMutation({
     mutationFn: answerService.bulkCreate,
   })
 
-  const { mutate: mutateDeleteAnswers } = useMutation({
+  const { mutate: mutateDeleteAnswers, isPending: isLoadingDeleteAnswers } = useMutation({
     mutationFn: answerService.delete,
     onError: () => {
       toast.error('This quiz have submission before, can not modified it')
@@ -282,7 +286,7 @@ export const QuizActions = ({ isOpen = true, onClose, defaultData, unitId }: Add
             <Stack width='100%' gap={4}>
               {isLoadingQuestions && <Loading />}
               {questions &&
-                questions?.map((question) => (
+                questions?.map((question, index) => (
                   <QuestionBox
                     quizId={id}
                     defaultQuestion={question}
@@ -290,6 +294,8 @@ export const QuizActions = ({ isOpen = true, onClose, defaultData, unitId }: Add
                     onUpdate={handleUpdateQuestion}
                     key={question.id}
                     status='view'
+                    index={index + 1}
+                    isLoading={isLoadingCreateAnswers || isLoadingUpdateQuestion || isLoadingDeleteAnswers}
                   />
                 ))}
             </Stack>
@@ -303,9 +309,9 @@ export const QuizActions = ({ isOpen = true, onClose, defaultData, unitId }: Add
               Add Question
             </Button>
             <Divider sx={{ my: 4 }} />
-            <Button variant='contained' type='submit' sx={{ my: 2 }} fullWidth>
+            <LoadingButton variant='contained' type='submit' sx={{ my: 2 }} fullWidth isLoading={isLoadingQuiz}>
               Save
-            </Button>
+            </LoadingButton>
             <Divider sx={{ my: 4 }} />
           </Box>
         </Container>

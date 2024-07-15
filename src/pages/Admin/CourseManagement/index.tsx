@@ -1,13 +1,13 @@
-import { CustomSelect, Flex } from '@/components'
+import { CustomSelect, Flex, Loading, NoData } from '@/components'
 import { versionService } from '@/services'
 import { VERSION_STATE } from '@/services/course/course.dto'
-import { courseKeys } from '@/services/course/course.query'
 import { versionKey } from '@/services/version/query'
 import { gray } from '@/styles/theme'
 import { formatDate, getAbsolutePathFile } from '@/utils'
 import { CancelRounded, CheckRounded } from '@mui/icons-material'
 import {
   Avatar,
+  Box,
   IconButton,
   Pagination,
   Stack,
@@ -19,13 +19,14 @@ import {
   Typography,
 } from '@mui/material'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
+const PAGE_SIZE = 5
 export function AdminCourseManagementPage() {
   const [selectedState, setSelectedState] = useState<number>(2)
-  const [page, setPage] = useState(1)
-  const courseInstance = versionKey.list({})
-  const { data: versions, refetch } = useQuery({ ...courseInstance })
+  const [page, setPage] = useState(0)
+  const courseInstance = versionKey.list({ state: selectedState, page, size: PAGE_SIZE })
+  const { data: versions, refetch, isFetched, isFetching } = useQuery({ ...courseInstance })
 
   const data = [
     {
@@ -57,6 +58,12 @@ export function AdminCourseManagementPage() {
     mutateApprove({ versionId, state: VERSION_STATE.rejected })
   }
 
+  useEffect(() => {
+    if (selectedState && isFetched && page) {
+      refetch()
+    }
+  }, [selectedState, page])
+
   return (
     <Stack>
       <Typography variant='h2' fontWeight={700}>
@@ -64,7 +71,7 @@ export function AdminCourseManagementPage() {
       </Typography>
       <Flex justifyContent='end'>
         <CustomSelect
-          value={'request'}
+          value={selectedState}
           data={data}
           sx={{ width: 150 }}
           size='small'
@@ -144,13 +151,19 @@ export function AdminCourseManagementPage() {
             </TableRow>
           ))}
         </TableBody>
-        <Pagination
-          page={page + 1}
-          count={versions?.totalPages}
-          sx={{ mt: 1 }}
-          onChange={(_, page) => setPage(page - 1)}
-        />
       </Table>
+      {isFetching && <Loading />}
+      {isFetched && !isFetching && !versions?.content.length && (
+        <Box sx={{ my: 2 }}>
+          <NoData />
+        </Box>
+      )}
+      <Pagination
+        page={page + 1}
+        count={versions?.totalPages}
+        sx={{ mt: 1, mx: 'auto' }}
+        onChange={(_, page) => setPage(page - 1)}
+      />
       {/* <ConfirmPopup isOpen title='Accept Publish Course' subtitle='are you sure to allow to publish this course?' /> */}
     </Stack>
   )

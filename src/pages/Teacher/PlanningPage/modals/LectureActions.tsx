@@ -1,4 +1,4 @@
-import { Flex } from '@/components'
+import { Flex, LoadingButton } from '@/components'
 import Editor from '@/components/ContentEditor/ContentEditor'
 import { CreateLecturePayload, Lecture, UpdateLecturePayload } from '@/services/lecture/lecture.dto'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -13,6 +13,7 @@ export type AddLectureProps = {
   onClose: () => void
   onCreate?: (payload: CreateLecturePayload) => void
   onUpdate?: (payload: UpdateLecturePayload) => void
+  isLoading?: boolean
 }
 
 const schema = object({
@@ -20,7 +21,7 @@ const schema = object({
   lectureName: string().required(),
 })
 
-export const LectureActions = ({ isOpen, onClose, defaultData, onCreate, onUpdate }: AddLectureProps) => {
+export const LectureActions = ({ isOpen, onClose, defaultData, onCreate, onUpdate, isLoading }: AddLectureProps) => {
   const { register, handleSubmit, setValue, watch, reset } = useForm<CreateLecturePayload>({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -100,9 +101,9 @@ export const LectureActions = ({ isOpen, onClose, defaultData, onCreate, onUpdat
               </Box>
             </Stack>
 
-            <Button fullWidth variant='contained' type='submit'>
+            <LoadingButton fullWidth variant='contained' type='submit' isLoading={isLoading}>
               Submit
-            </Button>
+            </LoadingButton>
           </Box>
         </Container>
       </Box>

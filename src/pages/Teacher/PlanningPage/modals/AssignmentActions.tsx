@@ -1,5 +1,5 @@
 import { icons } from '@/assets/icons'
-import { Flex, YoutubeCard } from '@/components'
+import { Flex, LoadingButton, YoutubeCard } from '@/components'
 import Editor from '@/components/ContentEditor/ContentEditor'
 import { UrlPopup } from '@/components/UrlPopup'
 import { useBoolean } from '@/hooks'
@@ -22,6 +22,7 @@ export type AddAssignmentProps = {
   isOpen: boolean
   defaultData?: Assignment
   status?: 'create' | 'update'
+  isLoading?: boolean
 }
 
 const schema = object({
@@ -39,11 +40,12 @@ export const AssignmentActions = ({
   defaultData,
   onCreate,
   onUpdate,
+  isLoading,
 }: AddAssignmentProps) => {
   const { value: isOpenUpload, setTrue: openUpload, setFalse: closeUpload } = useBoolean(false)
   const { value: isOpenYoutube, setTrue: openYoutube, setFalse: closeYoutube } = useBoolean(false)
 
-  console.log('default', defaultData)
+  console.log('defaultData', defaultData)
 
   const { register, handleSubmit, setValue, getValues, watch } = useForm<CreateAssignmentPayload>({
     resolver: yupResolver(schema),
@@ -184,12 +186,12 @@ export const AssignmentActions = ({
               </Stack>
             </Stack>
             <Stack direction='row' gap={2} pb={2}>
-              <Button variant='outlined' fullWidth onClick={onClose}>
+              <Button variant='outlined' fullWidth onClick={onClose} disabled={isLoading}>
                 Cancel
               </Button>
-              <Button variant='contained' fullWidth type='submit'>
+              <LoadingButton variant='contained' fullWidth type='submit' isLoading={isLoading}>
                 {status === 'update' ? 'Update' : 'Create'}
-              </Button>
+              </LoadingButton>
             </Stack>
           </Box>
         </Container>
