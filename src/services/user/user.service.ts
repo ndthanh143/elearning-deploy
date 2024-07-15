@@ -69,19 +69,44 @@ export const userService = {
     await axiosInstance.delete(`/account/delete/${id}`)
   },
   getListTeachers: async (query: GetUsersQuery) => {
-    const { data } = await axiosInstance.get<UsersResponse>('/teacher/list', { params: { ...query } })
+    const token = Cookies.get('admin_access_token')
+    const { data } = await axiosInstance.get<UsersResponse>('/teacher/list', {
+      params: { ...query },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
 
     return data.data
   },
   getListStudents: async (query: GetUsersQuery) => {
-    const { data } = await axiosInstance.get<UsersResponse>('/student/list', { params: { ...query } })
+    const token = Cookies.get('admin_access_token')
+
+    const { data } = await axiosInstance.get<UsersResponse>('/student/list', {
+      params: { ...query },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
 
     return data.data
   },
   updateStatusTeacher: async (payload: { teacherId: number; status: number }) => {
-    await axiosInstance.post('/teacher/change-status', payload)
+    const token = Cookies.get('admin_access_token')
+
+    await axiosInstance.post('/teacher/change-status', payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
   },
   updateStatusStudent: async (payload: { studentId: number; status: number }) => {
-    await axiosInstance.post('/student/change-status', payload)
+    const token = Cookies.get('admin_access_token')
+
+    await axiosInstance.post('/student/change-status', payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
   },
 }
