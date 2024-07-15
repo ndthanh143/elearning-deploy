@@ -9,7 +9,7 @@ export const versionService = {
     const { data } = await axiosInstance.get<GetVersionResponse>('/version/list', {
       params: { ...query },
       headers: {
-        ...(adminAccessToken && { Authorization: `Bearer ${adminAccessToken}` }),
+        Authorization: `Bearer ${adminAccessToken}`,
       },
     })
     return data.data
@@ -23,7 +23,7 @@ export const versionService = {
 
     await axiosInstance.post('/version/change-state', payload, {
       headers: {
-        ...(adminAccessToken && { Authorization: `Bearer ${adminAccessToken}` }),
+        Authorization: `Bearer ${adminAccessToken}`,
       },
     })
   },
@@ -36,7 +36,7 @@ export const versionService = {
       { versionId },
       {
         headers: {
-          ...(adminAccessToken && { Authorization: `Bearer ${adminAccessToken}` }),
+          Authorization: `Bearer ${adminAccessToken}`,
         },
       },
     )
