@@ -1,7 +1,7 @@
 import { CustomMenu, Flex } from '@/components'
 import { primary } from '@/styles/theme'
-import { DeleteRounded, EditRounded, MoreVertRounded } from '@mui/icons-material'
-import { Box, IconButton, ListItemIcon, MenuItem, Stack, Typography } from '@mui/material'
+import { CheckRounded, DeleteRounded, EditRounded, MoreVertRounded } from '@mui/icons-material'
+import { Box, Chip, IconButton, ListItemIcon, MenuItem, Stack, Typography } from '@mui/material'
 import { useDrag, useDrop, DragSourceMonitor } from 'react-dnd'
 import { icons } from '@/assets/icons'
 import { GroupTaskInfo } from '@/services/group/dto'
@@ -44,8 +44,6 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       }
     },
   })
-
-  console.log('data', data)
 
   return (
     <>
@@ -90,6 +88,24 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             </Flex>
           </Stack>
         </Flex>
+        <Flex justifyContent='end' mt={1}>
+          {(data.isSubmitted || data.score) && (
+            <Chip
+              label={
+                data.score ? (
+                  <Flex gap={0.5}>
+                    <Typography variant='caption'>Marked</Typography>
+                    <CheckRounded fontSize='small' sx={{ fontSize: 14 }} />
+                  </Flex>
+                ) : (
+                  'Student submitted'
+                )
+              }
+              color={data.score ? 'success' : 'primary'}
+              size='small'
+            />
+          )}
+        </Flex>
       </Stack>
       <CustomMenu anchorEl={anchorEl} onClose={onClose} open={isOpen}>
         <MenuItem
@@ -115,7 +131,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           <Typography variant='body2'>Remove</Typography>
         </MenuItem>
       </CustomMenu>
-      <ModalGroupTaskDetail data={data} isOpen={isOpenGroupTaskDetail} onClose={closeGroupTaskDetail} />
+      {isOpenGroupTaskDetail && (
+        <ModalGroupTaskDetail data={data} isOpen={isOpenGroupTaskDetail} onClose={closeGroupTaskDetail} />
+      )}
     </>
   )
 }

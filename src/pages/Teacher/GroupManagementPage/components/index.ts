@@ -1,4 +1,4 @@
-export * from './ModalAddTask'
+export * from './ModalActionsTask'
 export * from './ModalAutoGenerateGroup'
 export * from './TaskCard'
 export * from './GroupCard'

@@ -1,4 +1,5 @@
 import { ConfirmPopup, LoadingButton } from '@/components'
+import { useAlert } from '@/hooks'
 import {
   Anwser,
   AnwserCreate,
@@ -9,7 +10,13 @@ import {
 import { quizQuestionKey } from '@/services/quizQuestion/quizQuestion.query'
 import { quizQuestionService } from '@/services/quizQuestion/quizQuestion.service'
 import { gray } from '@/styles/theme'
-import { CloseOutlined } from '@mui/icons-material'
+import {
+  AddRounded,
+  CheckBoxOutlined,
+  CheckCircleOutline,
+  CheckCircleRounded,
+  CloseOutlined,
+} from '@mui/icons-material'
 import {
   Badge,
   Box,
@@ -44,13 +51,13 @@ type QuestionBoxProps = {
 export const QuestionBox = ({
   quizId,
   defaultQuestion,
-  onClose,
   onUpdate,
   onSave,
   status: defaultStatus,
   index,
   isLoading,
 }: QuestionBoxProps) => {
+  const { triggerAlert } = useAlert()
   const queryClient = useQueryClient()
   const [selectedDeleteQuestion, setSelectedDeleteQuestion] = useState<number | null>(null)
   const [questionContent, setQuestionContent] = useState(defaultQuestion?.questionContent || '')
@@ -71,13 +78,10 @@ export const QuestionBox = ({
   })
 
   const [answers, setAnwsers] = useState<Anwser[]>(
-    defaultQuestion?.answers || [
-      { id: 0, answerContent: '', isCorrect: false },
-      { id: 0, answerContent: '', isCorrect: false },
-      { id: 0, answerContent: '', isCorrect: false },
-      { id: 0, answerContent: '', isCorrect: false },
-    ],
+    defaultQuestion?.answers || Array(4).fill({ id: 0, answerContent: '', isCorrect: false }),
   )
+
+  console.log('answers', answers)
 
   const addAnwser = () => {
     const newAnwsers: Anwser = { answerContent: '', isCorrect: false, id: 0 }
@@ -101,9 +105,17 @@ export const QuestionBox = ({
 
   const handleCheckBoxAnwser = (index: number) => {
     answers[index].isCorrect = true
+    setAnwsers([...answers])
   }
 
   const handleSubmit = () => {
+    const isSettedCorrectAnswer = answers.some((item) => item.isCorrect)
+
+    if (!isSettedCorrectAnswer) {
+      triggerAlert('Please set correct answer', 'error')
+      return
+    }
+
     if (status === 'edit' && onUpdate && defaultQuestion) {
       onUpdate({ id: defaultQuestion.id, answers, questionContent, questionType })
       setStatus('view')
@@ -115,8 +127,21 @@ export const QuestionBox = ({
   }
 
   const handleChangeAnswer = (index: number, value: string) => {
-    answers[index].answerContent = value
+    const newAnswer = answers
+    newAnswer[index].answerContent = value
+    setAnwsers(newAnswer)
   }
+  const handleCancelEditQuestion = () => {
+    if (defaultQuestion) {
+      const newAnswer = defaultQuestion.answers
+      setAnwsers(newAnswer)
+      setQuestionContent(defaultQuestion.questionContent)
+      setQuestionType(defaultQuestion.questionType)
+    }
+    setStatus('view')
+  }
+
+  const isAllAnswerFilled = answers.every((item) => !!item.answerContent)
 
   return (
     <Badge
@@ -159,12 +184,36 @@ export const QuestionBox = ({
             onChange={questionType === 1 ? handleChangeCorrect : undefined}
           >
             {answers.map((item, index) => (
-              <Stack direction='row' gap={2} alignItems='center'>
+              <Stack direction='row' gap={2} alignItems='center' key={item.id}>
                 <Tooltip title='Choose correct anwser'>
                   {questionType === 1 ? (
-                    <Radio value={index} checked={item.isCorrect} />
+                    <Radio
+                      value={index}
+                      defaultChecked={item.isCorrect}
+                      checkedIcon={<CheckCircleRounded color='success' />}
+                      disabled={status === 'view'}
+                      icon={item.isCorrect ? <CheckCircleRounded color={'success'} /> : <CheckCircleOutline />}
+                      sx={{
+                        opacity: item.isCorrect ? 1 : 0.4,
+                        ':hover': {
+                          opacity: 1,
+                        },
+                      }}
+                    />
                   ) : (
-                    <Checkbox onChange={() => handleCheckBoxAnwser(index)} />
+                    <Checkbox
+                      onChange={() => handleCheckBoxAnwser(index)}
+                      disabled={status === 'view'}
+                      defaultChecked={item.isCorrect}
+                      checkedIcon={<CheckBoxOutlined color='success' />}
+                      icon={<CheckBoxOutlined />}
+                      sx={{
+                        opacity: item.isCorrect ? 1 : 0.4,
+                        ':hover': {
+                          opacity: 1,
+                        },
+                      }}
+                    />
                   )}
                 </Tooltip>
 
@@ -186,7 +235,12 @@ export const QuestionBox = ({
           </Box>
         </Stack>
         {['create', 'edit'].includes(status) && (
-          <Button variant='outlined' sx={{ width: 'fit-content', mt: 2 }} onClick={addAnwser}>
+          <Button
+            variant='outlined'
+            sx={{ width: 'fit-content', mt: 2 }}
+            onClick={addAnwser}
+            startIcon={<AddRounded />}
+          >
             Add Anwser
           </Button>
         )}
@@ -194,24 +248,13 @@ export const QuestionBox = ({
         <Stack direction='row' gap={1} justifyContent='center'>
           {['create', 'edit'].includes(status) ? (
             <>
-              <Button
-                onClick={() => {
-                  if (status === 'edit') {
-                    setStatus('view')
-                  } else {
-                    onClose()
-                  }
-                }}
-                variant='outlined'
-                fullWidth
-                disabled={isLoading}
-              >
+              <Button onClick={handleCancelEditQuestion} variant='outlined' fullWidth disabled={isLoading}>
                 Cancel
               </Button>
               <LoadingButton
                 variant='contained'
                 onClick={handleSubmit}
-                disabled={answers.length <= 2 || !questionContent}
+                disabled={answers.length <= 2 || !questionContent || !isAllAnswerFilled}
                 fullWidth
                 isLoading={isLoading}
               >

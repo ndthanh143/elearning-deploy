@@ -1,9 +1,16 @@
-import { ConfirmPopup, CustomMenu, Flex } from '@/components'
+import { ConfirmPopup, CustomMenu, CustomTooltip, Flex, LoadingButton } from '@/components'
 import { useAlert, useAuth, useBoolean, useMenu } from '@/hooks'
 import { blue, gray, primary } from '@/styles/theme'
-import { AddRounded, DeleteRounded, EditRounded, LogoutRounded, MoreVertRounded } from '@mui/icons-material'
 import {
-  Button,
+  AddRounded,
+  DeleteRounded,
+  EditRounded,
+  LockOpenRounded,
+  LockRounded,
+  LogoutRounded,
+  MoreVertRounded,
+} from '@mui/icons-material'
+import {
   Card,
   CardContent,
   Divider,
@@ -14,7 +21,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
-import { ModalAddTask, TaskCard, StudentCard } from '.'
+import { ModalActionsTask, TaskCard, StudentCard } from '.'
 import { icons } from '@/assets/icons'
 import { GetGroupListQuery, GetListGroupResponse, Group, GroupTaskInfo } from '@/services/group/dto'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -24,6 +31,7 @@ import { UseFormReturn, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useState } from 'react'
 import { groupKeys } from '@/services/group/query'
+import { red } from '@mui/material/colors'
 
 interface GroupCardProps {
   size: number
@@ -178,7 +186,7 @@ export const GroupCard = ({
     console.log(fromIndex, toIndex)
   }
 
-  const handleCreateTask = async (payload: {
+  const handleActionTask = async (payload: {
     name: string
     description: string
     startDate: string
@@ -189,18 +197,23 @@ export const GroupCard = ({
         payload.endDate || payload.startDate
           ? mutateUpdateGrantTask({
               groupId: data.id,
-              taskId: selectedEditTask.id,
+              taskId: Number(selectedEditTask.taskId),
               endDate: new Date(payload.endDate).toISOString(),
               startDate: new Date(payload.startDate).toISOString(),
             })
           : Promise.resolve(),
         payload.name || payload.description
-          ? mutateUpdateTask({ id: selectedEditTask.id, name: payload.name, description: payload.description })
+          ? mutateUpdateTask({
+              id: Number(selectedEditTask.taskId),
+              name: payload.name,
+              description: payload.description,
+            })
           : Promise.resolve(),
       ]
-      await Promise.all(updateTaskPromises)
+
+      await Promise.allSettled(updateTaskPromises)
         .then(() => {
-          queryClient.invalidateQueries({ queryKey: groupKeys.lists() })
+          queryClient.invalidateQueries({ queryKey: groupKeys.all })
           setSelectedEditTask(null)
           triggerAlert('Update task successfully', 'success')
         })
@@ -238,7 +251,7 @@ export const GroupCard = ({
     },
   })
 
-  const { mutate: mutateLeave } = useMutation({
+  const { mutate: mutateLeave, isPending: isLoadingLeave } = useMutation({
     mutationFn: groupService.leave,
     onSuccess: () => {
       if (queryKey && profile) {
@@ -273,6 +286,14 @@ export const GroupCard = ({
     },
     onError: () => {
       triggerAlert('Remove student failed', 'error')
+    },
+  })
+
+  const { mutate: mutateChangeLock } = useMutation({
+    mutationFn: groupService.changeLock,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: groupKeys.lists() })
+      triggerAlert('Change lock successfully', 'success')
     },
   })
 
@@ -372,8 +393,9 @@ export const GroupCard = ({
               justifyContent='center'
               sx={{
                 ':hover': {
-                  bgcolor: isStudent && isStudentExistIngroup ? '' : primary[50],
-                  cursor: disabled || (isStudent && isStudentExistIngroup) ? 'not-allowed' : 'pointer',
+                  bgcolor: isStudent && (isStudentExistIngroup || data.isLocked) ? '' : primary[50],
+                  cursor:
+                    disabled || (isStudent && (isStudentExistIngroup || data.isLocked)) ? 'not-allowed' : 'pointer',
                 },
               }}
               onClick={() => (isTeacher ? onAddStudent() : !disabled && handleEnroll())}
@@ -382,9 +404,17 @@ export const GroupCard = ({
             </Flex>
           ))}
         {isStudent && data.studentInfo.some((student) => student.id === profile?.data.id) && (
-          <Button onClick={handleLeave} color='error' variant='outlined' startIcon={<LogoutRounded />}>
+          <LoadingButton
+            onClick={handleLeave}
+            color='error'
+            variant='outlined'
+            startIcon={<LogoutRounded />}
+            sx={{ cursor: data.isLocked ? 'not-allowed' : 'pointer' }}
+            disabled={data.isLocked}
+            isLoading={isLoadingLeave}
+          >
             Leave
-          </Button>
+          </LoadingButton>
         )}
       </>
     )
@@ -412,9 +442,33 @@ export const GroupCard = ({
     )
   }
 
+  const handleToggleLock = () => {
+    mutateChangeLock({ groupId: data.id, isLocked: !data.isLocked })
+  }
+
   return (
     <>
-      <Card variant='outlined' sx={{ opacity: disabled ? 0.6 : 1, height: '100%' }}>
+      <Card variant='outlined' sx={{ opacity: disabled ? 0.6 : 1, height: '100%', position: 'relative' }}>
+        {isStudent && data.isLocked && !disabled && (
+          <Flex
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              bgcolor: 'rgba(0,0,0,0.4)',
+              z: 10,
+              opacity: 0,
+              ':hover': {
+                opacity: 1,
+              },
+              transition: 'all ease 0.3s',
+            }}
+            justifyContent='center'
+          >
+            <Typography textAlign='center' color='#fff' fontWeight={600} variant='h6'>
+              This group is locked!
+            </Typography>
+          </Flex>
+        )}
         <CardContent sx={{ height: '100%' }}>
           <Flex justifyContent='space-between'>
             <Flex justifyContent='space-between'>
@@ -428,9 +482,18 @@ export const GroupCard = ({
             {isTeacher && (
               <Flex gap={1}>
                 {state === 'member' ? (
-                  <IconButton onClick={onOpen}>
-                    <MoreVertRounded fontSize='small' />
-                  </IconButton>
+                  <Flex>
+                    <CustomTooltip title={data.isLocked ? 'Open this group' : 'Lock this group'}>
+                      {data.isLocked ? (
+                        <LockRounded sx={{ color: red[500], cursor: 'pointer' }} onClick={handleToggleLock} />
+                      ) : (
+                        <LockOpenRounded sx={{ color: gray[500], cursor: 'pointer' }} onClick={handleToggleLock} />
+                      )}
+                    </CustomTooltip>
+                    <IconButton onClick={onOpen}>
+                      <MoreVertRounded fontSize='small' />
+                    </IconButton>
+                  </Flex>
                 ) : (
                   <MuiButton startIcon={<AddRounded fontSize='small' />} size='small' onClick={openAddTask}>
                     Add task
@@ -438,15 +501,16 @@ export const GroupCard = ({
                 )}
               </Flex>
             )}
+            {isStudent && data.isLocked && <LockRounded color='error' />}
           </Flex>
           <Divider sx={{ my: 2 }} />
           <Stack gap={2}>{state === 'member' ? renderMembers() : renderTasks()}</Stack>
         </CardContent>
       </Card>
-      <ModalAddTask
+      <ModalActionsTask
         isOpen={isOpenAddTask || !!selectedEditTask}
         onClose={handleCloseModalTask}
-        onSubmit={handleCreateTask}
+        onSubmit={handleActionTask}
         form={form}
         status={selectedEditTask ? 'edit' : 'create'}
         loading={isPendingCreateTask}

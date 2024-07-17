@@ -114,6 +114,9 @@ export const TaskDetail = ({ isOpen, onClose, data }: ITaskDetailProps) => {
             </Typography>
           </Flex>
         </Flex>
+        <Stack gap={0.5} mt={2}>
+          <Typography variant='body2'>{data.taskInfo.description}</Typography>
+        </Stack>
         <Stack gap={2}>
           <Stack gap={1} mt={2}>
             <Flex gap={2}>
@@ -130,9 +133,7 @@ export const TaskDetail = ({ isOpen, onClose, data }: ITaskDetailProps) => {
             </Flex>
           </Stack>
         </Stack>
-        <Stack gap={0.5} mt={2}>
-          <Typography variant='body2'>{data.taskInfo.description}</Typography>
-        </Stack>
+
         <Stack mt={2} gap={1}>
           <Flex gap={1}>
             {icons['resource']}
@@ -179,6 +180,30 @@ export const TaskDetail = ({ isOpen, onClose, data }: ITaskDetailProps) => {
               </Box>
             </Stack>
           )}
+          {taskSubmission?.score && (
+            <Flex gap={1} mt={2}>
+              <Typography variant='body2' fontWeight={700}>
+                Your group get score:
+              </Typography>
+              <Chip
+                label={taskSubmission.score}
+                sx={{ width: 'fit-content' }}
+                size='small'
+                color={taskSubmission.score >= 5 ? 'success' : 'error'}
+              />
+            </Flex>
+          )}
+          {
+            <Stack gap={1} mt={1}>
+              <Typography variant='body2' fontWeight={700}>
+                Feedback from teacher:
+              </Typography>
+              <Typography px={2} py={1} borderRadius={3} border={1} borderColor={'#ededed'} variant='body2'>
+                {taskSubmission?.feedback || '--'}
+              </Typography>
+            </Stack>
+          }
+
           <Flex justifyContent='end' mt={2} gap={2}>
             <Button onClick={onClose}>Cancel</Button>
             <Button variant='contained' onClick={handleSave}>

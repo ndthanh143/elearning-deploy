@@ -11,14 +11,12 @@ interface IModalAddTaskProps {
   status: 'edit' | 'create'
   onSubmit: (payload: { name: string; description: string; startDate: string; endDate: string }) => void
 }
-export function ModalAddTask({ isOpen, status, onClose, onSubmit, form }: IModalAddTaskProps) {
+export function ModalActionsTask({ isOpen, status, onClose, onSubmit, form }: IModalAddTaskProps) {
   const {
     handleSubmit,
     register,
     formState: { errors },
   } = form
-
-  console.log('hehe', new Date(form.getValues('endDate')))
 
   return (
     <Modal open={isOpen} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} onClose={onClose}>
@@ -48,7 +46,7 @@ export function ModalAddTask({ isOpen, status, onClose, onSubmit, form }: IModal
               fullWidth
               variant='outlined'
               size='small'
-              placeholder='Add task name'
+              placeholder='Task name...'
               {...register('name')}
               error={errors.name ? true : false}
               helperText={errors.name?.message}
@@ -60,7 +58,7 @@ export function ModalAddTask({ isOpen, status, onClose, onSubmit, form }: IModal
               fullWidth
               variant='outlined'
               size='small'
-              placeholder='Add task description'
+              placeholder='Task description...'
               multiline
               minRows={3}
               {...register('description')}
@@ -74,11 +72,16 @@ export function ModalAddTask({ isOpen, status, onClose, onSubmit, form }: IModal
               fullWidth
               variant='outlined'
               size='small'
-              placeholder='Add task description'
               type='date'
               {...register('startDate')}
               error={errors.startDate ? true : false}
               helperText={errors.startDate?.message}
+              inputProps={{
+                min: new Date().toISOString().split('T')[0],
+                value: form.watch('startDate')
+                  ? new Date(form.watch('startDate')).toISOString().split('T')[0]
+                  : new Date().toISOString().split('T')[0],
+              }}
             />
           </Flex>
           <Flex gap={2} alignItems='start'>
@@ -87,12 +90,16 @@ export function ModalAddTask({ isOpen, status, onClose, onSubmit, form }: IModal
               fullWidth
               variant='outlined'
               size='small'
-              placeholder='Add task description'
               type='date'
               {...register('endDate')}
-              defaultValue={new Date(form.getValues('endDate'))}
               error={errors.endDate ? true : false}
               helperText={errors.endDate?.message}
+              inputProps={{
+                min: new Date().toISOString().split('T')[0],
+                value: form.watch('endDate')
+                  ? new Date(form.watch('endDate')).toISOString().split('T')[0]
+                  : new Date().toISOString().split('T')[0],
+              }}
             />
           </Flex>
         </Stack>

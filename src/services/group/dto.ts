@@ -32,6 +32,7 @@ export interface Group {
   size: number
   studentInfo: Info[]
   groupTaskInfo: GroupTaskInfo[]
+  isLocked: boolean
 }
 
 export interface CourseInfo {
@@ -81,4 +82,15 @@ export interface GroupTaskInfo {
   startDate: string
   isSubmitted?: boolean
   taskId?: number
+  score?: number
+}
+
+export interface ChangeLockPayload {
+  groupId: number
+  isLocked: boolean
+}
+
+export interface ChangeLockAllPayload {
+  courseId: number
+  isLocked: boolean
 }

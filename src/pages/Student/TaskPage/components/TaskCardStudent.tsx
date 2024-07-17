@@ -1,7 +1,7 @@
 import { icons } from '@/assets/icons'
 import { Flex } from '@/components'
 import { primary } from '@/styles/theme'
-import { Badge, Box, Card, CardContent, Divider, Stack, Typography } from '@mui/material'
+import { Badge, Box, Card, CardContent, Chip, Divider, Stack, Typography } from '@mui/material'
 import { TaskStatus } from '.'
 import { GroupTask } from '@/services/groupTask/dto'
 
@@ -39,7 +39,16 @@ export function TaskCardStudent({ data, index }: { data: GroupTask; index: numbe
                 {data.taskInfo.name}
               </Typography>
             </Flex>
-            <TaskStatus status={data.taskSubmissionInfo ? 'done' : 'undone'} />
+            <Flex gap={1}>
+              {data.taskSubmissionInfo?.score && (
+                <Chip
+                  label={`Score: ${data.taskSubmissionInfo.score}`}
+                  color={data.taskSubmissionInfo.score > 5 ? 'success' : 'error'}
+                  sx={{ fontWeight: 700 }}
+                />
+              )}
+              <TaskStatus status={data.taskSubmissionInfo ? 'done' : 'undone'} />
+            </Flex>
           </Flex>
           <Divider sx={{ my: 2 }} />
           <Stack gap={0.5}>

@@ -8,17 +8,11 @@ interface ILoadingOverlayProps {
 export const LoadingOverlay = ({ isOpen, title = 'Loading...' }: ILoadingOverlayProps) => {
   return (
     <Backdrop open={isOpen}>
-      <Stack
-        justifyContent='center'
-        alignItems='center'
-        bgcolor='white'
-        borderRadius={4}
-        paddingX={10}
-        paddingY={4}
-        gap={2}
-      >
-        <CircularProgress color='primary' />
-        <Typography>{title}</Typography>
+      <Stack justifyContent='center' alignItems='center' borderRadius={4} paddingX={10} paddingY={4} gap={2}>
+        <CircularProgress sx={{ color: '#fff' }} />
+        <Typography color='#fff' fontWeight={400} variant='h5' sx={{ userSelect: 'none' }}>
+          {title}
+        </Typography>
       </Stack>
     </Backdrop>
   )

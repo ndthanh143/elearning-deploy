@@ -1,5 +1,7 @@
 import axiosInstance from '@/axios'
 import {
+  ChangeLockAllPayload,
+  ChangeLockPayload,
   CreateGroupPayload,
   GenerateGroupPayload,
   GetGroupListQuery,
@@ -40,5 +42,11 @@ export const groupService = {
   },
   removeStudentFromGroup: async ({ groupId, studentId }: { groupId: number; studentId: number }) => {
     await axiosInstance.delete(`group/remove-student/${groupId}/${studentId}`)
+  },
+  changeLock: async (payload: ChangeLockPayload) => {
+    await axiosInstance.post('group/change-lock', payload)
+  },
+  changeLockAll: async (payload: ChangeLockAllPayload) => {
+    await axiosInstance.post('group/change-lock-all', payload)
   },
 }

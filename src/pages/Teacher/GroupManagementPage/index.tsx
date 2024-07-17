@@ -331,7 +331,7 @@ export const GroupManagementPage: React.FC = () => {
                       onAddStudent={() => setSelectedGroup(group)}
                     />
                   </Grid>
-                  {index === groups.content.length - 1 && (
+                  {index === groups.content.length - 1 && state === 'member' && (
                     <Grid item xs={12} sm={6} md={6} lg={4}>
                       <AddGroup onClick={openModalCreateGroup} />
                     </Grid>

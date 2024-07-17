@@ -33,7 +33,7 @@ export function ConfirmInvitationPage() {
     mutateConfirm(token || '')
   }
 
-  const courseInstance = courseKeys.detail(Number(courseId))
+  const courseInstance = courseKeys.publicDetail(Number(courseId))
   const { data: courseData } = useQuery({ ...courseInstance, enabled: Boolean(courseId) })
 
   return (
@@ -67,7 +67,7 @@ export function ConfirmInvitationPage() {
                     <Stack gap={1}>
                       <Typography fontWeight={700}>{courseData.courseName}</Typography>
                       <Chip
-                        label={courseData.categoryInfo?.name}
+                        label={courseData.categoryInfo?.categoryName}
                         sx={{ width: 'fit-content' }}
                         color='primary'
                         size='small'

@@ -3,6 +3,7 @@ import { ConfirmPopup, CustomMenu } from '@/components'
 import { useAlert, useBoolean, useMenu } from '@/hooks'
 import { lessonPlanKey } from '@/services/lessonPlan/lessonPlan.query'
 import { unitService } from '@/services/unit'
+import { unitKey } from '@/services/unit/query'
 import { Unit } from '@/services/unit/types'
 import { getTypeUnit } from '@/utils'
 import { Settings } from '@mui/icons-material'
@@ -27,7 +28,9 @@ export const ContentItem = ({ unit, onClick, onEdit }: ContentItemProps) => {
     mutationFn: unitService.delete,
     onSuccess: () => {
       triggerAlert('Delete successfully')
-      queryClient.invalidateQueries({ queryKey: lessonPlanKey.lists() })
+      queryClient.invalidateQueries({ queryKey: lessonPlanKey.all })
+      queryClient.invalidateQueries({ queryKey: unitKey.all })
+
       onClose()
       closeConfirm()
     },

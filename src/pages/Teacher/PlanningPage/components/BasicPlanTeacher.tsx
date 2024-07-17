@@ -83,9 +83,6 @@ export const BasicPlanTeacher = ({ lessonPlanId }: BasicPlanTeacherProps) => {
     formState: { isDirty, isValid },
   } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: {
-      lessonPlanName: currentLessonPlan?.name || '',
-    },
   })
 
   const { value: isOpenAddSection, setTrue: openAddSection, setFalse: closeAddSection } = useBoolean()
@@ -209,6 +206,8 @@ export const BasicPlanTeacher = ({ lessonPlanId }: BasicPlanTeacherProps) => {
     mutateUpdatePlan({ id: lessonPlanId, name: lessonPlanName })
   }
 
+  console.log('currentLessonPlan', currentLessonPlan)
+
   const handleBackPage = () => {
     navigate('/planning')
   }
@@ -242,7 +241,7 @@ export const BasicPlanTeacher = ({ lessonPlanId }: BasicPlanTeacherProps) => {
         <Stack component='form' gap={1} onSubmit={handleSubmit(handleEditPlan)}>
           <Flex gap={2}>
             {isEditSectionName ? (
-              <TextField defaultValue={currentLessonPlan?.name} {...register('lessonPlanName')} />
+              <TextField {...register('lessonPlanName')} defaultValue={currentLessonPlan?.name} />
             ) : (
               <Typography variant='h2' fontWeight={500}>
                 {currentLessonPlan?.name}

@@ -1,5 +1,5 @@
 import axiosInstance from '@/axios'
-import { GetListSubmissionResponse } from './dto'
+import { GetListSubmissionResponse, MarkScoreTaskSubmissionPayload } from './dto'
 
 export const taskSubmissionService = {
   getListSubmission: async (query: { groupTaskId: number }) => {
@@ -11,5 +11,8 @@ export const taskSubmissionService = {
   },
   delete: async (id: number) => {
     await axiosInstance.delete(`task-submission/delete/${id}`)
+  },
+  markScore: async (payload: MarkScoreTaskSubmissionPayload) => {
+    await axiosInstance.post('task-submission/mark-score', payload)
   },
 }
