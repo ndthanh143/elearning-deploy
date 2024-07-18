@@ -11,6 +11,10 @@ export type ContentItemProps = {
   unit: Unit
 }
 
+const saveTracking = (tracked: boolean) => {
+  localStorage.setItem('tracked', tracked ? 'true' : 'false')
+}
+
 export const ContentItem = ({ unit }: ContentItemProps) => {
   const { courseId } = useParams()
   const navigate = useNavigate()
@@ -20,13 +24,19 @@ export const ContentItem = ({ unit }: ContentItemProps) => {
     lecture: {
       title: unit.lectureInfo?.lectureName,
       iconUrl: actions.lecture,
-      onClick: () => navigate(`/courses/${courseId}/u/${unit.id}/lecture/${unit.lectureInfo?.id}`),
+      onClick: () => {
+        navigate(`/courses/${courseId}/u/${unit.id}/lecture/${unit.lectureInfo?.id}`)
+        saveTracking(unit.isDone)
+      },
       subTitle: '',
     },
     assignment: {
       title: unit.assignmentInfo?.assignmentTitle,
       iconUrl: actions.assignment,
-      onClick: () => navigate(`/courses/${courseId}/u/${unit.id}/assign/${unit.assignmentInfo?.id}`),
+      onClick: () => {
+        navigate(`/courses/${courseId}/u/${unit.id}/assign/${unit.assignmentInfo?.id}`)
+        saveTracking(unit.isDone)
+      },
       subTitle: '',
     },
     resource: {
@@ -34,7 +44,10 @@ export const ContentItem = ({ unit }: ContentItemProps) => {
       iconUrl: actions.resource,
       // onClick: () => handleDownloadResource(unit.resourceInfo?.urlDocument || ''),
       // onClick: () => setResourceUrl(`${configs.API_URL}/api/file/download${unit.resourceInfo?.urlDocument}`),
-      onClick: () => navigate(`/courses/${courseId}/u/${unit.id}/resource/${unit.resourceInfo?.id}`),
+      onClick: () => {
+        navigate(`/courses/${courseId}/u/${unit.id}/resource/${unit.resourceInfo?.id}`)
+        saveTracking(unit.isDone)
+      },
       subTitle: '',
     },
     video: {
@@ -42,7 +55,10 @@ export const ContentItem = ({ unit }: ContentItemProps) => {
       iconUrl: actions.video,
       // onClick: () => handleDownloadResource(unit.resourceInfo?.urlDocument || ''),
       // onClick: () => setResourceUrl(`${configs.API_URL}/api/file/download${unit.resourceInfo?.urlDocument}`),
-      onClick: () => navigate(`/courses/${courseId}/u/${unit.id}/resource/${unit.resourceInfo?.id}`),
+      onClick: () => {
+        navigate(`/courses/${courseId}/u/${unit.id}/resource/${unit.resourceInfo?.id}`)
+        saveTracking(unit.isDone)
+      },
       subTitle: convertSecond(unit.resourceInfo?.duration || 0),
     },
     quiz: {

@@ -25,41 +25,41 @@ interface IVideoPlayerProps {
   title: string
   onReady?: (player: any) => void
   onTracking?: () => void
+  duration?: number
 }
 
 export const VideoPlayer = (props: IVideoPlayerProps) => {
   const videoRef = useRef<HTMLDivElement | null>(null)
   const playerRef = useRef<any | null>(null)
-  const { options, title, onReady, onTracking = () => {} } = props
+  const { options, title, onReady, onTracking = () => {}, duration = 0 } = props
   const [_, setHovered] = useState(false)
   const [playing, setPlaying] = useState(false)
   const [volume, setVolume] = useState(1)
   const [muted, setMuted] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(0)
   const [fullscreen, setFullscreen] = useState(false)
   const [showIcon, setShowIcon] = useState(false)
 
-  const setTotalWatchTimeToStorage = (total: number) => {
-    localStorage.setItem('totalWatchTime', JSON.stringify(total))
-  }
+  // const setTotalWatchTimeToStorage = (total: number) => {
+  //   localStorage.setItem('totalWatchTime', JSON.stringify(total))
+  // }
 
-  const getTotalWatchTimeFromStorage = () => {
-    return Number(JSON.parse(localStorage.getItem('totalWatchTime') || '0'))
-  }
+  // const getTotalWatchTimeFromStorage = () => {
+  //   return Number(JSON.parse(localStorage.getItem('totalWatchTime') || '0'))
+  // }
 
   const setTrackedToStorage = (tracked: boolean) => {
-    localStorage.setItem('tracked', JSON.stringify(tracked))
+    localStorage.setItem('tracked', tracked ? 'true' : 'false')
   }
 
   const getTrackedFromStorage = () => {
-    return Boolean(JSON.parse(localStorage.getItem('tracked') || ''))
+    return localStorage.getItem('tracked') === 'true'
   }
 
-  useEffect(() => {
-    setTrackedToStorage(false)
-    localStorage.removeItem('totalWatchTime')
-  }, [])
+  // useEffect(() => {
+  //   setTrackedToStorage(false)
+  //   localStorage.removeItem('totalWatchTime')
+  // }, [])
 
   useEffect(() => {
     if (videoRef.current && !playerRef.current) {
@@ -70,25 +70,22 @@ export const VideoPlayer = (props: IVideoPlayerProps) => {
       const player = (playerRef.current = videojs(videoElement, { ...options, controls: false }, () => {
         videojs.log('player is ready')
         setPlaying(!!player.autoplay())
-        setDuration(player.duration() || 0)
         onReady && onReady(player)
       }))
 
       player.on('timeupdate', () => {
         setCurrentTime(player.currentTime() || 0)
 
-        const totalWatchTime = player.currentTime() || 0
+        const isTracked = getTrackedFromStorage()
 
-        setTotalWatchTimeToStorage(totalWatchTime)
+        const currentTime = player.currentTime() || 0
 
-        if (!getTrackedFromStorage() && getTotalWatchTimeFromStorage() >= (3 / 4) * duration && duration > 0) {
+        const isAvailable = !isTracked && currentTime >= (9.8 / 10) * duration
+
+        if (isAvailable) {
           onTracking()
           setTrackedToStorage(true)
         }
-      })
-
-      player.on('durationchange', () => {
-        setDuration(player.duration() || 0)
       })
     } else if (playerRef.current) {
       const player = playerRef.current

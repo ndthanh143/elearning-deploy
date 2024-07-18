@@ -90,7 +90,7 @@ export const SideContentCourse = ({ lessonPlan }: BasicPlanStudentProps) => {
         <Stack gap={1} width='100%' flex={1} sx={{ overflowY: 'scroll' }}>
           <Stack gap={1}>
             {mappedUnits?.group.map((unit) => (
-              <Card variant='outlined'>
+              <Card variant='outlined' key={unit.id}>
                 <CardContent sx={{ px: 0 }}>
                   <Stack gap={2} key={unit.id}>
                     <Box

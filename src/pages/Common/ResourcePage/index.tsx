@@ -3,19 +3,24 @@ import { Flex, Loading, NoData, PDFViewer } from '@/components'
 import { configs } from '@/configs'
 import { resourceKey } from '@/services/resource/query'
 import { Box, Card, CardContent, Container, Stack, Typography } from '@mui/material'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { VideoPlayer } from './VideoPlayer'
 import videojs from 'video.js'
 import { formatDate, getAbsolutePathFile } from '@/utils'
 import { unitService } from '@/services/unit'
+import { unitKey } from '@/services/unit/query'
+import { courseKeys } from '@/services/course/course.query'
+import { useAlert } from '@/hooks'
 
 const trackingUrl = (url: string) => {
   return `${configs.API_URL}/api/file/download${url}`
 }
 
 export function ResourcePage() {
+  const { triggerAlert } = useAlert()
+  const queryClient = useQueryClient()
   const { resourceId, unitId, courseId } = useParams()
 
   const resourceInstance = resourceKey.detail({
@@ -31,6 +36,11 @@ export function ResourcePage() {
 
   const { mutate: mutateTracking } = useMutation({
     mutationFn: unitService.tracking,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: unitKey.all })
+      queryClient.invalidateQueries({ queryKey: courseKeys.all })
+      triggerAlert('Tracked! Now you can move to next lesson !')
+    },
   })
 
   const handleLastPage = () => {
@@ -102,6 +112,7 @@ export function ResourcePage() {
               onReady={handlePlayerReady}
               title={resource.title}
               onTracking={handleTracking}
+              duration={resource.duration}
             />
             <Container maxWidth='lg'>
               <Typography variant='h2' fontWeight={700}>
