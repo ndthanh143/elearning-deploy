@@ -3,11 +3,11 @@ import Push from 'push.js'
 
 import { notificationKey } from '@/services/notification/notification.query'
 import { useQueryClient } from '@tanstack/react-query'
-import { useActivityTracking } from '.'
+// import { useActivityTracking } from '.'
 
 export const useWebSocket = () => {
   const queryClient = useQueryClient()
-  const { handleOptOut, handleSetTime } = useActivityTracking()
+  // const { handleOptOut, handleSetTime } = useActivityTracking()
 
   const websocket = new WebSocket(import.meta.env.VITE_SOCKET_API_URL)
 
@@ -40,7 +40,7 @@ export const useWebSocket = () => {
         },
       }
       doSend(JSON.stringify(client_info))
-      handleSetTime()
+      // handleSetTime()
     }
 
     websocket.onclose = () => {
@@ -62,7 +62,7 @@ export const useWebSocket = () => {
 
   const close = () => {
     websocket.close()
-    handleOptOut()
+    // handleOptOut()
   }
 
   const doPing = () => {

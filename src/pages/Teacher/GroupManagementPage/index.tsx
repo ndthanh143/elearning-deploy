@@ -1,4 +1,14 @@
-import { Button, ConfirmPopup, CustomModal, CustomSelect, Flex, Link, Loading, LoadingButton } from '@/components'
+import {
+  Button,
+  ConfirmPopup,
+  CustomModal,
+  CustomSelect,
+  Flex,
+  Link,
+  Loading,
+  LoadingButton,
+  NoData,
+} from '@/components'
 import { useAlert, useBoolean } from '@/hooks'
 import { AddRounded, AutoModeRounded } from '@mui/icons-material'
 import {
@@ -339,20 +349,25 @@ export const GroupManagementPage: React.FC = () => {
                 </Fragment>
               ))}
             </Grid>
-            {groups?.content.length === 0 && (
-              <Flex height='100%' justifyContent='center' alignItems='center' minHeight='60vh'>
-                <Stack gap={2} alignItems='center'>
-                  {icons['noData']}
-                  <MuiButton startIcon={<AddRounded />} onClick={openModalCreateGroup}>
-                    Create New Group
-                  </MuiButton>
-                  <Divider>Or</Divider>
-                  <Button startIcon={<AutoModeRounded />} onClick={openModalGenerate}>
-                    Auto Generate Group
-                  </Button>
+            {groups?.content.length === 0 &&
+              (state === 'member' ? (
+                <Flex height='100%' justifyContent='center' alignItems='center' minHeight='60vh'>
+                  <Stack gap={2} alignItems='center'>
+                    {icons['noData']}
+                    <MuiButton startIcon={<AddRounded />} onClick={openModalCreateGroup}>
+                      Create New Group
+                    </MuiButton>
+                    <Divider>Or</Divider>
+                    <Button startIcon={<AutoModeRounded />} onClick={openModalGenerate}>
+                      Auto Generate Group
+                    </Button>
+                  </Stack>
+                </Flex>
+              ) : (
+                <Stack sx={{ py: 4 }}>
+                  <NoData title='This course have no group!' />
                 </Stack>
-              </Flex>
-            )}
+              ))}
           </CardContent>
         </Card>
       </Container>

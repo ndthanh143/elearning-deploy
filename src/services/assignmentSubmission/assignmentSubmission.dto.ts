@@ -26,6 +26,7 @@ export type Submission = {
   textSubmission?: string
   linkSubmission?: string
   studentInfo: Account
+  feedback?: string
 } & BaseData
 
 export type UpdateSubmissionPayload = {
@@ -34,4 +35,5 @@ export type UpdateSubmissionPayload = {
   textSubmission?: string
   linkSubmission?: string
   score?: number
+  feedback?: string
 }

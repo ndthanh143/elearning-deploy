@@ -1,7 +1,7 @@
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { lectureKeys } from '../../../services/lecture/lecture.query'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Box, Container, IconButton, Stack, Typography } from '@mui/material'
+import { Box, Card, CardContent, Container, IconButton, Stack, Typography } from '@mui/material'
 import { CustomTooltip, DangerouseLyRenderLecture, Flex, NotFound } from '../../../components'
 import { CommentRounded } from '@mui/icons-material'
 import { useAuth, useBoolean, useIntersectionObserver } from '@/hooks'
@@ -14,6 +14,9 @@ import { commentService } from '@/services'
 import { groupCommentKeys } from '@/services/groupComment/query'
 import { primary } from '@/styles/theme'
 import { unitService } from '@/services/unit'
+import { VideoPlayer } from './components/VideoPlayer'
+import { getResourceType } from '@/utils'
+import { configs } from '@/configs'
 
 export const LecturePage = () => {
   const queryClient = useQueryClient()
@@ -30,7 +33,11 @@ export const LecturePage = () => {
   const boxCreateCommentRef = useRef<HTMLDivElement>(null)
   const contentContainerRef = useRef<HTMLDivElement>(null)
 
-  const groupCommentInstance = groupCommentKeys.list({ courseId: Number(courseId), unitId: Number(unitId) })
+  const groupCommentInstance = groupCommentKeys.list({
+    courseId: Number(courseId),
+    unitId: Number(unitId),
+    unpaged: true,
+  })
   const { data: groupComments, refetch: refetchGroupComments } = useQuery({ ...groupCommentInstance })
 
   const { isIntersecting, ref: setTrackingRef } = useIntersectionObserver({
@@ -151,6 +158,21 @@ export const LecturePage = () => {
     return <NotFound />
   }
 
+  console.log('lectureData.urlDocument', lectureData?.urlDocument)
+
+  const videoJsOptions = {
+    autoplay: false,
+    controls: true,
+    responsive: true,
+    fluid: true,
+    sources: [
+      {
+        src: lectureData?.urlDocument,
+        type: 'application/x-mpegURL',
+      },
+    ],
+  }
+
   return (
     lectureData && (
       <>
@@ -165,6 +187,47 @@ export const LecturePage = () => {
               <Box bgcolor='white' p={2} borderRadius={3}>
                 <DangerouseLyRenderLecture ref={contentContainerRef} content={lectureData.lectureContent} />
               </Box>
+              <Typography variant='body2' fontWeight={700}>
+                Resource references
+              </Typography>
+              <Stack gap={1} bgcolor='white' p={2} borderRadius={3}>
+                {lectureData.urlDocument &&
+                  (lectureData.urlDocument.includes('VIDEO') ? (
+                    <>
+                      {lectureData.state === 'PROCESSING' && (
+                        <Typography>Wait a minutes, this video is processing...</Typography>
+                      )}
+                      {lectureData.state === 'FAILED' && (
+                        <Typography>This video has been processing failed!</Typography>
+                      )}
+                      <VideoPlayer options={videoJsOptions} />
+                    </>
+                  ) : (
+                    <Link
+                      to={`${configs.API_URL}/api/file/download${lectureData.urlDocument}`}
+                      target='_blank'
+                      style={{ textDecoration: 'none' }}
+                    >
+                      <Card variant='outlined'>
+                        <CardContent>
+                          <Flex gap={2} position='relative'>
+                            <Box
+                              component='img'
+                              src={getResourceType(lectureData.urlDocument || '')}
+                              width={50}
+                              height={50}
+                            />
+                            <Stack gap={0.5} mr={4}>
+                              <Typography fontWeight={600} sx={{ textDecoration: 'none' }}>
+                                {lectureData.urlDocument}
+                              </Typography>
+                            </Stack>
+                          </Flex>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  ))}
+              </Stack>
               {showCommentButton && (
                 <CustomTooltip title='Comment'>
                   <IconButton

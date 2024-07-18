@@ -25,10 +25,15 @@ const DEFAULT_LIMIT = 12
 export const QuizSubmission = ({ courses }: { courses: Course[] }) => {
   const [page, setPage] = useState(0)
 
-  const [courseId, setSelectedCourseId] = useState<Number>()
-  const [selectedQuizId, setSelectedQuizId] = useState<Number>()
+  const [selectedCourseId, setSelectedCourseId] = useState<number>()
+  const [selectedQuizId, setSelectedQuizId] = useState<number>()
 
-  const quizSubmissionInstance = quizSubmissionKeys.list({ page: page, size: DEFAULT_LIMIT })
+  const quizSubmissionInstance = quizSubmissionKeys.list({
+    courseId: selectedCourseId,
+    quizId: selectedQuizId,
+    page: page,
+    size: DEFAULT_LIMIT,
+  })
   const {
     data: quizSubmissions,
     isLoading,
@@ -38,10 +43,10 @@ export const QuizSubmission = ({ courses }: { courses: Course[] }) => {
     ...quizSubmissionInstance,
   })
 
-  const quizInstance = quizKey.list({ courseId: Number(courseId) })
+  const quizInstance = quizKey.list({ courseId: Number(selectedCourseId) })
   const { data: quizzes, refetch: refetchQuizzes } = useQuery({
     ...quizInstance,
-    enabled: Boolean(courseId),
+    enabled: Boolean(selectedCourseId),
     select: (data) => data.content,
   })
 
@@ -56,10 +61,10 @@ export const QuizSubmission = ({ courses }: { courses: Course[] }) => {
   const headings = ['Student', 'Date', 'Score', 'Total time']
 
   useEffect(() => {
-    if (courseId) {
+    if (selectedCourseId) {
       refetchQuizzes()
     }
-  }, [courseId])
+  }, [selectedCourseId])
 
   useEffect(() => {
     if (selectedQuizId) {
@@ -73,7 +78,7 @@ export const QuizSubmission = ({ courses }: { courses: Course[] }) => {
         <Typography fontWeight={700} variant='body1'>
           Quiz
         </Typography>
-        <Filter courses={courses} onChangeCourse={setSelectedCourseId} />
+        <Filter selectedCourses={selectedCourseId} courses={courses} onChangeCourse={setSelectedCourseId} />
       </Flex>
       <Stack gap={4}>
         <Card elevation={0}>

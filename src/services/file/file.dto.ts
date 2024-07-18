@@ -4,6 +4,7 @@ export type UploadFileResponse = BaseResponse<UploadFileData>
 
 export type UploadFileData = {
   filePath: string
+  contentType: string
 }
 
 export enum UploadEnumType {

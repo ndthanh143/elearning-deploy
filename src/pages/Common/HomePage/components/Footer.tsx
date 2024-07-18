@@ -8,7 +8,7 @@ export function Footer() {
       <Container maxWidth='sm'>
         <Stack gap={4}>
           <Flex gap={4} justifyContent={'center'}>
-            <Logo size='large' variant='light' />
+            <Logo size='large' variant='light' type='short' />
             <Divider orientation='vertical' flexItem sx={{ bgcolor: gray[300] }} />
             <Typography variant='h3' color='white' fontWeight={400}>
               Online Learning

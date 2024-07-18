@@ -63,7 +63,6 @@ export const CourseIntro = ({ data }: CourseIntroProps) => {
 
   return (
     <>
-      {' '}
       <Stack gap={1}>
         <Flex justifyContent='space-between'>
           <Stack direction='row' justifyContent='space-between'>
@@ -71,7 +70,7 @@ export const CourseIntro = ({ data }: CourseIntroProps) => {
               Courses
             </Button>
           </Stack>
-          <ProgressCourse />
+          {/* <ProgressCourse /> */}
         </Flex>
         <Card>
           <CardContent>

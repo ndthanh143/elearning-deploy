@@ -22,25 +22,16 @@ export const StudentHomePage = () => {
     isAuthenticated ||
     (profile?.data.role === RoleEnum.Student && (
       <Container maxWidth={'xl'}>
-        <Grid container spacing={4}>
-          <Grid item xs={12} lg={8.5}>
-            <Stack gap={4}>
-              <BannerHeading
-                title='Managing emotions helps us maintain balance in the learning process.'
-                subtitle={`Take a look your learning progress for today, ${dayjs().format('MMMM DD YYYY')}`}
-                buttonLabel='Explore more'
-                rightIcon={icons['owl']}
-              />
-              <Overview />
-              <FollowingCourses />
-            </Stack>
-          </Grid>
-          <Grid item xs={12} lg={3.5}>
-            <Stack gap={4}>
-              <Activity />
-            </Stack>
-          </Grid>
-        </Grid>
+        <Stack gap={4}>
+          <BannerHeading
+            title='Managing emotions helps us maintain balance in the learning process.'
+            subtitle={`Take a look your learning progress for today, ${dayjs().format('MMMM DD YYYY')}`}
+            buttonLabel='Explore more'
+            rightIcon={icons['owl']}
+          />
+          <Overview />
+          <FollowingCourses />
+        </Stack>
       </Container>
     ))
   )

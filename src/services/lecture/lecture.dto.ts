@@ -5,11 +5,16 @@ export type LectureResponse = BaseResponse<Lecture>
 export type Lecture = {
   lectureContent: string
   lectureName: string
+  urlDocument?: string
+  state?: 'PROCESSING' | 'FAILED' | 'DONE'
+  videoDuration?: number
 } & BaseData
 
 export type CreateLecturePayload = {
   lectureName: string
   lectureContent: string
+  urlDocument?: string
+  contentType?: string
 }
 
 export type CreateLectureWithUnitPayload = {

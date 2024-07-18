@@ -89,7 +89,10 @@ export function ModalListStudentToAdd({
     courseRegistrations && (
       <CustomModal isOpen={isOpen} title='List student' maxWidth={450} onClose={onClose}>
         <Divider />
-        <List dense sx={{ width: '100%', maxWidth: 450, bgcolor: 'background.paper' }}>
+        <List
+          dense
+          sx={{ width: '100%', maxWidth: 450, bgcolor: 'background.paper', maxHeight: '75vh', overflowY: 'scroll' }}
+        >
           {courseRegistrations.map((value) => {
             const labelId = `checkbox-list-secondary-label-${value}`
             return (

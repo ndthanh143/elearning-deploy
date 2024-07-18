@@ -64,7 +64,7 @@ const exportToExcel = ({
   document.body.removeChild(a)
 }
 
-const DEFAULT_PAGE_LIMIT = 1
+const DEFAULT_PAGE_LIMIT = 5
 export const AssignmentSubmission = ({ courses }: { courses: Course[] }) => {
   const { triggerAlert } = useAlert()
   const [page, setPage] = useState(1)
@@ -76,7 +76,7 @@ export const AssignmentSubmission = ({ courses }: { courses: Course[] }) => {
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<number>()
 
   const assignmentSubmissionInstance = assignmentSubmissionKeys.list({
-    courseId: selectedAssignmentId,
+    courseId: selectedCourseId,
     ...(selectedAssignmentId && { assignmentId: selectedAssignmentId }),
     page: page - 1,
     size: DEFAULT_PAGE_LIMIT,
@@ -111,9 +111,9 @@ export const AssignmentSubmission = ({ courses }: { courses: Course[] }) => {
     },
   })
 
-  const handleSubmitScore = (score: number) => {
+  const handleSubmitScore = (payload: { score: number; feedback?: string }) => {
     if (selectedSubmission) {
-      mutateUpdateScore({ id: selectedSubmission.id, score })
+      mutateUpdateScore({ id: selectedSubmission.id, ...payload })
     }
   }
 
@@ -128,7 +128,6 @@ export const AssignmentSubmission = ({ courses }: { courses: Course[] }) => {
       toast.error('No submissions to export')
     }
   }
-
   useEffect(() => {
     if (courses && courses.length > 0 && !selectedCourseId) {
       setSelectedCourseId(courses[0].id)
@@ -147,7 +146,7 @@ export const AssignmentSubmission = ({ courses }: { courses: Course[] }) => {
     <Stack gap={2}>
       <Flex justifyContent='space-between'>
         <Typography fontWeight={700}>Assignment</Typography>
-        <Filter courses={courses} onChangeCourse={setSelectedCourseId} />
+        <Filter selectedCourses={selectedCourseId} courses={courses} onChangeCourse={setSelectedCourseId} />
       </Flex>
       <Stack gap={4}>
         <Card sx={{ height: '100%' }} elevation={0}>
@@ -219,7 +218,7 @@ export const AssignmentSubmission = ({ courses }: { courses: Course[] }) => {
                               <TableCell align='right'>
                                 {submission.linkSubmission ? (
                                   <Tooltip title='View link submission'>
-                                    <Link to={submission.linkSubmission} color='primary.main'>
+                                    <Link to={submission.linkSubmission} color='primary.main' target='_blank'>
                                       View
                                     </Link>
                                   </Tooltip>
@@ -297,6 +296,7 @@ export const AssignmentSubmission = ({ courses }: { courses: Course[] }) => {
                     setSelectedSubmission(null)
                   }}
                   defaultValue={selectedSubmission.score || 0}
+                  defaultFeedack={selectedSubmission.feedback}
                   onSubmit={handleSubmitScore}
                 />
               )}

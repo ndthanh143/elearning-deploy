@@ -159,19 +159,33 @@ export const SubmissionContent = ({ assignment, courseId, unitId }: SubmissionCo
               />
             )}
           </Stack>
-          {submissions && submissions.content.length > 0 && (
-            <Stack direction='row' alignItems='center' gap={1}>
-              <Typography>Your score:</Typography>
-              <Typography fontWeight={500} color='success'>
-                {submissions?.content[0].score}
-              </Typography>
-            </Stack>
-          )}
+
           {submissions && submissions.content[0]?.fileSubmissionUrl && (
             <FileCard filePath={submissions.content[0]?.fileSubmissionUrl} onDelete={openConfirmDelete} />
           )}
           {submissions && submissions.content[0]?.textSubmission && (
             <TextCard onReview={openReviewText} onDelete={openConfirmDelete} />
+          )}
+
+          {submissions && submissions.content.length > 0 && (
+            <>
+              <Stack direction='row' alignItems='center' gap={1}>
+                <Typography variant='body2' fontWeight={700}>
+                  Your score:
+                </Typography>
+                <Typography variant='body2' fontWeight={700} color='success'>
+                  {submissions?.content[0].score || '--'}
+                </Typography>
+              </Stack>
+              <Stack gap={1}>
+                <Typography variant='body2' fontWeight={700}>
+                  Feedback from teacher:
+                </Typography>
+                <Typography sx={{ border: '1px solid #ededed', borderRadius: 3, p: 1 }}>
+                  {submissions?.content[0].feedback || '--'}
+                </Typography>
+              </Stack>
+            </>
           )}
 
           {submissions && submissions.content[0]?.textSubmission && (

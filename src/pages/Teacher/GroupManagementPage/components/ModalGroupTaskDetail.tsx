@@ -27,6 +27,7 @@ export function ModalGroupTaskDetail({ data, isOpen, onClose }: IModalGroupTaskD
       const url = getAbsolutePathFile(submissions?.content[0].fileUrl) || ''
       const a = document.createElement('a')
       a.href = url
+      a.target = '_blank'
       a.download = submissions?.content[0].fileUrl
       a.click()
       URL.revokeObjectURL(url)
@@ -148,7 +149,7 @@ export function ModalGroupTaskDetail({ data, isOpen, onClose }: IModalGroupTaskD
             />
           </Stack>
         </Stack>
-        <Button onClick={handleMarkscore} variant='contained'>
+        <Button onClick={handleMarkscore} variant='contained' fullWidth>
           Save Score
         </Button>
       </Stack>

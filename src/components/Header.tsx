@@ -48,27 +48,17 @@ const Message = ({
   const navigate = useNavigate()
   const parseData = JSON.parse(data)
 
-  console.log(parseData)
+  console.log('parseData', parseData)
+  if (!parseData) return null
 
   const navigateObj = {
-    TOPIC: `/courses/${parseData.forumId}#${refId}`,
-    COMMENT: `/courses/${parseData.courseId}/u/${parseData.unitId}/lecture/${parseData.lectureId}#${parseData.blockId}`,
+    TOPIC: `/courses/${parseData?.forumId}#${refId}`,
+    COMMENT: `/courses/${parseData?.courseId}/u/${parseData?.unitId}/lecture/${parseData?.lectureId}#${parseData?.blockId}`,
   }
 
   const renderContent = {
     TOPIC: {
-      label: (
-        <>
-          created a topic in course{' '}
-          {/* <Box
-            component={Link}
-            to={`/courses/${parseData.forumId}`}
-            sx={{ color: 'primary.main', textDecoration: 'none', fontWeight: 500 }}
-          >
-            {parseData.forumTitle}
-          </Box> */}
-        </>
-      ),
+      label: <>created a topic in course </>,
       content: parseData.topicContent,
     },
     COMMENT: {

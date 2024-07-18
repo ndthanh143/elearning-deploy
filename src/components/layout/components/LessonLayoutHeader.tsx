@@ -3,7 +3,6 @@ import { Course } from '@/services/course/course.dto'
 import { primary } from '@/styles/theme'
 import { BallotRounded, ExpandMore } from '@mui/icons-material'
 import { Box, Grid, IconButton, Typography } from '@mui/material'
-import { ProgressCourse } from '.'
 import { useAuth } from '@/hooks'
 
 interface ILessonLayoutHeaderProps {
@@ -12,7 +11,6 @@ interface ILessonLayoutHeaderProps {
 }
 
 export function LessonLayoutHeader({ toggleSideContent, course }: ILessonLayoutHeaderProps) {
-  const { isStudent } = useAuth()
   const handleBack = () => {
     window.history.back()
   }
@@ -35,9 +33,9 @@ export function LessonLayoutHeader({ toggleSideContent, course }: ILessonLayoutH
             </Flex>
           </Grid>
           <Grid item xs={6} display='flex' justifyContent='end' alignItems='center' gap={4}>
-            {isStudent && (
+            {/* {isStudent && (
               <ProgressCourse totalLesson={course?.totalUnit || 0} totalFinish={course?.totalUnitDone || 0} />
-            )}
+            )} */}
             <Flex gap={1} sx={{ cursor: 'pointer' }} onClick={toggleSideContent}>
               <BallotRounded fontSize='small' sx={{ color: '#D3D6D8' }} />
               <Typography variant='body2' fontWeight={500} color='#fff'>
