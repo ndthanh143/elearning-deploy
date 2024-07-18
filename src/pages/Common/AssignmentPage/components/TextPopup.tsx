@@ -1,7 +1,7 @@
 import { CustomModal, Flex } from '@/components'
 import Editor from '@/components/ContentEditor/ContentEditor'
 import { DoNotDisturbAltRounded } from '@mui/icons-material'
-import { Box, Button, Typography } from '@mui/material'
+import { Button, Typography } from '@mui/material'
 import { useState } from 'react'
 
 export type TextPopupProps = {

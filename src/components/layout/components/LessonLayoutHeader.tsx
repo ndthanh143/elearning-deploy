@@ -3,7 +3,6 @@ import { Course } from '@/services/course/course.dto'
 import { primary } from '@/styles/theme'
 import { BallotRounded, ExpandMore } from '@mui/icons-material'
 import { Box, Grid, IconButton, Typography } from '@mui/material'
-import { useAuth } from '@/hooks'
 
 interface ILessonLayoutHeaderProps {
   toggleSideContent: () => void
