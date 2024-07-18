@@ -1,18 +1,18 @@
 import { Flex, Loading, NoData, Button } from '@/components'
-import { useAuth } from '@/hooks'
+import { useAlert, useAuth } from '@/hooks'
 import { Box, Container, Grid, Stack, Typography } from '@mui/material'
 import { TeacherCourseCard } from './components'
 import { courseKeys } from '@/services/course/course.query'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { courseService } from '@/services/course/course.service'
-import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import { AddOutlined } from '@mui/icons-material'
 import { BannerHeading } from '@/pages/Student/StudentHomePage/components'
 
 const DEFAULT_LIMIT = 20
 export const TeacherCoursesPage = () => {
+  const { triggerAlert } = useAlert()
   const { profile } = useAuth()
 
   const [page, _] = useState(0)
@@ -30,7 +30,10 @@ export const TeacherCoursesPage = () => {
     mutationFn: courseService.delete,
     onSuccess: () => {
       refetch()
-      toast.success('Delete course successfully')
+      triggerAlert('Delete course successfully')
+    },
+    onError: () => {
+      triggerAlert('You can not delete course that has students!', 'error')
     },
   })
 

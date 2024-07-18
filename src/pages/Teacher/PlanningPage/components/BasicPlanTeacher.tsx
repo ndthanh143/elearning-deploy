@@ -379,6 +379,7 @@ export const BasicPlanTeacher = ({ lessonPlanId }: BasicPlanTeacherProps) => {
               startDate: selectedUnit.startDate,
               endDate: selectedUnit.endDate,
             }}
+            status='update'
             onUpdate={handleUpdateAssignment}
             isLoading={isLoadingAssignment}
           />

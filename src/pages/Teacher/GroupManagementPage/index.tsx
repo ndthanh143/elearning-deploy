@@ -213,10 +213,10 @@ export const GroupManagementPage: React.FC = () => {
         }
       })
       setSelectedDeleteGroup(null)
-      triggerAlert('Update group successfully')
+      triggerAlert('Remove group successfully')
     },
     onError: () => {
-      triggerAlert('Update group failed', 'error')
+      triggerAlert('Remove group failed', 'error')
     },
   })
 

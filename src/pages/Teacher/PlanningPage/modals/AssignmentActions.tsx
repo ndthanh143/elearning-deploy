@@ -10,7 +10,7 @@ import { getAbsolutePathFile, parseYoutubeUrlToEmbed } from '@/utils'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { ArrowBackRounded, FileUploadRounded } from '@mui/icons-material'
 import { Box, Button, Container, IconButton, Modal, Stack, TextField, Tooltip, Typography } from '@mui/material'
-import { DatePicker } from '@mui/x-date-pickers'
+import { DateTimePicker } from '@mui/x-date-pickers'
 import dayjs from 'dayjs'
 import { useForm } from 'react-hook-form'
 import { number, object, string } from 'yup'
@@ -129,7 +129,7 @@ export const AssignmentActions = ({
                   <Typography variant='body1' fontWeight={600}>
                     Start date
                   </Typography>
-                  <DatePicker
+                  <DateTimePicker
                     defaultValue={defaultData?.startDate && dayjs(getValues('startDate'))}
                     slotProps={{
                       textField: {
@@ -137,7 +137,7 @@ export const AssignmentActions = ({
                         placeholder: 'Start date',
                       },
                     }}
-                    disablePast
+                    disablePast={status === 'create'}
                     onChange={(value: any) => setValue('startDate', dayjs(value).toISOString())}
                   />
                 </Stack>
@@ -145,7 +145,7 @@ export const AssignmentActions = ({
                   <Typography variant='body1' fontWeight={600}>
                     End date
                   </Typography>
-                  <DatePicker
+                  <DateTimePicker
                     disablePast
                     defaultValue={defaultData?.endDate && dayjs(getValues('endDate'))}
                     slotProps={{
