@@ -128,11 +128,6 @@ export const AssignmentSubmission = ({ courses }: { courses: Course[] }) => {
       toast.error('No submissions to export')
     }
   }
-  useEffect(() => {
-    if (courses && courses.length > 0 && !selectedCourseId) {
-      setSelectedCourseId(courses[0].id)
-    }
-  }, [courses])
 
   useEffect(() => {
     if (selectedCourseId) {

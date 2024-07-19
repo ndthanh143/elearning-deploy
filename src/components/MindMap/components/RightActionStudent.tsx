@@ -1,6 +1,6 @@
 import { CustomTooltip } from '@/components'
 import { useBoolean } from '@/hooks'
-import { InfoRounded, ListAltRounded, VisibilityOffRounded, VisibilityRounded } from '@mui/icons-material'
+import { VisibilityOffRounded, VisibilityRounded } from '@mui/icons-material'
 import { IconButton, Stack } from '@mui/material'
 
 interface IRightActionStudentProps {
@@ -20,16 +20,16 @@ export function RightActionStudent({ toggleViewLessons }: IRightActionStudentPro
       icon: isViewAllLessons ? <VisibilityOffRounded /> : <VisibilityRounded />,
       onClick: handleViewAllLessons,
     },
-    viewContents: {
-      title: 'Show content panel',
-      icon: <ListAltRounded />,
-      onClick: () => {},
-    },
-    info: {
-      title: 'View info',
-      icon: <InfoRounded />,
-      onClick: () => {},
-    },
+    // viewContents: {
+    //   title: 'Show content panel',
+    //   icon: <ListAltRounded />,
+    //   onClick: () => {},
+    // },
+    // info: {
+    //   title: 'View info',
+    //   icon: <InfoRounded />,
+    //   onClick: () => {},
+    // },
   }
 
   return (

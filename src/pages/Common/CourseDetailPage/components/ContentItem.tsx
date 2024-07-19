@@ -20,6 +20,14 @@ export const ContentItem = ({ unit }: ContentItemProps) => {
   const navigate = useNavigate()
   const childType = getTypeUnit(unit)
 
+  const handleDownloadResource = (url: string) => {
+    const link = document.createElement('a')
+    link.href = url
+    link.target = '_blank'
+    link.setAttribute('download', '')
+    link.click()
+  }
+
   const dataProps = {
     lecture: {
       title: unit.lectureInfo?.lectureName,
@@ -45,7 +53,8 @@ export const ContentItem = ({ unit }: ContentItemProps) => {
       // onClick: () => handleDownloadResource(unit.resourceInfo?.urlDocument || ''),
       // onClick: () => setResourceUrl(`${configs.API_URL}/api/file/download${unit.resourceInfo?.urlDocument}`),
       onClick: () => {
-        navigate(`/courses/${courseId}/u/${unit.id}/resource/${unit.resourceInfo?.id}`)
+        handleDownloadResource(unit.resourceInfo?.urlDocument || '')
+        // navigate(`/courses/${courseId}/u/${unit.id}/resource/${unit.resourceInfo?.id}`)
         saveTracking(unit.isDone)
       },
       subTitle: '',

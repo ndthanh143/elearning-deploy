@@ -2,7 +2,6 @@ import { CustomSelect, Flex } from '@/components'
 import { Course } from '@/services/course/course.dto'
 
 export function Filter({
-  selectedCourses,
   courses,
   onChangeCourse,
 }: {
@@ -28,14 +27,13 @@ export function Filter({
   return (
     <Flex gap={2}>
       <CustomSelect
-        data={courses.map((course) => ({
-          label: course.courseName,
-          value: course.id,
-        }))}
-        defaultValue={selectedCourses}
-        value={selectedCourses}
+        data={[
+          { label: 'All', value: 'all' },
+          ...courses.map((course) => ({ label: course.courseName, value: course.id })),
+        ]}
+        defaultValue={'all'}
         size='small'
-        onChange={(e) => onChangeCourse(e.target.value as number)}
+        onChange={(e) => e.target.value !== 'all' && onChangeCourse(e.target.value as number)}
       />
       {/* <CustomSelect data={selectDataTypeSubmit} defaultValue={selectDataTypeSubmit[0].value} size='small' /> */}
     </Flex>
