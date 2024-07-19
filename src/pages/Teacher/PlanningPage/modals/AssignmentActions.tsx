@@ -1,15 +1,14 @@
-import { icons } from '@/assets/icons'
-import { Flex, LoadingButton, YoutubeCard } from '@/components'
+import { Flex, LoadingButton } from '@/components'
 import Editor from '@/components/ContentEditor/ContentEditor'
 import { UrlPopup } from '@/components/UrlPopup'
 import { useBoolean } from '@/hooks'
-import { FileCard, UploadPopup } from '@/pages/Common/AssignmentPage/components'
+import { UploadPopup } from '@/pages/Common/AssignmentPage/components'
 import { Assignment, CreateAssignmentPayload, UpdateAssignmentPayload } from '@/services/assignment/assignment.dto'
 import { UploadFileData } from '@/services/file/file.dto'
-import { getAbsolutePathFile, parseYoutubeUrlToEmbed } from '@/utils'
+import { parseYoutubeUrlToEmbed } from '@/utils'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { ArrowBackRounded, FileUploadRounded } from '@mui/icons-material'
-import { Box, Button, Container, IconButton, Modal, Stack, TextField, Tooltip, Typography } from '@mui/material'
+import { ArrowBackRounded } from '@mui/icons-material'
+import { Box, Button, Container, Modal, Stack, TextField, Typography } from '@mui/material'
 import { DateTimePicker } from '@mui/x-date-pickers'
 import dayjs from 'dayjs'
 import { useForm } from 'react-hook-form'
@@ -42,8 +41,8 @@ export const AssignmentActions = ({
   onUpdate,
   isLoading,
 }: AddAssignmentProps) => {
-  const { value: isOpenUpload, setTrue: openUpload, setFalse: closeUpload } = useBoolean(false)
-  const { value: isOpenYoutube, setTrue: openYoutube, setFalse: closeYoutube } = useBoolean(false)
+  const { value: isOpenUpload, setFalse: closeUpload } = useBoolean(false)
+  const { value: isOpenYoutube, setFalse: closeYoutube } = useBoolean(false)
 
   console.log('defaultData', defaultData)
 
@@ -51,7 +50,6 @@ export const AssignmentActions = ({
     resolver: yupResolver(schema),
     defaultValues: {
       state: defaultData?.state || 1,
-      urlDocument: defaultData?.urlDocument || '',
       assignmentContent: defaultData?.assignmentContent,
       assignmentTitle: defaultData?.assignmentTitle,
       startDate: defaultData?.startDate ? dayjs(defaultData?.startDate).toISOString() : '',
@@ -69,19 +67,19 @@ export const AssignmentActions = ({
     closeYoutube()
   }
 
-  const renderReviewResource = () => {
-    const urlDocument = getValues('urlDocument')
+  // const renderReviewResource = () => {
+  //   const urlDocument = getValues('urlDocument')
 
-    if (urlDocument) {
-      const isYoutubeLink = urlDocument.includes('www.youtube.com')
+  //   if (urlDocument) {
+  //     const isYoutubeLink = urlDocument.includes('www.youtube.com')
 
-      if (isYoutubeLink) {
-        return <YoutubeCard videoUrl={urlDocument} />
-      } else {
-        return <FileCard filePath={getAbsolutePathFile(urlDocument) || ''} />
-      }
-    }
-  }
+  //     if (isYoutubeLink) {
+  //       return <YoutubeCard videoUrl={urlDocument} />
+  //     } else {
+  //       return <FileCard filePath={getAbsolutePathFile(urlDocument) || ''} />
+  //     }
+  //   }
+  // }
 
   const handleClose = () => {
     onClose()
@@ -158,7 +156,7 @@ export const AssignmentActions = ({
                   />
                 </Stack>
               </Stack>
-              <Stack gap={1}>
+              {/* <Stack gap={1}>
                 <Typography fontWeight={600}>Resource</Typography>
                 {renderReviewResource()}
                 <Flex gap={2}>
@@ -173,7 +171,7 @@ export const AssignmentActions = ({
                     </IconButton>
                   </Tooltip>
                 </Flex>
-              </Stack>
+              </Stack> */}
 
               <Stack gap={0.5}>
                 <Typography fontWeight={600}>Content</Typography>
