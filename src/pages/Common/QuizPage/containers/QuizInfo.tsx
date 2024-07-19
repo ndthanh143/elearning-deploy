@@ -119,7 +119,12 @@ export const QuizInfo = () => {
             </>
           )} */}
         </BoxContent>
-        <ModalAttempts data={quiz.quizSubmissionInfo} onClose={closeAttempts} isOpen={isOpenAttempts} />
+        <ModalAttempts
+          data={quiz.quizSubmissionInfo}
+          onClose={closeAttempts}
+          isOpen={isOpenAttempts}
+          isReviewAble={quiz.isPublicAnswer}
+        />
       </Container>
     )
   )
